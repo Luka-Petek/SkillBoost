@@ -1,0 +1,216 @@
+{
+  "users": [
+    {
+      "name": "Demo Student",
+      "email": "demo@student.skillboost.local",
+      "role": "STUDENT",
+      "goals": [
+        "Improve public speaking",
+        "Handle conflict calmly"
+      ],
+      "targetSkills": [
+        "public-speaking",
+        "conflict-resolution"
+      ],
+      "points": 0,
+      "badges": []
+    },
+    {
+      "name": "Demo Mentor",
+      "email": "mentor@skillboost.local",
+      "role": "MENTOR",
+      "goals": [
+        "Review learner answers"
+      ],
+      "targetSkills": [
+        "mentoring"
+      ],
+      "points": 0,
+      "badges": []
+    }
+  ],
+  "skills": [
+    {
+      "key": "public-speaking",
+      "name": "Public speaking",
+      "category": "Communication",
+      "description": "Practice clear structure, confident delivery and strong closing statements.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 15,
+      "outcomes": [
+        "Clear opening",
+        "Structured message",
+        "Actionable closing"
+      ]
+    },
+    {
+      "key": "conflict-resolution",
+      "name": "Conflict resolution",
+      "category": "Teamwork",
+      "description": "Learn to respond calmly, identify needs and move conflict toward a concrete next step.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 20,
+      "outcomes": [
+        "Calm tone",
+        "Needs discovery",
+        "Agreed next step"
+      ]
+    },
+    {
+      "key": "team-collaboration",
+      "name": "Team collaboration",
+      "category": "Workplace",
+      "description": "Improve daily communication, ownership, handoffs and accountability in a team.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 12,
+      "outcomes": [
+        "Clear updates",
+        "Blocked work visibility",
+        "Shared ownership"
+      ]
+    },
+    {
+      "key": "job-interview",
+      "name": "Job interview storytelling",
+      "category": "Career",
+      "description": "Use STAR-style examples to explain your experience and value in interviews.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 18,
+      "outcomes": [
+        "Situation",
+        "Action",
+        "Result",
+        "Reflection"
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "skillKey": "public-speaking",
+      "title": "One-minute product pitch",
+      "scenario": "You have one minute to present a new learning app to a small group of classmates.",
+      "expectedOutcome": "The listener understands the problem, the solution and the next step.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "clear opening",
+        "problem",
+        "solution",
+        "next step",
+        "closing"
+      ]
+    },
+    {
+      "skillKey": "public-speaking",
+      "title": "Status update to stakeholders",
+      "scenario": "Explain project progress, current risks and what help you need from stakeholders.",
+      "expectedOutcome": "Stakeholders understand progress, risk and requested decision.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 12,
+      "evaluationCriteria": [
+        "progress",
+        "risk",
+        "decision",
+        "action plan"
+      ]
+    },
+    {
+      "skillKey": "conflict-resolution",
+      "title": "Teammate misses a deadline",
+      "scenario": "A teammate missed an agreed deadline and your work is now blocked. Respond without escalating the conflict.",
+      "expectedOutcome": "You acknowledge the issue, ask for context and agree on a concrete recovery plan.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 10,
+      "evaluationCriteria": [
+        "calm tone",
+        "context",
+        "impact",
+        "next step",
+        "agreement"
+      ]
+    },
+    {
+      "skillKey": "team-collaboration",
+      "title": "Daily standup update",
+      "scenario": "Give a short standup update: what you did, what you will do and where you are blocked.",
+      "expectedOutcome": "The team can quickly understand progress and blockers.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 5,
+      "evaluationCriteria": [
+        "yesterday",
+        "today",
+        "blocker",
+        "help"
+      ]
+    },
+    {
+      "skillKey": "job-interview",
+      "title": "Tell me about a challenge",
+      "scenario": "Answer an interview question about a difficult challenge you solved.",
+      "expectedOutcome": "The answer includes situation, task, action, result and what you learned.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 15,
+      "evaluationCriteria": [
+        "situation",
+        "task",
+        "action",
+        "result",
+        "reflection"
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "skillKey": "public-speaking",
+      "title": "Pitch feedback coach",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "You are a practical communication coach. Give concise, direct and actionable feedback.",
+      "userPromptTemplate": "Evaluate this one-minute pitch. Score clarity, structure and closing. Answer: {{answer}}",
+      "simulatedAiResponse": "Mock AI: focus on a stronger hook, make the problem-solution structure explicit, and finish with one concrete call to action.",
+      "tags": [
+        "pitch",
+        "presentation",
+        "clarity"
+      ]
+    },
+    {
+      "skillKey": "conflict-resolution",
+      "title": "Conflict de-escalation coach",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "You are a calm workplace mediator. Help the learner lower tension and move toward agreement.",
+      "userPromptTemplate": "Review this conflict response. Check tone, empathy, ownership and next step. Answer: {{answer}}",
+      "simulatedAiResponse": "Mock AI: acknowledge the impact without blame, ask one open question, then propose a specific recovery step and deadline.",
+      "tags": [
+        "conflict",
+        "empathy",
+        "teamwork"
+      ]
+    },
+    {
+      "skillKey": "team-collaboration",
+      "title": "Standup update coach",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "You help teams communicate faster and with less ambiguity.",
+      "userPromptTemplate": "Review this daily standup update for clarity and blockers. Answer: {{answer}}",
+      "simulatedAiResponse": "Mock AI: keep the update short, separate done/today/blockers, and clearly state who you need help from.",
+      "tags": [
+        "standup",
+        "blockers",
+        "team"
+      ]
+    },
+    {
+      "skillKey": "job-interview",
+      "title": "STAR interview coach",
+      "difficulty": "INTERMEDIATE",
+      "systemPrompt": "You are an interview coach. Evaluate examples using the STAR method and career relevance.",
+      "userPromptTemplate": "Evaluate this interview story. Check situation, task, action, result and lesson. Answer: {{answer}}",
+      "simulatedAiResponse": "Mock AI: add measurable result, make your personal action clearer, and end with what the experience taught you.",
+      "tags": [
+        "interview",
+        "career",
+        "STAR"
+      ]
+    }
+  ]
+}

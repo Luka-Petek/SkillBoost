@@ -1,0 +1,62 @@
+### Health
+GET http://localhost:8080/api/health
+
+### Users
+GET http://localhost:8080/api/users
+
+### Create user
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Miha",
+  "email": "miha.demo@skillboost.local",
+  "role": "STUDENT",
+  "goals": ["Boljša komunikacija", "Javno nastopanje"],
+  "targetSkills": ["public-speaking", "conflict-resolution"]
+}
+
+### Skills
+GET http://localhost:8080/api/skills
+
+### Challenges by skill
+GET http://localhost:8080/api/challenges/skill/public-speaking
+
+### Prompts by skill
+GET http://localhost:8080/api/prompts/skill/public-speaking
+
+### Add new mock LLM prompt
+POST http://localhost:8080/api/prompts
+Content-Type: application/json
+
+{
+  "skillKey": "team-collaboration",
+  "title": "Daily standup coach",
+  "difficulty": "BEGINNER",
+  "systemPrompt": "You are a practical soft-skills coach.",
+  "userPromptTemplate": "Give feedback for a daily standup answer: {{answer}}",
+  "simulatedAiResponse": "Mock response: mention blockers clearly, keep it short, and ask for help early.",
+  "tags": ["standup", "team", "communication"]
+}
+
+### Submit training session
+POST http://localhost:8080/api/sessions
+Content-Type: application/json
+
+{
+  "userId": "REPLACE_WITH_USER_ID",
+  "challengeId": "REPLACE_WITH_CHALLENGE_ID",
+  "skillKey": "public-speaking",
+  "userAnswer": "Dober dan, danes bom predstavil problem, rešitev in naslednje korake. Najprej bom pojasnil kontekst, potem bom prikazal rezultat in na koncu predlagal akcijski načrt."
+}
+
+### Mentor note
+PATCH http://localhost:8080/api/sessions/REPLACE_WITH_SESSION_ID/mentor-note
+Content-Type: application/json
+
+{
+  "mentorNote": "Dober nastop, naslednjič dodaj še konkreten primer in bolj jasen zaključek."
+}
+
+### Report
+GET http://localhost:8080/api/reports/REPLACE_WITH_USER_ID

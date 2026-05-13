@@ -1,0 +1,55 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: skillboost-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - skillboost_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: skillboost-mongo-express
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+
+  backend:
+    build:
+      context: ./backend
+    container_name: skillboost-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/skillboost
+      SPRING_PROFILES_ACTIVE: docker
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: skillboost-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  skillboost_mongo_data:

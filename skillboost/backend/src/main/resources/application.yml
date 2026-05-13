@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: skillboost-backend
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/skillboost}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.skillboost: INFO
