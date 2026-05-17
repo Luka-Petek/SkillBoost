@@ -51,5 +51,19 @@ services:
     ports:
       - "3000:80"
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: skillboost-keycloak
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "9080:8080"
+    volumes:
+      - ./keycloak_data:/opt/keycloak/data/
+      - ./keycloak_config:/opt/keycloak/data/import/
+
 volumes:
   skillboost_mongo_data:
+  skillboost_keycloak_data:

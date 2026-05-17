@@ -4,6 +4,12 @@ spring:
   data:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/skillboost}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9080/realms/SkillBoost
+          jwk-set-uri: http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs
 
 server:
   port: 8080

@@ -1,9 +1,12 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 async function request(path, options = {}) {
+  const token = localStorage.getItem('token');  //zeton od keycloak-a
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '', // Dodano!
       ...(options.headers || {})
     },
     ...options
