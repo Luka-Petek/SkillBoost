@@ -60,3 +60,14 @@ Content-Type: application/json
 
 ### Report
 GET http://localhost:8080/api/reports/REPLACE_WITH_USER_ID
+
+### Testiranje pravega Gemini API-ja
+POST http://localhost:8080/api/sessions
+Content-Type: application/json
+
+{
+  "userId": "TUKAJ_PRILEPI_PRAVI_ID_IZ_MONGO",
+  "challengeId": "TUKAJ_PRILEPI_PRAVI_ID_IZ_CHALLENGA",
+  "skillKey": "public-speaking",
+  "userAnswer": "Zivjo, rad bi vam predstavil naso novo aplikacijo SkillBoost, ki resuje problem ucenja mehkih vescin s pomocjo umetne inteligence."
+}

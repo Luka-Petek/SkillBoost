@@ -40,6 +40,7 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/skillboost
       SPRING_PROFILES_ACTIVE: docker
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
 
   frontend:
     build:

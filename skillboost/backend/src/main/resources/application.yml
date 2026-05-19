@@ -10,6 +10,9 @@ spring:
         jwt:
           issuer-uri: http://localhost:9080/realms/SkillBoost
           jwk-set-uri: http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs
+  gemini:
+    api:
+      key: "AIzaSyAeAmfYPoEbPIYHOStLa90qnlrvzF1Mx2Q"
 
 server:
   port: 8080
