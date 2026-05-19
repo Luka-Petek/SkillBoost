@@ -81,38 +81,7 @@ export default function App() {
                             <MetricCard label="Badges" value={data.selectedUser?.badges?.length || 0} helper={(data.selectedUser?.badges || []).join(', ') || 'No badges yet'} />
                         </section>
 
-                        <section className="workspace-grid">
-                            <aside className="panel side-panel">
-                                <div className="section-title">
-                                    <span>Setup</span>
-                                    <small>user + skill</small>
-                                </div>
-
-                                <label>
-                                    User
-                                    <select value={data.selectedUserId} onChange={(e) => data.setSelectedUserId(e.target.value)}>
-                                        {data.users.map((user) => (
-                                            <option key={user.id} value={user.id}>{user.name} · {user.role}</option>
-                                        ))}
-                                    </select>
-                                </label>
-
-                                <label>
-                                    Skill
-                                    <select value={data.selectedSkillKey} onChange={(e) => data.setSelectedSkillKey(e.target.value)}>
-                                        {data.skills.map((skill) => (
-                                            <option key={skill.id} value={skill.key}>{skill.name}</option>
-                                        ))}
-                                    </select>
-                                </label>
-
-                                <div className="mini-list">
-                                    {(data.skills.find((skill) => skill.key === data.selectedSkillKey)?.outcomes || []).map((outcome) => (
-                                        <span key={outcome}>{outcome}</span>
-                                    ))}
-                                </div>
-                            </aside>
-
+                        <div className="workspace-centered" style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
                             <section className="panel main-panel">
                                 {activeSection === 'simulator' && (
                                     <SimulatorSection
@@ -148,23 +117,7 @@ export default function App() {
 
                                 {activeSection === 'report' && <ReportSection report={data.report} />}
                             </section>
-
-                            <aside className="panel side-panel">
-                                <div className="section-title">
-                                    <span>Registracija</span>
-                                    <small>Ustvari nov račun</small>
-                                </div>
-                                <form className="stack" onSubmit={data.handleRegisterUser}>
-                                    <input placeholder="Name" value={data.newUser.name} onChange={(e) => data.setNewUser({ ...data.newUser, name: e.target.value })} />
-                                    <input placeholder="Email" value={data.newUser.email} onChange={(e) => data.setNewUser({ ...data.newUser, email: e.target.value })} />
-                                    <input placeholder="Goals, comma separated" value={data.newUser.goals} onChange={(e) => data.setNewUser({ ...data.newUser, goals: e.target.value })} />
-                                    <input placeholder="Target skills, comma separated" value={data.newUser.targetSkills} onChange={(e) => data.setNewUser({ ...data.newUser, targetSkills: e.target.value })} />
-                                    <button className="secondary" disabled={data.saving}>
-                                        {data.saving ? 'Registracija...' : 'Registriraj uporabnika'}
-                                    </button>
-                                </form>
-                            </aside>
-                        </section>
+                        </div>
                     </>
                 )}
             </main>
@@ -189,7 +142,7 @@ function SimulatorSection({ filteredChallenges, selectedChallengeId, setSelected
             <form className="simulation-form" onSubmit={handleSubmitSession}>
                 <label>Challenge
                     <select value={selectedChallengeId} onChange={(e) => setSelectedChallengeId(e.target.value)}>
-                        {filteredChallenges.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+                        {(filteredChallenges || []).map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
                     </select>
                 </label>
                 {selectedChallenge && (
@@ -225,14 +178,14 @@ function SimulatorSection({ filteredChallenges, selectedChallengeId, setSelected
 function SkillsSection({ skills, challenges }) {
     return (
         <div className="content-section">
-            <div className="section-title"><span>Skill catalogue</span><small>{skills.length} skills</small></div>
+            <div className="section-title"><span>Skill catalogue</span><small>{(skills || []).length} skills</small></div>
             <div className="cards-grid">
-                {skills.map((skill) => (
+                {(skills || []).map((skill) => (
                     <article key={skill.id} className="skill-card">
                         <p>{skill.category}</p><h3>{skill.name}</h3><span>{skill.level} · {skill.estimatedMinutes} min</span>
                         <p>{skill.description}</p>
-                        <div className="mini-list">{skill.outcomes.map((o) => <span key={o}>{o}</span>)}</div>
-                        <small>{challenges.filter((c) => c.skillKey === skill.key).length} challenges</small>
+                        <div className="mini-list">{(skill.outcomes || []).map((o) => <span key={o}>{o}</span>)}</div>
+                        <small>{(challenges || []).filter((c) => c.skillKey === skill.key).length} challenges</small>
                     </article>
                 ))}
             </div>
@@ -246,7 +199,7 @@ function PromptsSection({ filteredPrompts, newPrompt, setNewPrompt, handleCreate
             <div className="section-title"><span>Prompt library</span><small>mock LLM JSON</small></div>
             <div className="prompt-layout">
                 <div className="prompt-list">
-                    {filteredPrompts.map((p) => (
+                    {(filteredPrompts || []).map((p) => (
                         <article key={p.id} className="prompt-card">
                             <p>{p.difficulty}</p><h3>{p.title}</h3><code>{p.userPromptTemplate}</code><pre>{p.simulatedAiResponse}</pre>
                         </article>
@@ -285,7 +238,7 @@ function ReportSection({ report }) {
                 <MetricCard label="Average" value={`${report.averageScore}/100`} helper="Across all sessions" />
             </div>
             <div className="cards-grid single">
-                {report.skillProgress.map((s) => (
+                {(report.skillProgress || []).map((s) => (
                     <article key={s.skillKey} className="skill-card">
                         <p>{s.skillKey}</p><h3>{s.averageScore}/100</h3><span>{s.sessions} sessions</span><p>Next: {s.nextSuggestedChallenge}</p>
                     </article>
@@ -293,7 +246,7 @@ function ReportSection({ report }) {
             </div>
             <div className="recommendations">
                 <h3>Recommendations</h3>
-                {report.recommendations.map((item) => <p key={item}>→ {item}</p>)}
+                {(report.recommendations || []).map((item) => <p key={item}>→ {item}</p>)}
             </div>
         </div>
     );

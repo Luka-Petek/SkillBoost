@@ -29,7 +29,6 @@ export function useAppData() {
     const [report, setReport] = useState(null);
     
     const [newPrompt, setNewPrompt] = useState(emptyPrompt);
-    const [newUser, setNewUser] = useState({ name: '', email: '', role: 'STUDENT', goals: '', targetSkills: '' });
     
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -62,7 +61,12 @@ export function useAppData() {
             setChallenges(challengeResult);
             setPrompts(promptResult);
             setSelectedUserId(userResult[0]?.id || '');
-            setSelectedSkillKey(skillResult[0]?.key || 'public-speaking');
+            
+            const initialSkill = skillResult[0]?.key || 'public-speaking';
+            setSelectedSkillKey(initialSkill);
+            
+            const firstChallenge = challengeResult.find(c => c.skillKey === initialSkill);
+            setSelectedChallengeId(firstChallenge?.id || challengeResult[0]?.id || '');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -100,7 +104,12 @@ export function useAppData() {
             }
 
             setSelectedUserId(currentMe.id);
-            setSelectedSkillKey(skillRes[0]?.key || 'public-speaking');
+            
+            const initialSkill = skillRes[0]?.key || 'public-speaking';
+            setSelectedSkillKey(initialSkill);
+            
+            const firstChallenge = challengeRes.find(c => c.skillKey === initialSkill);
+            setSelectedChallengeId(firstChallenge?.id || challengeRes[0]?.id || '');
         } catch (err) {
             setError("Napaka pri nalaganju podatkov: " + err.message);
         } finally {
@@ -115,47 +124,32 @@ export function useAppData() {
     }, [selectedUserId, loadReport]);
 
     useEffect(() => {
-        const firstForSkill = challenges.find((c) => c.skillKey === selectedSkillKey);
-        setSelectedChallengeId(firstForSkill?.id || '');
-    }, [selectedSkillKey, challenges]);
+        const currentChallenge = challenges.find(c => c.id === selectedChallengeId);
+        if (currentChallenge && currentChallenge.skillKey !== selectedSkillKey) {
+            setSelectedSkillKey(currentChallenge.skillKey);
+        }
+    }, [selectedChallengeId, challenges, selectedSkillKey]);
 
-    // Akcije obrazcev
     const handleSubmitSession = async (event) => {
         event.preventDefault();
         if (!selectedUserId || !selectedChallengeId || !answer.trim()) {
-            setError('Izberi uporabnika, izziv in vpiši odgovor.');
+            setError('Manjkajo podatki za oddajo (uporabnik, izziv ali odgovor).');
             return;
         }
         try {
             setSaving(true);
             setError('');
             const session = await api.submitSession({
-                userId: selectedUserId, challengeId: selectedChallengeId, skillKey: selectedSkillKey, userAnswer: answer
+                userId: selectedUserId, 
+                challengeId: selectedChallengeId, 
+                skillKey: selectedSkillKey, 
+                userAnswer: answer
             });
             setLastSession(session);
             setAnswer('');
             await Promise.all([loadReport(selectedUserId), refreshUsers()]);
         } catch (err) {
             setError(err.message);
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleRegisterUser = async (event) => {
-        event.preventDefault();
-        try {
-            setSaving(true);
-            setError('');
-            const created = await api.createUser({
-                name: newUser.name, email: newUser.email, role: newUser.role,
-                goals: splitCsv(newUser.goals), targetSkills: splitCsv(newUser.targetSkills)
-            });
-            setUsers((current) => [created, ...current]);
-            setSelectedUserId(created.id);
-            setNewUser({ name: '', email: '', role: 'STUDENT', goals: '', targetSkills: '' });
-        } catch (err) {
-            setError('Registracija ni uspela: ' + err.message);
         } finally {
             setSaving(false);
         }
@@ -195,16 +189,40 @@ export function useAppData() {
     };
 
     const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
-    const filteredChallenges = useMemo(() => challenges.filter((c) => c.skillKey === selectedSkillKey), [challenges, selectedSkillKey]);
+    const filteredChallenges = useMemo(() => challenges, [challenges]); 
     const filteredPrompts = useMemo(() => prompts.filter((p) => p.skillKey === selectedSkillKey), [prompts, selectedSkillKey]);
     const selectedChallenge = useMemo(() => challenges.find((c) => c.id === selectedChallengeId), [challenges, selectedChallengeId]);
 
     return {
-        health, users, skills, selectedUserId, setSelectedUserId, selectedSkillKey, setSelectedSkillKey,
-        selectedChallengeId, setSelectedChallengeId, answer, setAnswer, lastSession, mentorNote, setMentorNote,
-        report, newPrompt, setNewPrompt, newUser, setNewUser, loading, saving, error,
-        loadPublicData, handleSuccessfulAuth, handleSubmitSession, handleRegisterUser, handleCreatePrompt, handleMentorNote,
-        selectedUser, filteredChallenges, filteredPrompts, selectedChallenge
+        health, 
+        users, 
+        skills, 
+        selectedUserId, 
+        setSelectedUserId, 
+        selectedSkillKey, 
+        setSelectedSkillKey,
+        selectedChallengeId, 
+        setSelectedChallengeId, 
+        answer, 
+        setAnswer, 
+        lastSession, 
+        mentorNote, 
+        setMentorNote,
+        report, 
+        newPrompt, 
+        setNewPrompt, 
+        loading, 
+        saving, 
+        error,
+        loadPublicData, 
+        handleSuccessfulAuth, 
+        handleSubmitSession, 
+        handleCreatePrompt, 
+        handleMentorNote,
+        selectedUser, 
+        filteredChallenges, 
+        filteredPrompts, 
+        selectedChallenge
     };
 }
 
