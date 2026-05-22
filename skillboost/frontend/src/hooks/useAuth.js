@@ -41,9 +41,11 @@ export function useAuth(onAuthSuccess, onAuthFail) {
         return () => clearInterval(interval);
     }, []);
 
-    const handleLogin = () => keycloak.login({ redirectUri: 'http://localhost:3000/' });
-    const handleRegister = () => keycloak.register({ redirectUri: 'http://localhost:3000/' });
-    const handleLogout = () => keycloak.logout();
+    const currentRedirectUri = () => window.location.origin + '/';
+
+    const handleLogin = () => keycloak.login({ redirectUri: currentRedirectUri() });
+    const handleRegister = () => keycloak.register({ redirectUri: currentRedirectUri() });
+    const handleLogout = () => keycloak.logout({ redirectUri: currentRedirectUri() });
 
     return {
         authenticated,

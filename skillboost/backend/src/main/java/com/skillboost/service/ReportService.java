@@ -42,7 +42,9 @@ public class ReportService {
                 .orElse(0);
 
         Map<String, List<TrainingSession>> bySkill = sessions.stream()
-                .collect(Collectors.groupingBy(TrainingSession::getSkillKey));
+                .flatMap(session -> splitSkillKeys(session.getSkillKey()).stream()
+                        .map(skillKey -> Map.entry(skillKey, session)))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
 
         List<ReportResponse.SkillProgress> skillProgress = bySkill.entrySet()
                 .stream()
@@ -56,7 +58,7 @@ public class ReportService {
                                     .noneMatch(session -> challenge.getId().equals(session.getChallengeId())))
                             .findFirst()
                             .map(TrainingChallenge::getTitle)
-                            .orElse("Dodaj nov težji izziv za to veščino.");
+                            .orElse("Dodaj nov težji izziv ali prosi mentorja za ciljno nalogo.");
                     return new ReportResponse.SkillProgress(
                             entry.getKey(),
                             entry.getValue().size(),
@@ -69,13 +71,22 @@ public class ReportService {
         List<String> recommendations = new ArrayList<>();
         if (sessions.isEmpty()) {
             recommendations.add("Začni z eno kratko simulacijo in shrani prvi rezultat.");
-            recommendations.add("Izberi veščino, ki je neposredno povezana s tvojim trenutnim ciljem.");
-        } else if (averageScore < 70) {
-            recommendations.add("Vadbo razbij na manjše korake: najprej jasen uvod, nato argument, potem zaključek.");
-            recommendations.add("Po vsaki simulaciji popravi odgovor in ga oddaj še enkrat.");
+            recommendations.add("Izberi dve povezani veščini, npr. javno nastopanje + samozavestna komunikacija.");
         } else {
-            recommendations.add("Rezultati so dobri. Naslednji korak je težji scenarij ali mentorjev pregled.");
-            recommendations.add("Za realen napredek vadi isto veščino več dni zapored.");
+            long practicedSkills = bySkill.keySet().size();
+            if (averageScore < 60) {
+                recommendations.add("Odgovore strukturiraj po vzorcu: situacija, razumevanje, predlog, dogovor.");
+                recommendations.add("Po AI povratni informaciji popravi isti odgovor in ga oddaj ponovno.");
+            } else if (averageScore < 80) {
+                recommendations.add("Rezultati so stabilni. Dodaj več konkretnih primerov in merljive naslednje korake.");
+                recommendations.add("Mentor naj pregleda vsaj eno simulacijo, da dobiš človeško povratno informacijo.");
+            } else {
+                recommendations.add("Odličen napredek. Preizkusi težji scenarij ali kombinacijo treh veščin hkrati.");
+                recommendations.add("Za realen razvoj vadi isto veščino več dni zapored in primerjaj poročila.");
+            }
+            if (practicedSkills < 2) {
+                recommendations.add("Dodaj še vsaj eno veščino, da bo učni načrt bolj prilagojen tvojim ciljem.");
+            }
         }
 
         return new ReportResponse(
@@ -88,6 +99,18 @@ public class ReportService {
                 skillProgress,
                 recommendations
         );
+    }
+
+    private List<String> splitSkillKeys(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of("general-soft-skills");
+        }
+        return List.of(value.split(","))
+                .stream()
+                .map(String::trim)
+                .filter(skillKey -> !skillKey.isBlank())
+                .distinct()
+                .toList();
     }
 
     private double round(double value) {

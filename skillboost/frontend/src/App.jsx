@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useTheme } from './hooks/useTheme';
 import { useAppData } from './hooks/useAppData';
+
+const scoreLabels = [
+    { min: 85, label: 'Odlično', tone: 'great' },
+    { min: 70, label: 'Dobro', tone: 'good' },
+    { min: 50, label: 'V razvoju', tone: 'warn' },
+    { min: 0, label: 'Za vajo', tone: 'danger' }
+];
 
 export default function App() {
     const [activeSection, setActiveSection] = useState('simulator');
@@ -14,77 +21,96 @@ export default function App() {
     );
 
     const reportScore = data.report?.averageScore || 0;
+    const selectedSkillNames = data.selectedSkills.map((skill) => skill.name).join(', ') || 'Izberi veščine';
 
     return (
         <div className="app-shell">
             <header className="topbar">
                 <a className="brand" href="#top" aria-label="SkillBoost home">
-                    <span className="brand-mark">S</span>
+                    <span className="brand-mark">SB</span>
                     <span>SkillBoost</span>
                 </a>
-                <nav className="nav-pill" aria-label="Main navigation">
+                <nav className="nav-pill" aria-label="Glavna navigacija">
                     <button onClick={() => setActiveSection('simulator')} className={activeSection === 'simulator' ? 'active' : ''}>Simulator</button>
-                    <button onClick={() => setActiveSection('skills')} className={activeSection === 'skills' ? 'active' : ''}>Skills</button>
-                    <button onClick={() => setActiveSection('prompts')} className={activeSection === 'prompts' ? 'active' : ''}>Prompts</button>
-                    <button onClick={() => setActiveSection('report')} className={activeSection === 'report' ? 'active' : ''}>Report</button>
+                    <button onClick={() => setActiveSection('skills')} className={activeSection === 'skills' ? 'active' : ''}>Veščine</button>
+                    <button onClick={() => setActiveSection('prompts')} className={activeSection === 'prompts' ? 'active' : ''}>Prompti</button>
+                    <button onClick={() => setActiveSection('report')} className={activeSection === 'report' ? 'active' : ''}>Poročilo</button>
                 </nav>
-                <button className="theme-toggle" onClick={toggleTheme}>
-                    {theme === 'light' ? 'Dark' : 'Light'} mode
-                </button>
-
-                {!authenticated ? (
-                    <>
-                        <button className="secondary" onClick={handleLogin}>Prijava</button>
-                        <button className="primary" onClick={handleRegister}>Registracija</button>
-                    </>
-                ) : (
-                    <button className="secondary" onClick={handleLogout}>
-                        Odjava ({username})
-                    </button>
-                )}
+                <div className="topbar-actions">
+                    <button className="theme-toggle" onClick={toggleTheme}>{theme === 'light' ? 'Temni način' : 'Svetli način'}</button>
+                    {!authenticated ? (
+                        <>
+                            <button className="secondary" onClick={handleLogin}>Prijava</button>
+                            <button className="primary" onClick={handleRegister}>Registracija</button>
+                        </>
+                    ) : (
+                        <button className="secondary" onClick={handleLogout}>Odjava ({username})</button>
+                    )}
+                </div>
             </header>
 
             <main id="top">
                 <section className="hero-grid">
-                    <div className="hero-card">
-                        <p className="eyebrow">Soft-skills MVP</p>
-                        <h1>Practice real situations, get mock AI feedback, track progress.</h1>
+                    <article className="hero-card">
+                        <p className="eyebrow">AI trener mehkih veščin</p>
+                        <h1>Vadi realne situacije, dobi pametno povratno informacijo in spremljaj napredek.</h1>
                         <p>
-                            {authenticated
-                                ? 'Prijavljen si preko varnega protokola Keycloak.'
-                                : 'Pregleduješ aplikacijo kot gost. Za polno funkcionalnost in pošiljanje podatkov se prijavi.'}
+                            SkillBoost združuje personaliziran učni načrt, več izbranih veščin naenkrat, simulacije pogovorov,
+                            mentorjeve zapiske in napredno poročilo o napredku.
                         </p>
                         <div className="hero-actions">
-                            <button className="primary" onClick={() => setActiveSection('simulator')}>Start simulation</button>
-                            <button className="secondary" onClick={() => setActiveSection('prompts')}>Open prompt library</button>
+                            <button className="primary" onClick={() => setActiveSection('simulator')}>Začni simulacijo</button>
+                            <button className="secondary" onClick={() => setActiveSection('skills')}>Izberi več veščin</button>
                         </div>
-                    </div>
+                        <div className="hero-strip" aria-label="Trenutni fokus">
+                            <span>Fokus</span>
+                            <strong>{selectedSkillNames}</strong>
+                        </div>
+                    </article>
 
-                    <div className="status-card">
-                        <span className={`status-dot ${data.health?.status === 'UP' ? 'ok' : ''}`} />
-                        <div>
-                            <strong>Backend status</strong>
-                            <p>{data.health?.status || 'Checking...'}</p>
+                    <aside className="status-stack" aria-label="Stanje sistema">
+                        <div className="status-card compact">
+                            <span className={`status-dot ${data.health?.status === 'UP' || data.health?.status === 'DEMO' ? 'ok' : ''}`} />
+                            <div>
+                                <strong>Backend</strong>
+                                <p>{data.health?.status || 'Preverjam...'}</p>
+                            </div>
                         </div>
-                    </div>
+                        <div className="coach-preview">
+                            <span className="spark">AI</span>
+                            <h2>Interaktivni coach</h2>
+                            <p>Po oddaji odgovora dobiš oceno, razlago, vprašanje za razmislek in naslednji korak.</p>
+                        </div>
+                    </aside>
                 </section>
 
                 {data.error && <div className="alert">{data.error}</div>}
-                {data.loading && <div className="loading-card">Loading SkillBoost data...</div>}
+                {data.loading && <div className="loading-card">Nalagam SkillBoost podatke...</div>}
 
                 {!data.loading && (
                     <>
-                        <section className="metrics-grid" aria-label="Progress metrics">
-                            <MetricCard label="Active user" value={data.selectedUser?.name || 'None'} helper={data.selectedUser?.role || 'Create a user'} />
-                            <MetricCard label="Points" value={data.selectedUser?.points ?? 0} helper="Updated after each simulation" />
-                            <MetricCard label="Average score" value={`${reportScore}/100`} helper={`${data.report?.totalSessions || 0} completed sessions`} />
-                            <MetricCard label="Badges" value={data.selectedUser?.badges?.length || 0} helper={(data.selectedUser?.badges || []).join(', ') || 'No badges yet'} />
+                        <section className="metrics-grid" aria-label="Metrike napredka">
+                            <MetricCard label="Aktivni uporabnik" value={data.selectedUser?.name || 'Gost'} helper={data.selectedUser?.role || 'Prijava odklene shranjevanje'} />
+                            <MetricCard label="Točke" value={data.selectedUser?.points ?? 0} helper="Dodajo se po vsaki simulaciji" />
+                            <MetricCard label="Povprečje" value={`${reportScore}/100`} helper={`${data.report?.totalSessions || 0} zaključenih vaj`} />
+                            <MetricCard label="Značke" value={data.selectedUser?.badges?.length || 0} helper={(data.selectedUser?.badges || []).join(', ') || 'Prva značka čaka nate'} />
                         </section>
 
-                        <div className="workspace-centered" style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+                        <section className="workspace-grid">
+                            <aside className="panel side-panel">
+                                <SkillSelector
+                                    skills={data.skills}
+                                    selectedSkillKeys={data.selectedSkillKeys}
+                                    toggleSkillKey={data.toggleSkillKey}
+                                />
+                            </aside>
+
                             <section className="panel main-panel">
                                 {activeSection === 'simulator' && (
                                     <SimulatorSection
+                                        skills={data.skills}
+                                        demoMode={data.demoMode}
+                                        selectedSkillKeys={data.selectedSkillKeys}
                                         filteredChallenges={data.filteredChallenges}
                                         selectedChallengeId={data.selectedChallengeId}
                                         setSelectedChallengeId={data.setSelectedChallengeId}
@@ -101,10 +127,18 @@ export default function App() {
                                     />
                                 )}
 
-                                {activeSection === 'skills' && <SkillsSection skills={data.skills} challenges={data.challenges} />}
+                                {activeSection === 'skills' && (
+                                    <SkillsSection
+                                        skills={data.skills}
+                                        challenges={data.challenges}
+                                        selectedSkillKeys={data.selectedSkillKeys}
+                                        toggleSkillKey={data.toggleSkillKey}
+                                    />
+                                )}
 
                                 {activeSection === 'prompts' && (
                                     <PromptsSection
+                                        skills={data.skills}
                                         filteredPrompts={data.filteredPrompts}
                                         newPrompt={data.newPrompt}
                                         setNewPrompt={data.setNewPrompt}
@@ -117,7 +151,17 @@ export default function App() {
 
                                 {activeSection === 'report' && <ReportSection report={data.report} />}
                             </section>
-                        </div>
+
+                            <aside className="panel side-panel progress-panel">
+                                <h2>Dnevni načrt</h2>
+                                <ol className="daily-plan">
+                                    <li><span>1</span> Izberi 2-3 ciljne veščine.</li>
+                                    <li><span>2</span> Reši simulacijo in oddaj konkreten odgovor.</li>
+                                    <li><span>3</span> Preberi AI oceno ter popravi odgovor.</li>
+                                    <li><span>4</span> Mentor doda opombo ali naslednji izziv.</li>
+                                </ol>
+                            </aside>
+                        </section>
                     </>
                 )}
             </main>
@@ -135,57 +179,143 @@ function MetricCard({ label, value, helper }) {
     );
 }
 
-function SimulatorSection({ filteredChallenges, selectedChallengeId, setSelectedChallengeId, selectedChallenge, answer, setAnswer, saving, authenticated, handleSubmitSession, lastSession, mentorNote, setMentorNote, handleMentorNote }) {
+function SkillSelector({ skills, selectedSkillKeys, toggleSkillKey }) {
     return (
-        <div className="content-section">
-            <div className="section-title"><span>Simulation</span><small>mock AI evaluator</small></div>
-            <form className="simulation-form" onSubmit={handleSubmitSession}>
-                <label>Challenge
-                    <select value={selectedChallengeId} onChange={(e) => setSelectedChallengeId(e.target.value)}>
-                        {(filteredChallenges || []).map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
-                    </select>
-                </label>
-                {selectedChallenge && (
-                    <div className="challenge-card">
-                        <div><h3>{selectedChallenge.title}</h3><p>{selectedChallenge.scenario}</p></div>
-                        <span>{selectedChallenge.estimatedMinutes} min</span>
-                    </div>
-                )}
-                <label>Your answer
-                    <textarea rows="8" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Write your response to the simulated situation..." />
-                </label>
-                <button className="primary" disabled={saving || !authenticated}>
-                    {saving ? 'Saving...' : authenticated ? 'Submit simulation' : 'Za ocenjevanje se moraš prijaviti'}
-                </button>
-            </form>
-            {lastSession && (
-                <div className="feedback-card">
-                    <div className="score-circle">{lastSession.score}</div>
-                    <div>
-                        <h3>Mock AI feedback</h3><pre>{lastSession.aiFeedback}</pre>
-                        {lastSession.mentorNote && <p className="mentor-note"><strong>Mentor:</strong> {lastSession.mentorNote}</p>}
-                        <div className="mentor-row">
-                            <input placeholder="Add mentor note" value={mentorNote} onChange={(e) => setMentorNote(e.target.value)} />
-                            <button className="secondary" type="button" disabled={!authenticated} onClick={handleMentorNote}>Save note</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+        <div className="skill-selector">
+            <p className="eyebrow">Učni fokus</p>
+            <h2>Več veščin naenkrat</h2>
+            <p>Označi vse veščine, ki jih želiš vaditi. Simulator in prompti se prilagodijo izboru.</p>
+            <div className="skill-chip-list">
+                {(skills || []).map((skill) => (
+                    <button
+                        key={skill.id}
+                        type="button"
+                        className={`skill-chip ${selectedSkillKeys.includes(skill.key) ? 'selected' : ''}`}
+                        onClick={() => toggleSkillKey(skill.key)}
+                    >
+                        <span>{selectedSkillKeys.includes(skill.key) ? '✓' : '+'}</span>
+                        {skill.name}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
 
-function SkillsSection({ skills, challenges }) {
+function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallenges, selectedChallengeId, setSelectedChallengeId, selectedChallenge, answer, setAnswer, saving, authenticated, handleSubmitSession, lastSession, mentorNote, setMentorNote, handleMentorNote }) {
+    const answerStats = useMemo(() => getAnswerStats(answer), [answer]);
+    const selectedSkillNames = skills.filter((skill) => selectedSkillKeys.includes(skill.key)).map((skill) => skill.name);
+
     return (
         <div className="content-section">
-            <div className="section-title"><span>Skill catalogue</span><small>{(skills || []).length} skills</small></div>
+            <div className="section-title">
+                <div>
+                    <span>Interaktivna simulacija</span>
+                    <small>AI ocenjevanje z več veščinami</small>
+                </div>
+                <span className="pill">{selectedSkillNames.length} izbranih</span>
+            </div>
+
+            <form className="simulation-form" onSubmit={handleSubmitSession}>
+                <label>Scenarij
+                    <select value={selectedChallengeId} onChange={(e) => setSelectedChallengeId(e.target.value)}>
+                        {(filteredChallenges || []).map((challenge) => (
+                            <option key={challenge.id} value={challenge.id}>{challenge.title}</option>
+                        ))}
+                    </select>
+                </label>
+
+                {selectedChallenge && (
+                    <article className="challenge-card">
+                        <div>
+                            <p>{selectedChallenge.skillKey}</p>
+                            <h3>{selectedChallenge.title}</h3>
+                            <p>{selectedChallenge.scenario}</p>
+                            <div className="mini-list">
+                                {(selectedChallenge.evaluationCriteria || []).map((criterion) => <span key={criterion}>{criterion}</span>)}
+                            </div>
+                        </div>
+                        <span>{selectedChallenge.estimatedMinutes} min</span>
+                    </article>
+                )}
+
+                <div className="coach-box">
+                    <div>
+                        <strong>AI namig pred oddajo</strong>
+                        <p>{answerStats.tip}</p>
+                    </div>
+                    <div className="quality-meter" aria-label="Kakovost osnutka">
+                        <span style={{ width: `${answerStats.percent}%` }} />
+                    </div>
+                    <div className="quick-actions">
+                        {['Dodaj konkreten primer', 'Zapiši naslednji korak', 'Pokaži empatijo', 'Zaključi z vprašanjem'].map((hint) => (
+                            <button key={hint} type="button" onClick={() => setAnswer(`${answer}${answer ? '\n' : ''}${hint}: `)}>{hint}</button>
+                        ))}
+                    </div>
+                </div>
+
+                <label>Tvoj odgovor
+                    <textarea
+                        rows="9"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                        placeholder="Napiši, kaj bi rekel v situaciji. Poskusi vključiti kontekst, empatijo, jasen predlog in naslednji korak."
+                    />
+                </label>
+
+                <button className="primary submit-button" disabled={saving || (!authenticated && !demoMode)}>
+                    {saving ? 'Ocenjujem...' : authenticated || demoMode ? 'Oddaj in prejmi AI povratno informacijo' : 'Za ocenjevanje se moraš prijaviti'}
+                </button>
+            </form>
+
+            {lastSession && <FeedbackCard lastSession={lastSession} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
+        </div>
+    );
+}
+
+function FeedbackCard({ lastSession, mentorNote, setMentorNote, authenticated, handleMentorNote }) {
+    const scoreMeta = scoreLabels.find((item) => lastSession.score >= item.min) || scoreLabels.at(-1);
+    return (
+        <article className={`feedback-card ${scoreMeta.tone}`}>
+            <div className="score-circle">
+                <strong>{lastSession.score}</strong>
+                <span>{scoreMeta.label}</span>
+            </div>
+            <div className="feedback-content">
+                <div className="section-title compact-title">
+                    <span>AI povratna informacija</span>
+                    <small>ocena je kombinacija strukture, jasnosti, empatije in akcijskih korakov</small>
+                </div>
+                <pre>{lastSession.aiFeedback}</pre>
+                {lastSession.mentorNote && <p className="mentor-note"><strong>Mentor:</strong> {lastSession.mentorNote}</p>}
+                <div className="mentor-row">
+                    <input placeholder="Dodaj mentorjev komentar ali naslednjo nalogo" value={mentorNote} onChange={(e) => setMentorNote(e.target.value)} />
+                    <button className="secondary" type="button" disabled={!authenticated} onClick={handleMentorNote}>Shrani opombo</button>
+                </div>
+            </div>
+        </article>
+    );
+}
+
+function SkillsSection({ skills, challenges, selectedSkillKeys, toggleSkillKey }) {
+    return (
+        <div className="content-section">
+            <div className="section-title">
+                <div>
+                    <span>Katalog veščin</span>
+                    <small>{(skills || []).length} področij za razvoj</small>
+                </div>
+                <span className="pill">Klikni za izbor</span>
+            </div>
             <div className="cards-grid">
                 {(skills || []).map((skill) => (
-                    <article key={skill.id} className="skill-card">
-                        <p>{skill.category}</p><h3>{skill.name}</h3><span>{skill.level} · {skill.estimatedMinutes} min</span>
+                    <article key={skill.id} className={`skill-card interactive ${selectedSkillKeys.includes(skill.key) ? 'selected' : ''}`} onClick={() => toggleSkillKey(skill.key)}>
+                        <p>{skill.category}</p>
+                        <h3>{skill.name}</h3>
+                        <span>{skill.level} · {skill.estimatedMinutes} min</span>
                         <p>{skill.description}</p>
-                        <div className="mini-list">{(skill.outcomes || []).map((o) => <span key={o}>{o}</span>)}</div>
-                        <small>{(challenges || []).filter((c) => c.skillKey === skill.key).length} challenges</small>
+                        <div className="mini-list">{(skill.outcomes || []).map((outcome) => <span key={outcome}>{outcome}</span>)}</div>
+                        <small>{(challenges || []).filter((challenge) => challenge.skillKey === skill.key).length} izzivov</small>
                     </article>
                 ))}
             </div>
@@ -193,34 +323,68 @@ function SkillsSection({ skills, challenges }) {
     );
 }
 
-function PromptsSection({ filteredPrompts, newPrompt, setNewPrompt, handleCreatePrompt, selectedSkillKey, saving, authenticated }) {
+function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPrompt, handleCreatePrompt, selectedSkillKey, saving, authenticated }) {
+    const selectedSkill = skills.find((skill) => skill.key === (newPrompt.skillKey || selectedSkillKey));
+    const preview = buildPromptPreview(newPrompt, selectedSkill);
+
     return (
         <div className="content-section">
-            <div className="section-title"><span>Prompt library</span><small>mock LLM JSON</small></div>
+            <div className="section-title">
+                <div>
+                    <span>Prompt studio</span>
+                    <small>bolj strukturirani prompti za AI coacha</small>
+                </div>
+                <span className="pill">{(filteredPrompts || []).length} aktivnih</span>
+            </div>
             <div className="prompt-layout">
                 <div className="prompt-list">
-                    {(filteredPrompts || []).map((p) => (
-                        <article key={p.id} className="prompt-card">
-                            <p>{p.difficulty}</p><h3>{p.title}</h3><code>{p.userPromptTemplate}</code><pre>{p.simulatedAiResponse}</pre>
+                    {(filteredPrompts || []).map((prompt) => (
+                        <article key={prompt.id} className="prompt-card">
+                            <div className="prompt-card-head">
+                                <p>{prompt.difficulty}</p>
+                                <span>{prompt.skillKey}</span>
+                            </div>
+                            <h3>{prompt.title}</h3>
+                            <code>{prompt.userPromptTemplate}</code>
+                            <pre>{prompt.simulatedAiResponse}</pre>
+                            <div className="mini-list">{(prompt.tags || []).map((tag) => <span key={tag}>{tag}</span>)}</div>
                         </article>
                     ))}
                 </div>
                 <form className="prompt-form" onSubmit={handleCreatePrompt}>
-                    <h3>Add prompt</h3>
-                    <input value={newPrompt.title} onChange={(e) => setNewPrompt({ ...newPrompt, title: e.target.value })} placeholder="Prompt title" />
-                    <select value={newPrompt.skillKey || selectedSkillKey} onChange={(e) => setNewPrompt({ ...newPrompt, skillKey: e.target.value })}>
-                        <option value="public-speaking">public-speaking</option>
-                        <option value="conflict-resolution">conflict-resolution</option>
-                        <option value="team-collaboration">team-collaboration</option>
-                        <option value="job-interview">job-interview</option>
-                    </select>
-                    <textarea rows="3" value={newPrompt.systemPrompt} onChange={(e) => setNewPrompt({ ...newPrompt, systemPrompt: e.target.value })} placeholder="System prompt" />
-                    <textarea rows="3" value={newPrompt.userPromptTemplate} onChange={(e) => setNewPrompt({ ...newPrompt, userPromptTemplate: e.target.value })} placeholder="User prompt template" />
-                    <textarea rows="4" value={newPrompt.simulatedAiResponse} onChange={(e) => setNewPrompt({ ...newPrompt, simulatedAiResponse: e.target.value })} placeholder="Simulated AI response" />
-                    <input value={Array.isArray(newPrompt.tags) ? newPrompt.tags.join(', ') : newPrompt.tags} onChange={(e) => setNewPrompt({ ...newPrompt, tags: e.target.value })} placeholder="tags, comma separated" />
-                    <button className="primary" disabled={saving || !authenticated}>
-                        {authenticated ? 'Save prompt' : 'Prijavi se za shranjevanje'}
-                    </button>
+                    <h3>Dodaj ali izboljšaj prompt</h3>
+                    <label>Naslov prompta
+                        <input value={newPrompt.title} onChange={(e) => setNewPrompt({ ...newPrompt, title: e.target.value })} placeholder="npr. Empatično reševanje konflikta" />
+                    </label>
+                    <label>Veščina
+                        <select value={newPrompt.skillKey || selectedSkillKey} onChange={(e) => setNewPrompt({ ...newPrompt, skillKey: e.target.value })}>
+                            {(skills || []).map((skill) => <option key={skill.key} value={skill.key}>{skill.name}</option>)}
+                        </select>
+                    </label>
+                    <label>Težavnost
+                        <select value={newPrompt.difficulty} onChange={(e) => setNewPrompt({ ...newPrompt, difficulty: e.target.value })}>
+                            <option value="BEGINNER">BEGINNER</option>
+                            <option value="INTERMEDIATE">INTERMEDIATE</option>
+                            <option value="ADVANCED">ADVANCED</option>
+                        </select>
+                    </label>
+                    <label>Sistemski prompt
+                        <textarea rows="4" value={newPrompt.systemPrompt} onChange={(e) => setNewPrompt({ ...newPrompt, systemPrompt: e.target.value })} placeholder="AI naj bo trener, naj sprašuje, ocenjuje in predlaga izboljšave" />
+                    </label>
+                    <label>Uporabniška predloga
+                        <textarea rows="4" value={newPrompt.userPromptTemplate} onChange={(e) => setNewPrompt({ ...newPrompt, userPromptTemplate: e.target.value })} placeholder="Uporabi {{answer}}, {{scenario}}, {{criteria}}" />
+                    </label>
+                    <label>Primer AI odgovora
+                        <textarea rows="5" value={newPrompt.simulatedAiResponse} onChange={(e) => setNewPrompt({ ...newPrompt, simulatedAiResponse: e.target.value })} placeholder="Ocena, pohvala, izboljšava, vprašanje" />
+                    </label>
+                    <label>Oznake
+                        <input value={Array.isArray(newPrompt.tags) ? newPrompt.tags.join(', ') : newPrompt.tags} onChange={(e) => setNewPrompt({ ...newPrompt, tags: e.target.value })} placeholder="empatija, jasnost, akcijski-korak" />
+                    </label>
+                    <div className="prompt-preview">
+                        <strong>Predogled</strong>
+                        <pre>{preview}</pre>
+                    </div>
+                    <button className="primary" disabled={saving || !authenticated}>{authenticated ? 'Shrani prompt' : 'Prijavi se za shranjevanje'}</button>
                 </form>
             </div>
         </div>
@@ -228,26 +392,65 @@ function PromptsSection({ filteredPrompts, newPrompt, setNewPrompt, handleCreate
 }
 
 function ReportSection({ report }) {
-    if (!report) return <div className="content-section">No report yet.</div>;
+    if (!report) return <div className="content-section empty-state">Poročilo še ni na voljo. Najprej oddaj simulacijo.</div>;
     return (
         <div className="content-section">
-            <div className="section-title"><span>Progress report</span><small>{report.userName}</small></div>
+            <div className="section-title">
+                <div>
+                    <span>Napredno poročilo</span>
+                    <small>{report.userName}</small>
+                </div>
+                <span className="pill">mentor ready</span>
+            </div>
             <div className="report-grid">
-                <MetricCard label="Sessions" value={report.totalSessions} helper="Completed simulations" />
-                <MetricCard label="Points" value={report.totalPoints} helper="Gamified progress" />
-                <MetricCard label="Average" value={`${report.averageScore}/100`} helper="Across all sessions" />
+                <MetricCard label="Simulacije" value={report.totalSessions} helper="Zaključene vaje" />
+                <MetricCard label="Točke" value={report.totalPoints} helper="Gamificiran napredek" />
+                <MetricCard label="Povprečje" value={`${report.averageScore}/100`} helper="Čez vse veščine" />
+                <MetricCard label="Značke" value={(report.badges || []).length} helper={(report.badges || []).join(', ') || 'Brez značk'} />
             </div>
             <div className="cards-grid single">
-                {(report.skillProgress || []).map((s) => (
-                    <article key={s.skillKey} className="skill-card">
-                        <p>{s.skillKey}</p><h3>{s.averageScore}/100</h3><span>{s.sessions} sessions</span><p>Next: {s.nextSuggestedChallenge}</p>
+                {(report.skillProgress || []).map((skill) => (
+                    <article key={skill.skillKey} className="skill-card report-card">
+                        <p>{skill.skillKey}</p>
+                        <div className="report-score-row">
+                            <h3>{skill.averageScore}/100</h3>
+                            <span>{skill.sessions} vaj</span>
+                        </div>
+                        <div className="progress-bar"><span style={{ width: `${Math.min(100, skill.averageScore)}%` }} /></div>
+                        <p>Naslednje: {skill.nextSuggestedChallenge}</p>
                     </article>
                 ))}
             </div>
-            <div className="recommendations">
-                <h3>Recommendations</h3>
+            <article className="recommendations">
+                <h3>Priporočila za nadaljnji razvoj</h3>
                 {(report.recommendations || []).map((item) => <p key={item}>→ {item}</p>)}
-            </div>
+            </article>
         </div>
     );
+}
+
+function getAnswerStats(answer) {
+    const normalized = answer.toLowerCase();
+    const words = normalized.trim() ? normalized.trim().split(/\s+/).length : 0;
+    let percent = Math.min(40, words * 2);
+    if (normalized.includes('primer') || normalized.includes('na primer')) percent += 15;
+    if (normalized.includes('razumem') || normalized.includes('slišim') || normalized.includes('slisim')) percent += 15;
+    if (normalized.includes('korak') || normalized.includes('predlagam') || normalized.includes('dogovor')) percent += 15;
+    if (normalized.includes('?') || normalized.includes('vprašanje') || normalized.includes('vprasanje')) percent += 15;
+    percent = Math.min(100, percent);
+
+    let tip = 'Začni z jasnim odzivom: pokaži razumevanje, dodaj konkreten predlog in zaključi z naslednjim korakom.';
+    if (words > 20) tip = 'Dober začetek. Dodaj še merljiv naslednji korak ali vprašanje za sogovornika.';
+    if (percent >= 75) tip = 'Osnutek je močan: ima strukturo, empatijo in akcijo. Pred oddajo preveri ton.';
+
+    return { words, percent, tip };
+}
+
+function buildPromptPreview(prompt, skill) {
+    return [
+        `Veščina: ${skill?.name || prompt.skillKey}`,
+        `Sistem: ${prompt.systemPrompt || 'Ni sistemskega prompta.'}`,
+        `Uporabnik: ${(prompt.userPromptTemplate || '').replace('{{answer}}', 'Moj odgovor ...').replace('{{scenario}}', 'Izbran scenarij ...').replace('{{criteria}}', 'Merila ocenjevanja ...')}`,
+        `Pričakovan AI: ${prompt.simulatedAiResponse || 'Ocena + pohvala + izboljšave + vprašanje.'}`
+    ].join('\n\n');
 }

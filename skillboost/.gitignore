@@ -18,3 +18,7 @@ frontend/.vite/
 
 # Docker
 *.log
+
+# Keycloak
+keycloak_data/
+keycloak_data/h2/

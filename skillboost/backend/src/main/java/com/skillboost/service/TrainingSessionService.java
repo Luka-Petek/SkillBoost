@@ -10,7 +10,6 @@ import com.skillboost.repository.LearningPromptRepository;
 import com.skillboost.repository.TrainingChallengeRepository;
 import com.skillboost.repository.TrainingSessionRepository;
 import com.skillboost.repository.UserProfileRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -62,59 +62,92 @@ public class TrainingSessionService {
         TrainingChallenge challenge = challengeRepository.findById(request.challengeId())
                 .orElseThrow(() -> new IllegalArgumentException("Challenge not found."));
 
-        String skillKey = request.skillKey() == null || request.skillKey().isBlank()
-                ? challenge.getSkillKey()
-                : request.skillKey();
+        List<String> skillKeys = normalizeSkillKeys(request, challenge);
+        String primarySkillKey = skillKeys.get(0);
+        String storedSkillKey = String.join(",", skillKeys);
 
-        int score = calculateScore(request.userAnswer(), challenge.getEvaluationCriteria());
-        String feedback = generateRealAiFeedback(skillKey, challenge, request.userAnswer(), score);
+        int score = calculateScore(request.userAnswer(), challenge.getEvaluationCriteria(), skillKeys);
+        String feedback = generateRealAiFeedback(skillKeys, challenge, request.userAnswer(), score);
 
         TrainingSession session = new TrainingSession();
         session.setUserId(user.getId());
         session.setChallengeId(challenge.getId());
-        session.setSkillKey(skillKey);
+        session.setSkillKey(storedSkillKey);
         session.setUserAnswer(request.userAnswer());
         session.setScore(score);
         session.setAiFeedback(feedback);
         session.setCreatedAt(LocalDateTime.now());
 
         TrainingSession saved = sessionRepository.save(session);
-        applyGamification(user, score, skillKey);
+        applyGamification(user, score, primarySkillKey, skillKeys);
         userRepository.save(user);
         return saved;
     }
 
-    private String generateRealAiFeedback(String skillKey, TrainingChallenge challenge, String answer, int score) {
+    private List<String> normalizeSkillKeys(SubmitSessionRequest request, TrainingChallenge challenge) {
+        LinkedHashSet<String> keys = new LinkedHashSet<>();
+        if (request.skillKeys() != null) {
+            request.skillKeys().stream()
+                    .filter(value -> value != null && !value.isBlank())
+                    .map(String::trim)
+                    .forEach(keys::add);
+        }
+        if (request.skillKey() != null && !request.skillKey().isBlank()) {
+            keys.add(request.skillKey().trim());
+        }
+        if (challenge.getSkillKey() != null && !challenge.getSkillKey().isBlank()) {
+            keys.add(challenge.getSkillKey().trim());
+        }
+        if (keys.isEmpty()) {
+            keys.add("general-soft-skills");
+        }
+        return new ArrayList<>(keys);
+    }
+
+    private String generateRealAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
+        String primarySkillKey = skillKeys.get(0);
         if (apiKey == null || apiKey.isBlank()) {
-            return buildMockAiFeedback(skillKey, challenge, answer, score);
+            return buildMockAiFeedback(skillKeys, challenge, answer, score);
         }
 
         try {
             //iscemo prompt v bazi za to specifično veščino
-            LearningPrompt promptTemplate = promptRepository.findBySkillKeyIgnoreCase(skillKey)
+            LearningPrompt promptTemplate = promptRepository.findBySkillKeyIgnoreCase(primarySkillKey)
                     .stream()
                     .findFirst()
                     .orElse(null);
 
-            String systemPrompt = promptTemplate != null ? promptTemplate.getSystemPrompt() : "You are a helpful skills coach.";
-            String userTemplate = promptTemplate != null ? promptTemplate.getUserPromptTemplate() : "Evaluate: {{answer}}";
+            String systemPrompt = promptTemplate != null
+                    ? promptTemplate.getSystemPrompt()
+                    : "You are an interactive soft-skills coach. Evaluate clearly and ask one useful follow-up question.";
+            String userTemplate = promptTemplate != null
+                    ? promptTemplate.getUserPromptTemplate()
+                    : "Evaluate this answer: {{answer}}";
 
+            String criteria = String.join(", ", challenge.getEvaluationCriteria());
+            
             //vbrizgamo dejanski odgovor študenta
-            String finalUserPrompt = userTemplate.replace("{{answer}}", answer);
+            String finalUserPrompt = userTemplate
+                    .replace("{{answer}}", answer)
+                    .replace("{{scenario}}", challenge.getScenario())
+                    .replace("{{criteria}}", criteria);
 
             // Google Gemini API URL naslov za model 2.5 Flash
             String url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=" + apiKey;
             //JSON struktura
             String fullAiPrompt = String.format(
-                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nNote: The user scored %d/100 based on internal criteria. Incorporate this context into your analysis.",
-                    systemPrompt, finalUserPrompt, score
+                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario title: %s\n- Selected skills: %s\n- Expected outcome: %s\n- Internal score: %d/100\n\nReturn feedback in Slovenian with these sections: 1) Ocena, 2) Kaj je dobro, 3) Kaj izboljšati, 4) Boljša verzija odgovora, 5) Vprašanje za nadaljevanje.",
+                    systemPrompt,
+                    finalUserPrompt,
+                    challenge.getTitle(),
+                    String.join(", ", skillKeys),
+                    challenge.getExpectedOutcome(),
+                    score
             );
 
             Map<String, Object> requestBody = Map.of(
                     "contents", List.of(
-                            Map.of(
-                                    "parts", List.of(Map.of("text", fullAiPrompt))
-                            )
+                            Map.of("parts", List.of(Map.of("text", fullAiPrompt)))
                     )
             );
 
@@ -138,12 +171,10 @@ public class TrainingSessionService {
             }
 
             throw new RuntimeException("Empty response from Gemini.");
-
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Gemini API Error: " + e.getMessage());
-            return "[Povezava z Gemini je spodletela - Prikazujem rezervni odgovor]\n\n"
-                    + buildMockAiFeedback(skillKey, challenge, answer, score);
+            return "[Povezava z Gemini je spodletela - prikazujem lokalno interaktivno oceno]\n\n"
+                    + buildMockAiFeedback(skillKeys, challenge, answer, score);
         }
     }
 
@@ -154,82 +185,95 @@ public class TrainingSessionService {
         return sessionRepository.save(session);
     }
 
-    private int calculateScore(String answer, List<String> criteria) {
+    private int calculateScore(String answer, List<String> criteria, List<String> skillKeys) {
         String normalized = answer == null ? "" : answer.toLowerCase(Locale.ROOT);
         int words = normalized.isBlank() ? 0 : normalized.trim().split("\\s+").length;
-        int score = 35;
+        int score = 20;
 
-        score += Math.min(25, words * 2);
+        score += Math.min(24, words);
+        if (words >= 35) score += 8;
+        if (words >= 70) score += 6;
 
         for (String criterion : criteria) {
-            if (criterion == null || criterion.isBlank()) {
-                continue;
-            }
+            if (criterion == null || criterion.isBlank()) continue;
             String[] tokens = criterion.toLowerCase(Locale.ROOT).split("\\s+");
             for (String token : tokens) {
                 if (token.length() > 4 && normalized.contains(token)) {
-                    score += 8;
+                    score += 7;
                     break;
                 }
             }
         }
 
-        if (normalized.contains("primer") || normalized.contains("example")) {
-            score += 8;
+        score += containsAny(normalized, "razumem", "slišim", "slisim", "empat", "spošt", "spost") ? 10 : 0;
+        score += containsAny(normalized, "primer", "na primer", "situacij", "izkušnja", "izkusnja") ? 9 : 0;
+        score += containsAny(normalized, "predlagam", "naslednji", "korak", "dogovor", "akcij") ? 11 : 0;
+        score += containsAny(normalized, "vpraš", "vpras", "kako", "kaj meniš", "kaj menis") ? 7 : 0;
+        score += containsAny(normalized, "najprej", "potem", "zaključ", "zakljuc", "strukt") ? 6 : 0;
+
+        if (skillKeys.size() > 1) {
+            score += Math.min(8, skillKeys.size() * 2);
         }
-        if (normalized.contains("naslednji") || normalized.contains("akcijski") || normalized.contains("korak")) {
-            score += 8;
+        if (words < 12) {
+            score -= 18;
         }
-        if (normalized.contains("hvala") || normalized.contains("vprašanja") || normalized.contains("vprasanja")) {
-            score += 5;
+        if (!normalized.contains(".") && !normalized.contains("?") && !normalized.contains("!")) {
+            score -= 5;
         }
 
         return Math.max(0, Math.min(100, score));
     }
 
+    private boolean containsAny(String text, String... needles) {
+        for (String needle : needles) {
+            if (text.contains(needle)) return true;
+        }
+        return false;
+    }
+
     //to je se vedno, ce real ai response ne dela
-    private String buildMockAiFeedback(String skillKey, TrainingChallenge challenge, String answer, int score) {
-        LearningPrompt prompt = promptRepository.findBySkillKeyIgnoreCase(skillKey)
+    private String buildMockAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
+        LearningPrompt prompt = promptRepository.findBySkillKeyIgnoreCase(skillKeys.get(0))
                 .stream()
                 .findFirst()
                 .orElse(null);
 
         String base = prompt == null
-                ? "Mock AI feedback: odgovor je ocenjen glede na jasnost, strukturo in uporabnost."
+                ? "AI coach je odgovor ocenil glede na jasnost, strukturo, empatijo, relevantnost za scenarij in izvedljiv naslednji korak."
                 : prompt.getSimulatedAiResponse();
 
         List<String> tips = new ArrayList<>();
-        if (score < 60) {
-            tips.add("Dodaj bolj jasno strukturo: kontekst, cilj, predlog in zaključek.");
-            tips.add("Uporabi konkreten primer, da odgovor ne ostane preveč splošen.");
-        } else if (score < 80) {
-            tips.add("Odgovor je dober, izboljšaš ga lahko z bolj merljivim naslednjim korakom.");
-            tips.add("Dodaj eno kratko preverjanje razumevanja pri sogovorniku.");
+        if (score < 55) {
+            tips.add("Dodaj strukturo: kontekst → tvoje razumevanje → konkreten predlog → naslednji korak.");
+            tips.add("Odgovor naj vsebuje vsaj en konkreten primer ali frazo, ki bi jo zares uporabil v pogovoru.");
+        } else if (score < 78) {
+            tips.add("Odgovor je uporaben. Izboljšaš ga z bolj jasnim dogovorom, kdo naredi kaj in do kdaj.");
+            tips.add("Dodaj eno vprašanje, da preveriš razumevanje sogovornika.");
         } else {
-            tips.add("Odlično: odgovor je jasen, uporaben in dovolj strukturiran.");
-            tips.add("Naslednji nivo: dodaj še bolj prepričljiv zaključek ali poziv k akciji.");
+            tips.add("Odlično: odgovor je jasen, empatičen in usmerjen v rešitev.");
+            tips.add("Naslednji nivo: poskusi krajšo, bolj samozavestno verzijo z močnim zaključkom.");
         }
 
-        return "Ocena: " + score + "/100\n\n"
-                + base + "\n\n"
+        return "Ocena: " + score + "/100\n"
+                + "Izbrane veščine: " + String.join(", ", skillKeys) + "\n\n"
+                + "Kaj je dobro:\n- " + base + "\n\n"
                 + "Izziv: " + challenge.getTitle() + "\n"
                 + "Pričakovan izid: " + challenge.getExpectedOutcome() + "\n\n"
-                + "Priporočila:\n- " + String.join("\n- ", tips);
+                + "Kaj izboljšati:\n- " + String.join("\n- ", tips) + "\n\n"
+                + "Vprašanje za nadaljevanje:\n- Kateri del svojega odgovora bi lahko povedal bolj konkretno ali bolj empatično?";
     }
 
-    private void applyGamification(UserProfile user, int score, String skillKey) {
-        user.setPoints(user.getPoints() + score);
+    private void applyGamification(UserProfile user, int score, String primarySkillKey, List<String> skillKeys) {
+        user.setPoints(user.getPoints() + score + Math.max(0, skillKeys.size() - 1) * 5);
         user.setUpdatedAt(LocalDateTime.now());
 
         List<String> badges = new ArrayList<>(user.getBadges());
         addBadgeIfMissing(badges, "First simulation");
-        if (score >= 80) {
-            addBadgeIfMissing(badges, "Strong answer");
-        }
-        if (user.getPoints() >= 300) {
-            addBadgeIfMissing(badges, "Consistent learner");
-        }
-        if ("conflict-resolution".equalsIgnoreCase(skillKey)) {
+        if (score >= 80) addBadgeIfMissing(badges, "Strong answer");
+        if (score >= 90) addBadgeIfMissing(badges, "AI-ready communicator");
+        if (skillKeys.size() >= 3) addBadgeIfMissing(badges, "Multi-skill learner");
+        if (user.getPoints() >= 300) addBadgeIfMissing(badges, "Consistent learner");
+        if ("conflict-resolution".equalsIgnoreCase(primarySkillKey) || skillKeys.contains("conflict-resolution")) {
             addBadgeIfMissing(badges, "Calm resolver");
         }
         user.setBadges(badges);
