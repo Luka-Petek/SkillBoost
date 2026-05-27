@@ -27,6 +27,20 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: skillboost-keycloak
+    command: start-dev --import-realm
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "9080:8080"
+    volumes:
+      - skillboost_keycloak_data:/opt/keycloak/data/
+      - ./keycloak_config:/opt/keycloak/data/import/:ro
+
   backend:
     build:
       context: ./backend
@@ -35,13 +49,17 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     ports:
       - "8080:8080"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/skillboost
       SPRING_PROFILES_ACTIVE: docker
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      SKILLBOOST_SECURITY_ENABLED: ${SKILLBOOST_SECURITY_ENABLED:-false}
+      SKILLBOOST_SECURITY_ENABLED: "true"
+      KEYCLOAK_ISSUER_URI: http://localhost:9080/realms/SkillBoost
+      KEYCLOAK_JWK_SET_URI: http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs
 
   frontend:
     build:
@@ -50,21 +68,9 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+      - keycloak
     ports:
       - "3000:80"
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0
-    container_name: skillboost-keycloak
-    command: start-dev --import-realm
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "9080:8080"
-    volumes:
-      - ./keycloak_data:/opt/keycloak/data/
-      - ./keycloak_config:/opt/keycloak/data/import/
 
 volumes:
   skillboost_mongo_data:

@@ -1,15 +1,18 @@
 spring:
   application:
     name: skillboost-backend
+
   data:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/skillboost}
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9080/realms/SkillBoost}
-          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9080/realms/SkillBoost/protocol/openid-connect/certs}
+
   gemini:
     api:
       key: ${GEMINI_API_KEY:}
@@ -24,3 +27,4 @@ server:
 logging:
   level:
     com.skillboost: INFO
+    org.springframework.security: INFO
