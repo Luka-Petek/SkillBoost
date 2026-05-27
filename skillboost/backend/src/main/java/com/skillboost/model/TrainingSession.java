@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document("training_sessions")
 public class TrainingSession {
@@ -11,12 +13,19 @@ public class TrainingSession {
     private String id;
 
     private String userId;
+    /**
+     * Kept for backwards compatibility with earlier seed/report logic.
+     * New code should prefer skillKeys.
+     */
     private String skillKey;
+    private List<String> skillKeys = new ArrayList<>();
     private String challengeId;
     private String userAnswer;
     private String aiFeedback;
     private String mentorNote;
     private int score;
+    private int earnedXp;
+    private int earnedStars;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public TrainingSession() {
@@ -44,6 +53,14 @@ public class TrainingSession {
 
     public void setSkillKey(String skillKey) {
         this.skillKey = skillKey;
+    }
+
+    public List<String> getSkillKeys() {
+        return skillKeys;
+    }
+
+    public void setSkillKeys(List<String> skillKeys) {
+        this.skillKeys = skillKeys == null ? new ArrayList<>() : skillKeys;
     }
 
     public String getChallengeId() {
@@ -84,6 +101,22 @@ public class TrainingSession {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public int getEarnedXp() {
+        return earnedXp;
+    }
+
+    public void setEarnedXp(int earnedXp) {
+        this.earnedXp = earnedXp;
+    }
+
+    public int getEarnedStars() {
+        return earnedStars;
+    }
+
+    public void setEarnedStars(int earnedStars) {
+        this.earnedStars = earnedStars;
     }
 
     public LocalDateTime getCreatedAt() {

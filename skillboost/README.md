@@ -147,3 +147,37 @@ Oba pipeline-a preverita backend build, frontend build in Docker build.
 - Dodati bolj strukturirano ocenjevanje po kriterijih.
 - Dodati testne scenarije in integracijske teste z MongoDB Testcontainers.
 - Dodati OpenAPI/Swagger dokumentacijo.
+
+## Gamification update
+
+Ta verzija vsebuje razširjeno motivacijsko logiko po vzoru učnih aplikacij:
+
+- XP/točke po vsaki oddani simulaciji.
+- 0-3 zvezdice glede na dosežen score.
+- uporabniški level in progress bar do naslednjega levela.
+- dnevni streak na podlagi zadnjega dneva vaje.
+- dnevni quest board: ena simulacija, rezultat nad 70/100 in vaja z vsaj dvema veščinama.
+- značke za prvi poskus, prvo zvezdico, močan odgovor, AI-ready odgovor, multi-skill vajo, streak in zbiranje zvezdic.
+- `POST /api/sessions` zdaj vrača `SessionSubmissionResponse`, ki vsebuje `session`, `reward` in posodobljenega `user`.
+
+Backend logika je ločena v `GamificationService`, da `TrainingSessionService` ostane osredotočen na simulacijo, scoring in AI feedback.
+
+### Security/API key
+
+Gemini API key ni več hardcodan v projektu. Nastavi ga samo lokalno ali v deployment okolju:
+
+```bash
+GEMINI_API_KEY=...
+```
+
+Za lokalni MVP je varnost privzeto izklopljena, da Docker Compose deluje brez dodatnega Keycloak debugiranja:
+
+```bash
+SKILLBOOST_SECURITY_ENABLED=false
+```
+
+Ko želiš strožje testiranje z JWT/Keycloak, nastavi:
+
+```bash
+SKILLBOOST_SECURITY_ENABLED=true
+```

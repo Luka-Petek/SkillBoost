@@ -1,5 +1,6 @@
 package com.skillboost.service;
 
+import com.skillboost.dto.DailyQuest;
 import com.skillboost.dto.ReportResponse;
 import com.skillboost.model.TrainingChallenge;
 import com.skillboost.model.TrainingSession;
@@ -9,6 +10,8 @@ import com.skillboost.repository.TrainingSessionRepository;
 import com.skillboost.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -20,20 +23,24 @@ public class ReportService {
     private final UserProfileRepository userRepository;
     private final TrainingSessionRepository sessionRepository;
     private final TrainingChallengeRepository challengeRepository;
+    private final GamificationService gamificationService;
 
     public ReportService(
             UserProfileRepository userRepository,
             TrainingSessionRepository sessionRepository,
-            TrainingChallengeRepository challengeRepository
+            TrainingChallengeRepository challengeRepository,
+            GamificationService gamificationService
     ) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.challengeRepository = challengeRepository;
+        this.gamificationService = gamificationService;
     }
 
     public ReportResponse buildReport(String userId) {
         UserProfile user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        gamificationService.syncLevel(user);
 
         List<TrainingSession> sessions = sessionRepository.findByUserId(userId);
         double averageScore = sessions.stream()
@@ -42,7 +49,7 @@ public class ReportService {
                 .orElse(0);
 
         Map<String, List<TrainingSession>> bySkill = sessions.stream()
-                .flatMap(session -> splitSkillKeys(session.getSkillKey()).stream()
+                .flatMap(session -> splitSkillKeys(session).stream()
                         .map(skillKey -> Map.entry(skillKey, session)))
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
 
@@ -68,6 +75,9 @@ public class ReportService {
                 })
                 .toList();
 
+        List<TrainingSession> todaysSessions = findTodaysSessions(userId);
+        List<DailyQuest> dailyQuests = gamificationService.buildDailyQuests(todaysSessions, null);
+
         List<String> recommendations = new ArrayList<>();
         if (sessions.isEmpty()) {
             recommendations.add("Začni z eno kratko simulacijo in shrani prvi rezultat.");
@@ -87,6 +97,8 @@ public class ReportService {
             if (practicedSkills < 2) {
                 recommendations.add("Dodaj še vsaj eno veščino, da bo učni načrt bolj prilagojen tvojim ciljem.");
             }
+            gamificationService.buildMissingDailyQuests(todaysSessions)
+                    .forEach(quest -> recommendations.add("Dnevni cilj: " + quest + "."));
         }
 
         return new ReportResponse(
@@ -94,14 +106,38 @@ public class ReportService {
                 user.getName(),
                 sessions.size(),
                 user.getPoints(),
+                user.getTotalStars(),
+                user.getLevel(),
+                user.getCurrentLevelXp(),
+                user.getNextLevelXp(),
+                user.getStreakDays(),
                 round(averageScore),
                 user.getBadges(),
+                dailyQuests,
                 skillProgress,
                 recommendations
         );
     }
 
-    private List<String> splitSkillKeys(String value) {
+    private List<TrainingSession> findTodaysSessions(String userId) {
+        LocalDate today = LocalDate.now();
+        return sessionRepository.findByUserIdAndCreatedAtBetween(
+                userId,
+                today.atStartOfDay(),
+                today.plusDays(1).atStartOfDay()
+        );
+    }
+
+    private List<String> splitSkillKeys(TrainingSession session) {
+        if (session.getSkillKeys() != null && !session.getSkillKeys().isEmpty()) {
+            return session.getSkillKeys()
+                    .stream()
+                    .map(String::trim)
+                    .filter(skillKey -> !skillKey.isBlank())
+                    .distinct()
+                    .toList();
+        }
+        String value = session.getSkillKey();
         if (value == null || value.isBlank()) {
             return List.of("general-soft-skills");
         }

@@ -8,11 +8,15 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9080/realms/SkillBoost
-          jwk-set-uri: http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9080/realms/SkillBoost}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs}
   gemini:
     api:
-      key: "AIzaSyAeAmfYPoEbPIYHOStLa90qnlrvzF1Mx2Q"
+      key: ${GEMINI_API_KEY:}
+
+skillboost:
+  security:
+    enabled: ${SKILLBOOST_SECURITY_ENABLED:false}
 
 server:
   port: 8080

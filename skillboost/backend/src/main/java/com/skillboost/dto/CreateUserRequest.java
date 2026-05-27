@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public record CreateUserRequest(
+        String keycloakId,
         @NotBlank String name,
         @Email @NotBlank String email,
         String role,

@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface UserProfileRepository extends MongoRepository<UserProfile, String> {
     Optional<UserProfile> findByEmailIgnoreCase(String email);
+    Optional<UserProfile> findByKeycloakId(String keycloakId);
 }
+

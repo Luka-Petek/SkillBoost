@@ -1,6 +1,8 @@
 package com.skillboost.service;
 
 import com.skillboost.dto.MentorNoteRequest;
+import com.skillboost.dto.RewardSummary;
+import com.skillboost.dto.SessionSubmissionResponse;
 import com.skillboost.dto.SubmitSessionRequest;
 import com.skillboost.model.LearningPrompt;
 import com.skillboost.model.TrainingChallenge;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -28,10 +31,10 @@ public class TrainingSessionService {
     private final UserProfileRepository userRepository;
     private final TrainingChallengeRepository challengeRepository;
     private final LearningPromptRepository promptRepository;
+    private final GamificationService gamificationService;
 
     private final RestClient restClient = RestClient.create();
 
-    //api key iz application.yml
     @Value("${spring.gemini.api.key:}")
     private String apiKey;
 
@@ -39,12 +42,14 @@ public class TrainingSessionService {
             TrainingSessionRepository sessionRepository,
             UserProfileRepository userRepository,
             TrainingChallengeRepository challengeRepository,
-            LearningPromptRepository promptRepository
+            LearningPromptRepository promptRepository,
+            GamificationService gamificationService
     ) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.promptRepository = promptRepository;
+        this.gamificationService = gamificationService;
     }
 
     public List<TrainingSession> findAll() {
@@ -55,7 +60,7 @@ public class TrainingSessionService {
         return sessionRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
-    public TrainingSession submit(SubmitSessionRequest request) {
+    public SessionSubmissionResponse submit(SubmitSessionRequest request) {
         UserProfile user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
 
@@ -63,7 +68,6 @@ public class TrainingSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("Challenge not found."));
 
         List<String> skillKeys = normalizeSkillKeys(request, challenge);
-        String primarySkillKey = skillKeys.get(0);
         String storedSkillKey = String.join(",", skillKeys);
 
         int score = calculateScore(request.userAnswer(), challenge.getEvaluationCriteria(), skillKeys);
@@ -73,15 +77,27 @@ public class TrainingSessionService {
         session.setUserId(user.getId());
         session.setChallengeId(challenge.getId());
         session.setSkillKey(storedSkillKey);
+        session.setSkillKeys(skillKeys);
         session.setUserAnswer(request.userAnswer());
         session.setScore(score);
         session.setAiFeedback(feedback);
         session.setCreatedAt(LocalDateTime.now());
 
+        List<TrainingSession> todaysSessions = findTodaysSessions(user.getId());
+        List<TrainingSession> sessionsIncludingCurrent = new ArrayList<>(todaysSessions);
+        sessionsIncludingCurrent.add(session);
+
+        RewardSummary reward = gamificationService.applyReward(user, session, sessionsIncludingCurrent);
         TrainingSession saved = sessionRepository.save(session);
-        applyGamification(user, score, primarySkillKey, skillKeys);
-        userRepository.save(user);
-        return saved;
+        UserProfile savedUser = userRepository.save(user);
+        return new SessionSubmissionResponse(saved, reward, savedUser);
+    }
+
+    private List<TrainingSession> findTodaysSessions(String userId) {
+        LocalDate today = LocalDate.now();
+        LocalDateTime from = today.atStartOfDay();
+        LocalDateTime to = today.plusDays(1).atStartOfDay();
+        return sessionRepository.findByUserIdAndCreatedAtBetween(userId, from, to);
     }
 
     private List<String> normalizeSkillKeys(SubmitSessionRequest request, TrainingChallenge challenge) {
@@ -111,7 +127,6 @@ public class TrainingSessionService {
         }
 
         try {
-            //iscemo prompt v bazi za to specifično veščino
             LearningPrompt promptTemplate = promptRepository.findBySkillKeyIgnoreCase(primarySkillKey)
                     .stream()
                     .findFirst()
@@ -125,16 +140,12 @@ public class TrainingSessionService {
                     : "Evaluate this answer: {{answer}}";
 
             String criteria = String.join(", ", challenge.getEvaluationCriteria());
-            
-            //vbrizgamo dejanski odgovor študenta
             String finalUserPrompt = userTemplate
                     .replace("{{answer}}", answer)
                     .replace("{{scenario}}", challenge.getScenario())
                     .replace("{{criteria}}", criteria);
 
-            // Google Gemini API URL naslov za model 2.5 Flash
             String url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-            //JSON struktura
             String fullAiPrompt = String.format(
                     "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario title: %s\n- Selected skills: %s\n- Expected outcome: %s\n- Internal score: %d/100\n\nReturn feedback in Slovenian with these sections: 1) Ocena, 2) Kaj je dobro, 3) Kaj izboljšati, 4) Boljša verzija odgovora, 5) Vprašanje za nadaljevanje.",
                     systemPrompt,
@@ -158,7 +169,6 @@ public class TrainingSessionService {
                     .retrieve()
                     .body(Map.class);
 
-            //poberemo vrnjeno besedilo iz globoke Googlove JSON strukture
             if (response != null && response.containsKey("candidates")) {
                 List<?> candidates = (List<?>) response.get("candidates");
                 if (!candidates.isEmpty()) {
@@ -231,7 +241,6 @@ public class TrainingSessionService {
         return false;
     }
 
-    //to je se vedno, ce real ai response ne dela
     private String buildMockAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
         LearningPrompt prompt = promptRepository.findBySkillKeyIgnoreCase(skillKeys.get(0))
                 .stream()
@@ -261,27 +270,5 @@ public class TrainingSessionService {
                 + "Pričakovan izid: " + challenge.getExpectedOutcome() + "\n\n"
                 + "Kaj izboljšati:\n- " + String.join("\n- ", tips) + "\n\n"
                 + "Vprašanje za nadaljevanje:\n- Kateri del svojega odgovora bi lahko povedal bolj konkretno ali bolj empatično?";
-    }
-
-    private void applyGamification(UserProfile user, int score, String primarySkillKey, List<String> skillKeys) {
-        user.setPoints(user.getPoints() + score + Math.max(0, skillKeys.size() - 1) * 5);
-        user.setUpdatedAt(LocalDateTime.now());
-
-        List<String> badges = new ArrayList<>(user.getBadges());
-        addBadgeIfMissing(badges, "First simulation");
-        if (score >= 80) addBadgeIfMissing(badges, "Strong answer");
-        if (score >= 90) addBadgeIfMissing(badges, "AI-ready communicator");
-        if (skillKeys.size() >= 3) addBadgeIfMissing(badges, "Multi-skill learner");
-        if (user.getPoints() >= 300) addBadgeIfMissing(badges, "Consistent learner");
-        if ("conflict-resolution".equalsIgnoreCase(primarySkillKey) || skillKeys.contains("conflict-resolution")) {
-            addBadgeIfMissing(badges, "Calm resolver");
-        }
-        user.setBadges(badges);
-    }
-
-    private void addBadgeIfMissing(List<String> badges, String badge) {
-        if (!badges.contains(badge)) {
-            badges.add(badge);
-        }
     }
 }

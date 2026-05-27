@@ -12,7 +12,7 @@ const emptyPrompt = {
     tags: []
 };
 
-const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, badges: ['First simulation', 'Multi-skill learner'] };
+const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['First simulation', 'Multi-skill learner'] };
 const demoSkills = [
     { id: 's1', key: 'public-speaking', name: 'Javno nastopanje', category: 'Komunikacija', level: 'BEGINNER', estimatedMinutes: 12, description: 'Jasna struktura, samozavesten nastop in prepričljiv zaključek.', outcomes: ['jasen uvod', 'argument', 'zaključek'] },
     { id: 's2', key: 'conflict-resolution', name: 'Reševanje konfliktov', category: 'Sodelovanje', level: 'INTERMEDIATE', estimatedMinutes: 15, description: 'Umirjanje napetosti, aktivno poslušanje in skupni dogovor.', outcomes: ['empatija', 'dogovor', 'meje'] },
@@ -44,6 +44,7 @@ export function useAppData() {
 
     const [answer, setAnswer] = useState('');
     const [lastSession, setLastSession] = useState(null);
+    const [lastReward, setLastReward] = useState(null);
     const [mentorNote, setMentorNote] = useState('');
     const [report, setReport] = useState(null);
 
@@ -73,8 +74,14 @@ export function useAppData() {
             userName: demoUser.name,
             totalSessions: 1,
             totalPoints: demoUser.points,
+            totalStars: demoUser.totalStars,
+            level: demoUser.level,
+            currentLevelXp: demoUser.currentLevelXp,
+            nextLevelXp: demoUser.nextLevelXp,
+            streakDays: demoUser.streakDays,
             averageScore: 78,
             badges: demoUser.badges,
+            dailyQuests: buildDemoDailyQuests(false, 1),
             skillProgress: [
                 { skillKey: 'public-speaking', sessions: 1, averageScore: 78, nextSuggestedChallenge: 'Predstavitev ideje v 2 minutah' }
             ],
@@ -204,20 +211,37 @@ export function useAppData() {
             setError('');
             if (demoMode) {
                 const session = buildDemoSession({ answer, selectedChallenge, selectedSkillKeys });
+                const reward = buildDemoReward(session, selectedSkillKeys);
+                const updatedDemoUser = {
+                    ...demoUser,
+                    points: reward.totalPoints,
+                    totalStars: reward.totalStars,
+                    level: reward.newLevel,
+                    currentLevelXp: reward.currentLevelXp,
+                    nextLevelXp: reward.nextLevelXp,
+                    streakDays: reward.streakDays,
+                    badges: [...new Set([...demoUser.badges, ...reward.newBadges])]
+                };
                 setLastSession(session);
+                setLastReward(reward);
                 setAnswer('');
-                setReport(buildDemoReport(session, selectedSkillKeys));
-                setUsers([{ ...demoUser, points: demoUser.points + session.score, badges: [...demoUser.badges, session.score >= 80 ? 'Strong answer' : 'Practice streak'] }]);
+                setReport(buildDemoReport(session, selectedSkillKeys, reward, updatedDemoUser));
+                setUsers([updatedDemoUser]);
                 return;
             }
-            const session = await api.submitSession({
+            const submission = await api.submitSession({
                 userId: selectedUserId,
                 challengeId: selectedChallengeId,
                 skillKey: selectedSkillKey,
                 skillKeys: selectedSkillKeys,
                 userAnswer: answer
             });
+            const session = submission.session || submission;
             setLastSession(session);
+            setLastReward(submission.reward || null);
+            if (submission.user) {
+                setUsers((current) => current.map((user) => user.id === submission.user.id ? submission.user : user));
+            }
             setAnswer('');
             await Promise.all([loadReport(selectedUserId), refreshUsers()]);
         } catch (err) {
@@ -290,6 +314,7 @@ export function useAppData() {
         answer,
         setAnswer,
         lastSession,
+        lastReward,
         mentorNote,
         setMentorNote,
         report,
@@ -332,6 +357,7 @@ function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys }) {
         id: `demo-session-${Date.now()}`,
         score,
         skillKey: selectedSkillKeys.join(','),
+        skillKeys: selectedSkillKeys,
         challengeId: selectedChallenge?.id,
         userAnswer: answer,
         mentorNote: '',
@@ -339,14 +365,64 @@ function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys }) {
     };
 }
 
-function buildDemoReport(session, selectedSkillKeys) {
+function buildDemoReward(session, selectedSkillKeys) {
+    const earnedStars = scoreToStars(session.score);
+    const earnedXp = Math.max(5, session.score + Math.max(0, selectedSkillKeys.length - 1) * 5 + earnedStars * 5);
+    const totalPoints = demoUser.points + earnedXp;
+    const level = totalPoints >= 250 ? 3 : totalPoints >= 100 ? 2 : 1;
+    const levelStart = level === 3 ? 250 : level === 2 ? 100 : 0;
+    const nextLevelTarget = level === 3 ? 450 : level === 2 ? 250 : 100;
+    const newBadges = ['First star'];
+    if (session.score >= 80) newBadges.push('Strong answer');
+    if (session.score >= 90) newBadges.push('AI-ready communicator');
+    if (selectedSkillKeys.length >= 3) newBadges.push('Multi-skill learner');
+
+    return {
+        earnedXp,
+        earnedStars,
+        oldLevel: demoUser.level,
+        newLevel: level,
+        leveledUp: level > demoUser.level,
+        totalPoints,
+        totalStars: demoUser.totalStars + earnedStars,
+        currentLevelXp: totalPoints - levelStart,
+        nextLevelXp: nextLevelTarget - levelStart,
+        streakDays: demoUser.streakDays + 1,
+        newBadges: [...new Set(newBadges)],
+        dailyQuests: buildDemoDailyQuests(session.score >= 70, selectedSkillKeys.length)
+    };
+}
+
+function buildDemoDailyQuests(strongAnswerCompleted, selectedSkillCount) {
+    const multiSkillCompleted = selectedSkillCount >= 2;
+    return [
+        { id: 'practice-once', label: 'Reši 1 simulacijo danes', completed: true, current: 1, target: 1, rewardText: '+20 XP disciplina' },
+        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: strongAnswerCompleted, current: strongAnswerCompleted ? 1 : 0, target: 1, rewardText: 'močnejši score' },
+        { id: 'multi-skill', label: 'Vadi vsaj 2 veščini hkrati', completed: multiSkillCompleted, current: Math.min(selectedSkillCount, 2), target: 2, rewardText: '+5 XP bonus' }
+    ];
+}
+
+function scoreToStars(score) {
+    if (score >= 90) return 3;
+    if (score >= 70) return 2;
+    if (score >= 50) return 1;
+    return 0;
+}
+
+function buildDemoReport(session, selectedSkillKeys, reward, user) {
     return {
         userId: demoUser.id,
-        userName: demoUser.name,
+        userName: user.name,
         totalSessions: 2,
-        totalPoints: demoUser.points + session.score,
+        totalPoints: user.points,
+        totalStars: user.totalStars,
+        level: user.level,
+        currentLevelXp: user.currentLevelXp,
+        nextLevelXp: user.nextLevelXp,
+        streakDays: user.streakDays,
         averageScore: session.score,
-        badges: [...demoUser.badges, session.score >= 80 ? 'Strong answer' : 'Practice streak'],
+        badges: user.badges,
+        dailyQuests: reward.dailyQuests,
         skillProgress: selectedSkillKeys.map((skillKey) => ({
             skillKey,
             sessions: 1,
@@ -354,7 +430,7 @@ function buildDemoReport(session, selectedSkillKeys) {
             nextSuggestedChallenge: 'Ponovi simulacijo z bolj konkretnim primerom in mentorjevim komentarjem.'
         })),
         recommendations: [
-            'Odgovor popravi po AI povratni informaciji in ga oddaj ponovno.',
+            reward.leveledUp ? `Nov level: ${reward.newLevel}. Nadaljuj z dnevno rutino.` : 'Odgovor popravi po AI povratni informaciji in ga oddaj ponovno.',
             'Dodaj mentorjevo opombo, če želiš človeški vpogled v napredek.',
             'Naslednjič izberi še eno povezano veščino za širši učni načrt.'
         ]

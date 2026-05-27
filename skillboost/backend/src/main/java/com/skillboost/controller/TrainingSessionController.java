@@ -2,6 +2,7 @@ package com.skillboost.controller;
 
 import com.skillboost.dto.MentorNoteRequest;
 import com.skillboost.dto.SubmitSessionRequest;
+import com.skillboost.dto.SessionSubmissionResponse;
 import com.skillboost.model.TrainingSession;
 import com.skillboost.service.TrainingSessionService;
 import jakarta.validation.Valid;
@@ -38,7 +39,7 @@ public class TrainingSessionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TrainingSession submitSession(@Valid @RequestBody SubmitSessionRequest request) {
+    public SessionSubmissionResponse submitSession(@Valid @RequestBody SubmitSessionRequest request) {
         return sessionService.submit(request);
     }
 

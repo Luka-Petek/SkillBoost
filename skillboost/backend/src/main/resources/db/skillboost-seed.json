@@ -13,7 +13,13 @@
         "conflict-resolution"
       ],
       "points": 0,
-      "badges": []
+      "badges": [],
+      "keycloakId": null,
+      "totalStars": 0,
+      "level": 1,
+      "currentLevelXp": 0,
+      "nextLevelXp": 100,
+      "streakDays": 0
     },
     {
       "name": "Demo Mentor",
@@ -26,7 +32,13 @@
         "mentoring"
       ],
       "points": 0,
-      "badges": []
+      "badges": [],
+      "keycloakId": null,
+      "totalStars": 0,
+      "level": 1,
+      "currentLevelXp": 0,
+      "nextLevelXp": 100,
+      "streakDays": 0
     }
   ],
   "skills": [

@@ -7,8 +7,14 @@ public record ReportResponse(
         String userName,
         int totalSessions,
         int totalPoints,
+        int totalStars,
+        int level,
+        int currentLevelXp,
+        int nextLevelXp,
+        int streakDays,
         double averageScore,
         List<String> badges,
+        List<DailyQuest> dailyQuests,
         List<SkillProgress> skillProgress,
         List<String> recommendations
 ) {

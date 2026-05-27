@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class UserProfile {
     @Id
     private String id;
 
+    private String keycloakId;
     private String name;
 
     @Indexed(unique = true)
@@ -21,7 +23,15 @@ public class UserProfile {
     private String role;
     private List<String> goals = new ArrayList<>();
     private List<String> targetSkills = new ArrayList<>();
+
     private int points;
+    private int totalStars;
+    private int level = 1;
+    private int currentLevelXp;
+    private int nextLevelXp = 100;
+    private int streakDays;
+    private LocalDate lastPracticeDate;
+
     private List<String> badges = new ArrayList<>();
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
@@ -35,6 +45,14 @@ public class UserProfile {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 
     public String getName() {
@@ -83,6 +101,54 @@ public class UserProfile {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public int getTotalStars() {
+        return totalStars;
+    }
+
+    public void setTotalStars(int totalStars) {
+        this.totalStars = totalStars;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getCurrentLevelXp() {
+        return currentLevelXp;
+    }
+
+    public void setCurrentLevelXp(int currentLevelXp) {
+        this.currentLevelXp = currentLevelXp;
+    }
+
+    public int getNextLevelXp() {
+        return nextLevelXp;
+    }
+
+    public void setNextLevelXp(int nextLevelXp) {
+        this.nextLevelXp = nextLevelXp;
+    }
+
+    public int getStreakDays() {
+        return streakDays;
+    }
+
+    public void setStreakDays(int streakDays) {
+        this.streakDays = streakDays;
+    }
+
+    public LocalDate getLastPracticeDate() {
+        return lastPracticeDate;
+    }
+
+    public void setLastPracticeDate(LocalDate lastPracticeDate) {
+        this.lastPracticeDate = lastPracticeDate;
     }
 
     public List<String> getBadges() {

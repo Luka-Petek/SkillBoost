@@ -22,6 +22,10 @@ export default function App() {
 
     const reportScore = data.report?.averageScore || 0;
     const selectedSkillNames = data.selectedSkills.map((skill) => skill.name).join(', ') || 'Izberi veščine';
+    const player = data.selectedUser || {};
+    const level = player.level || data.report?.level || 1;
+    const totalStars = player.totalStars ?? data.report?.totalStars ?? 0;
+    const streakDays = player.streakDays ?? data.report?.streakDays ?? 0;
 
     return (
         <div className="app-shell">
@@ -91,10 +95,12 @@ export default function App() {
                     <>
                         <section className="metrics-grid" aria-label="Metrike napredka">
                             <MetricCard label="Aktivni uporabnik" value={data.selectedUser?.name || 'Gost'} helper={data.selectedUser?.role || 'Prijava odklene shranjevanje'} />
-                            <MetricCard label="Točke" value={data.selectedUser?.points ?? 0} helper="Dodajo se po vsaki simulaciji" />
-                            <MetricCard label="Povprečje" value={`${reportScore}/100`} helper={`${data.report?.totalSessions || 0} zaključenih vaj`} />
-                            <MetricCard label="Značke" value={data.selectedUser?.badges?.length || 0} helper={(data.selectedUser?.badges || []).join(', ') || 'Prva značka čaka nate'} />
+                            <MetricCard label="Level" value={level} helper={`${player.currentLevelXp ?? data.report?.currentLevelXp ?? 0}/${player.nextLevelXp ?? data.report?.nextLevelXp ?? 100} XP do naslednjega`} />
+                            <MetricCard label="Zvezdice" value={totalStars} helper="Zbirajo se po simulacijah" />
+                            <MetricCard label="Streak" value={`🔥 ${streakDays}`} helper="dnevni niz vaj" />
                         </section>
+
+                        <PlayerStatus user={data.selectedUser} report={data.report} />
 
                         <section className="workspace-grid">
                             <aside className="panel side-panel">
@@ -121,6 +127,7 @@ export default function App() {
                                         authenticated={authenticated}
                                         handleSubmitSession={data.handleSubmitSession}
                                         lastSession={data.lastSession}
+                                        lastReward={data.lastReward}
                                         mentorNote={data.mentorNote}
                                         setMentorNote={data.setMentorNote}
                                         handleMentorNote={data.handleMentorNote}
@@ -153,18 +160,63 @@ export default function App() {
                             </section>
 
                             <aside className="panel side-panel progress-panel">
-                                <h2>Dnevni načrt</h2>
-                                <ol className="daily-plan">
-                                    <li><span>1</span> Izberi 2-3 ciljne veščine.</li>
-                                    <li><span>2</span> Reši simulacijo in oddaj konkreten odgovor.</li>
-                                    <li><span>3</span> Preberi AI oceno ter popravi odgovor.</li>
-                                    <li><span>4</span> Mentor doda opombo ali naslednji izziv.</li>
-                                </ol>
+                                <DailyQuests quests={data.lastReward?.dailyQuests || data.report?.dailyQuests} />
                             </aside>
                         </section>
                     </>
                 )}
             </main>
+        </div>
+    );
+}
+
+function PlayerStatus({ user, report }) {
+    const level = user?.level || report?.level || 1;
+    const currentLevelXp = user?.currentLevelXp ?? report?.currentLevelXp ?? 0;
+    const nextLevelXp = user?.nextLevelXp ?? report?.nextLevelXp ?? 100;
+    const progress = Math.min(100, Math.round((currentLevelXp / Math.max(1, nextLevelXp)) * 100));
+    const badges = user?.badges || report?.badges || [];
+
+    return (
+        <section className="player-status" aria-label="Igralčev napredek">
+            <div>
+                <p className="eyebrow">SkillBoost profile</p>
+                <h2>{user?.name || report?.userName || 'Gost'} · Level {level}</h2>
+                <p>Napreduj z dnevno vajo, zberi zvezdice in odklepaj značke kot v učni igri.</p>
+            </div>
+            <div className="level-progress">
+                <div className="level-progress-head"><strong>{currentLevelXp}/{nextLevelXp} XP</strong><span>{progress}%</span></div>
+                <div className="progress-bar big"><span style={{ width: `${progress}%` }} /></div>
+                <div className="badge-strip">
+                    {badges.length ? badges.slice(-4).map((badge) => <span key={badge}>{badge}</span>) : <span>Prva značka čaka nate</span>}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function DailyQuests({ quests }) {
+    const safeQuests = quests?.length ? quests : [
+        { id: 'practice-once', label: 'Reši 1 simulacijo danes', completed: false, current: 0, target: 1, rewardText: '+20 XP disciplina' },
+        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: false, current: 0, target: 1, rewardText: 'močnejši score' },
+        { id: 'multi-skill', label: 'Vadi vsaj 2 veščini hkrati', completed: false, current: 0, target: 2, rewardText: '+5 XP bonus' }
+    ];
+
+    return (
+        <div className="daily-quests">
+            <p className="eyebrow">Dnevni cilji</p>
+            <h2>Quest board</h2>
+            <div className="quest-list">
+                {safeQuests.map((quest) => (
+                    <div key={quest.id} className={`quest-item ${quest.completed ? 'done' : ''}`}>
+                        <span>{quest.completed ? '✓' : '○'}</span>
+                        <div>
+                            <strong>{quest.label}</strong>
+                            <p>{quest.current}/{quest.target} · {quest.rewardText}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -202,7 +254,7 @@ function SkillSelector({ skills, selectedSkillKeys, toggleSkillKey }) {
     );
 }
 
-function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallenges, selectedChallengeId, setSelectedChallengeId, selectedChallenge, answer, setAnswer, saving, authenticated, handleSubmitSession, lastSession, mentorNote, setMentorNote, handleMentorNote }) {
+function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallenges, selectedChallengeId, setSelectedChallengeId, selectedChallenge, answer, setAnswer, saving, authenticated, handleSubmitSession, lastSession, lastReward, mentorNote, setMentorNote, handleMentorNote }) {
     const answerStats = useMemo(() => getAnswerStats(answer), [answer]);
     const selectedSkillNames = skills.filter((skill) => selectedSkillKeys.includes(skill.key)).map((skill) => skill.name);
 
@@ -268,13 +320,14 @@ function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallen
                 </button>
             </form>
 
-            {lastSession && <FeedbackCard lastSession={lastSession} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
+            {lastSession && <FeedbackCard lastSession={lastSession} reward={lastReward} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
         </div>
     );
 }
 
-function FeedbackCard({ lastSession, mentorNote, setMentorNote, authenticated, handleMentorNote }) {
+function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenticated, handleMentorNote }) {
     const scoreMeta = scoreLabels.find((item) => lastSession.score >= item.min) || scoreLabels.at(-1);
+    const stars = reward?.earnedStars ?? lastSession.earnedStars ?? scoreToStars(lastSession.score);
     return (
         <article className={`feedback-card ${scoreMeta.tone}`}>
             <div className="score-circle">
@@ -282,11 +335,20 @@ function FeedbackCard({ lastSession, mentorNote, setMentorNote, authenticated, h
                 <span>{scoreMeta.label}</span>
             </div>
             <div className="feedback-content">
+                {reward && (
+                    <div className="reward-banner">
+                        <div className="stars" aria-label={`${stars} zvezdice`}>{renderStars(stars)}</div>
+                        <strong>+{reward.earnedXp} XP</strong>
+                        <span>🔥 {reward.streakDays} dni</span>
+                        {reward.leveledUp && <span>Level up: {reward.oldLevel} → {reward.newLevel}</span>}
+                    </div>
+                )}
                 <div className="section-title compact-title">
                     <span>AI povratna informacija</span>
                     <small>ocena je kombinacija strukture, jasnosti, empatije in akcijskih korakov</small>
                 </div>
                 <pre>{lastSession.aiFeedback}</pre>
+                {reward?.newBadges?.length > 0 && <div className="new-badges">{reward.newBadges.map((badge) => <span key={badge}>🏅 {badge}</span>)}</div>}
                 {lastSession.mentorNote && <p className="mentor-note"><strong>Mentor:</strong> {lastSession.mentorNote}</p>}
                 <div className="mentor-row">
                     <input placeholder="Dodaj mentorjev komentar ali naslednjo nalogo" value={mentorNote} onChange={(e) => setMentorNote(e.target.value)} />
@@ -404,9 +466,9 @@ function ReportSection({ report }) {
             </div>
             <div className="report-grid">
                 <MetricCard label="Simulacije" value={report.totalSessions} helper="Zaključene vaje" />
-                <MetricCard label="Točke" value={report.totalPoints} helper="Gamificiran napredek" />
+                <MetricCard label="Level" value={report.level || 1} helper={`${report.currentLevelXp || 0}/${report.nextLevelXp || 100} XP`} />
+                <MetricCard label="Zvezdice" value={report.totalStars || 0} helper="Skupno zbranih" />
                 <MetricCard label="Povprečje" value={`${report.averageScore}/100`} helper="Čez vse veščine" />
-                <MetricCard label="Značke" value={(report.badges || []).length} helper={(report.badges || []).join(', ') || 'Brez značk'} />
             </div>
             <div className="cards-grid single">
                 {(report.skillProgress || []).map((skill) => (
@@ -427,6 +489,17 @@ function ReportSection({ report }) {
             </article>
         </div>
     );
+}
+
+function scoreToStars(score) {
+    if (score >= 90) return 3;
+    if (score >= 70) return 2;
+    if (score >= 50) return 1;
+    return 0;
+}
+
+function renderStars(count) {
+    return '★'.repeat(count) + '☆'.repeat(Math.max(0, 3 - count));
 }
 
 function getAnswerStats(answer) {

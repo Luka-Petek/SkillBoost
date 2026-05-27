@@ -11,13 +11,17 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserProfileRepository userRepository;
+    private final GamificationService gamificationService;
 
-    public UserService(UserProfileRepository userRepository) {
+    public UserService(UserProfileRepository userRepository, GamificationService gamificationService) {
         this.userRepository = userRepository;
+        this.gamificationService = gamificationService;
     }
 
     public List<UserProfile> findAll() {
-        return userRepository.findAll();
+        List<UserProfile> users = userRepository.findAll();
+        users.forEach(gamificationService::syncLevel);
+        return users;
     }
 
     public UserProfile create(CreateUserRequest request) {
@@ -26,6 +30,7 @@ public class UserService {
         });
 
         UserProfile user = new UserProfile();
+        user.setKeycloakId(request.keycloakId());
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(request.role() == null || request.role().isBlank() ? "STUDENT" : request.role());
@@ -33,6 +38,7 @@ public class UserService {
         user.setTargetSkills(request.targetSkills());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
+        gamificationService.syncLevel(user);
         return userRepository.save(user);
     }
 }
