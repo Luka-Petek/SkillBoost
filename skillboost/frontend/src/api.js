@@ -40,5 +40,7 @@ export const api = {
   createPrompt: (payload) => request('/prompts', { method: 'POST', body: JSON.stringify(payload) }),
   submitSession: (payload) => request('/sessions', { method: 'POST', body: JSON.stringify(payload) }),
   updateMentorNote: (sessionId, payload) => request(`/sessions/${sessionId}/mentor-note`, { method: 'PATCH', body: JSON.stringify(payload) }),
-  getReport: (userId) => request(`/reports/${userId}`)
+  getReport: (userId) => request(`/reports/${userId}`),
+  getProfile: () => request('/profile'),
+  updateProfile: (payload) => request('/profile', { method: 'PUT', body: JSON.stringify(payload) })
 };

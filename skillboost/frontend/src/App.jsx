@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useTheme } from './hooks/useTheme';
 import { useAppData } from './hooks/useAppData';
+import { ProfileSection } from './components/ProfileSection';
 
 const scoreLabels = [
     { min: 85, label: 'Odlično', tone: 'great' },
@@ -48,7 +49,14 @@ export default function App() {
                             <button className="primary" onClick={handleRegister}>Registracija</button>
                         </>
                     ) : (
-                        <button className="secondary" onClick={handleLogout}>Odjava ({username})</button>
+                        <>
+                            <button className={`secondary ${activeSection === 'profile' ? 'active' : ''}`} onClick={() => setActiveSection('profile')}>
+                                Moj profil
+                            </button>
+                            <button className="secondary" onClick={handleLogout}>
+                                Odjava ({username})
+                            </button>
+                        </>
                     )}
                 </div>
             </header>
@@ -157,6 +165,14 @@ export default function App() {
                                 )}
 
                                 {activeSection === 'report' && <ReportSection report={data.report} />}
+
+                                {activeSection === 'profile' && (
+                                    <ProfileSection
+                                        profile={data.myProfile}
+                                        onUpdate={data.handleUpdateProfile}
+                                        saving={data.saving}
+                                    />
+                                )}
                             </section>
 
                             <aside className="panel side-panel progress-panel">

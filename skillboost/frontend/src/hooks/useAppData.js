@@ -55,6 +55,8 @@ export function useAppData() {
     const [error, setError] = useState('');
     const [demoMode, setDemoMode] = useState(false);
 
+    const [myProfile, setMyProfile] = useState(null);
+
     const refreshUsers = async () => {
         if (demoMode) return;
         const freshUsers = await api.getUsers();
@@ -140,28 +142,35 @@ export function useAppData() {
         try {
             setError('');
             setLoading(true);
-            const [healthRes, userList, skillRes, challengeRes, promptRes] = await Promise.all([
-                api.health(), api.getUsers(), api.getSkills(), api.getChallenges(), api.getPrompts()
+            const [healthRes, userList, skillRes, challengeRes, promptRes, profileRes] = await Promise.all([
+                api.health(), api.getUsers(), api.getSkills(), api.getChallenges(), api.getPrompts(), api.getProfile()
             ]);
 
             setHealth(healthRes);
             setSkills(skillRes);
             setChallenges(challengeRes);
             setPrompts(promptRes);
+            setMyProfile(profileRes)
 
-            let currentMe = userList.find(u => u.keycloakId === keycloakId || u.email === email);
+            try {
+                const userList = await api.getUsers();
+                let currentMe = userList.find(u => u.keycloakId === keycloakId || u.email === email);
 
-            if (!currentMe) {
-                currentMe = await api.createUser({
-                    keycloakId, name, email, role: 'STUDENT', goals: [], targetSkills: []
-                });
-                const freshUsers = await api.getUsers();
-                setUsers(freshUsers);
-            } else {
-                setUsers(userList);
+                if (!currentMe) {
+                    currentMe = await api.createUser({
+                        keycloakId, name, email, role: 'STUDENT', goals: [], targetSkills: []
+                    });
+                    const freshUsers = await api.getUsers();
+                    setUsers(freshUsers);
+                } else {
+                    setUsers(userList);
+                }
+
+                setSelectedUserId(currentMe.id);
+            } catch (e) {
+                console.warn("Uporabniki niso dostopni, delam v omejenem načinu:", e);
             }
 
-            setSelectedUserId(currentMe.id);
             syncInitialSelection(skillRes, challengeRes);
         } catch (err) {
             hydrateDemoData("Napaka pri nalaganju podatkov: " + err.message);
@@ -297,6 +306,19 @@ export function useAppData() {
     const selectedChallenge = useMemo(() => challenges.find((c) => c.id === selectedChallengeId), [challenges, selectedChallengeId]);
     const selectedSkills = useMemo(() => skills.filter((skill) => selectedSkillKeys.includes(skill.key)), [skills, selectedSkillKeys]);
 
+    const handleUpdateProfile = async (profileData) => {
+        try {
+            setSaving(true);
+            setError('');
+            const updated = await api.updateProfile(profileData);
+            setMyProfile(updated);
+        } catch (err) {
+            setError('Napaka pri posodabljanju profila: ' + err.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return {
         health,
         users,
@@ -333,7 +355,9 @@ export function useAppData() {
         selectedSkills,
         filteredChallenges,
         filteredPrompts,
-        selectedChallenge
+        selectedChallenge,
+        myProfile,
+        handleUpdateProfile,
     };
 }
 

@@ -1,6 +1,7 @@
 package com.skillboost.service;
 
 import com.skillboost.dto.CreateUserRequest;
+import com.skillboost.dto.UpdateProfileRequest;
 import com.skillboost.model.UserProfile;
 import com.skillboost.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,32 @@ public class UserService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         gamificationService.syncLevel(user);
+        return userRepository.save(user);
+    }
+
+    public UserProfile getOrCreateFromJwt(String email, String defaultName){
+
+        //iscemo po mailu
+        return userRepository.findByEmailIgnoreCase(email).orElseGet(() -> {
+            UserProfile newUser = new UserProfile();
+            newUser.setName(defaultName != null ? defaultName : "Nov Uporabnik");
+            newUser.setEmail(email);
+            newUser.setRole("STUDENT");
+            newUser.setCreatedAt(LocalDateTime.now());
+            newUser.setUpdatedAt(LocalDateTime.now());
+            return userRepository.save(newUser);
+        });
+    }
+
+    public UserProfile updateProfile(String email, UpdateProfileRequest request) {
+        UserProfile user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ne obstaja."));
+
+        user.setName(request.name());
+        user.setGoals(request.goals());
+        user.setTargetSkills(request.targetSkills());
+        user.setUpdatedAt(LocalDateTime.now());
+
         return userRepository.save(user);
     }
 }
