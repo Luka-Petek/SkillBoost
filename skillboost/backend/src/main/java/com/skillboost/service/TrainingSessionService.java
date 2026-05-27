@@ -12,6 +12,8 @@ import com.skillboost.repository.LearningPromptRepository;
 import com.skillboost.repository.TrainingChallengeRepository;
 import com.skillboost.repository.TrainingSessionRepository;
 import com.skillboost.repository.UserProfileRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import java.util.Map;
 
 @Service
 public class TrainingSessionService {
+    private static final Logger log = LoggerFactory.getLogger(TrainingSessionService.class);
+
     private final TrainingSessionRepository sessionRepository;
     private final UserProfileRepository userRepository;
     private final TrainingChallengeRepository challengeRepository;
@@ -37,6 +41,15 @@ public class TrainingSessionService {
 
     @Value("${spring.gemini.api.key:}")
     private String apiKey;
+
+    @Value("${spring.gemini.api.base-url:https://generativelanguage.googleapis.com}")
+    private String geminiApiBaseUrl;
+
+    @Value("${spring.gemini.model:gemini-2.5-flash}")
+    private String geminiModel;
+
+    @Value("${spring.gemini.fallback-enabled:false}")
+    private boolean geminiFallbackEnabled;
 
     public TrainingSessionService(
             TrainingSessionRepository sessionRepository,
@@ -123,7 +136,12 @@ public class TrainingSessionService {
     private String generateRealAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
         String primarySkillKey = skillKeys.get(0);
         if (apiKey == null || apiKey.isBlank()) {
-            return buildMockAiFeedback(skillKeys, challenge, answer, score);
+            return handleAiFailure(
+                    skillKeys,
+                    challenge,
+                    score,
+                    "GEMINI_API_KEY is missing. Create a local .env file or set the environment variable before starting the backend."
+            );
         }
 
         try {
@@ -141,11 +159,16 @@ public class TrainingSessionService {
 
             String criteria = String.join(", ", challenge.getEvaluationCriteria());
             String finalUserPrompt = userTemplate
-                    .replace("{{answer}}", answer)
-                    .replace("{{scenario}}", challenge.getScenario())
+                    .replace("{{answer}}", answer == null ? "" : answer)
+                    .replace("{{scenario}}", challenge.getScenario() == null ? "" : challenge.getScenario())
                     .replace("{{criteria}}", criteria);
 
-            String url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+            String url = String.format(
+                    "%s/v1beta/models/%s:generateContent?key=%s",
+                    geminiApiBaseUrl.replaceAll("/+$", ""),
+                    geminiModel,
+                    apiKey
+            );
             String fullAiPrompt = String.format(
                     "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario title: %s\n- Selected skills: %s\n- Expected outcome: %s\n- Internal score: %d/100\n\nReturn feedback in Slovenian with these sections: 1) Ocena, 2) Kaj je dobro, 3) Kaj izboljšati, 4) Boljša verzija odgovora, 5) Vprašanje za nadaljevanje.",
                     systemPrompt,
@@ -158,7 +181,10 @@ public class TrainingSessionService {
 
             Map<String, Object> requestBody = Map.of(
                     "contents", List.of(
-                            Map.of("parts", List.of(Map.of("text", fullAiPrompt)))
+                            Map.of(
+                                    "role", "user",
+                                    "parts", List.of(Map.of("text", fullAiPrompt))
+                            )
                     )
             );
 
@@ -169,23 +195,49 @@ public class TrainingSessionService {
                     .retrieve()
                     .body(Map.class);
 
-            if (response != null && response.containsKey("candidates")) {
-                List<?> candidates = (List<?>) response.get("candidates");
-                if (!candidates.isEmpty()) {
-                    Map<?, ?> firstCandidate = (Map<?, ?>) candidates.get(0);
-                    Map<?, ?> content = (Map<?, ?>) firstCandidate.get("content");
-                    List<?> parts = (List<?>) content.get("parts");
-                    Map<?, ?> firstPart = (Map<?, ?>) parts.get(0);
-                    return (String) firstPart.get("text");
-                }
+            String text = extractGeminiText(response);
+            if (text != null && !text.isBlank()) {
+                return text.trim();
             }
 
-            throw new RuntimeException("Empty response from Gemini.");
+            return handleAiFailure(skillKeys, challenge, score, "Empty response from Gemini.");
         } catch (Exception e) {
-            System.err.println("Gemini API Error: " + e.getMessage());
-            return "[Povezava z Gemini je spodletela - prikazujem lokalno interaktivno oceno]\n\n"
-                    + buildMockAiFeedback(skillKeys, challenge, answer, score);
+            log.warn("Gemini API call failed: {}", e.getMessage());
+            return handleAiFailure(skillKeys, challenge, score, "Gemini API call failed: " + e.getMessage());
         }
+    }
+
+    private String extractGeminiText(Map<String, Object> response) {
+        if (response == null || !response.containsKey("candidates")) {
+            return null;
+        }
+        List<?> candidates = (List<?>) response.get("candidates");
+        if (candidates.isEmpty() || !(candidates.get(0) instanceof Map<?, ?> firstCandidate)) {
+            return null;
+        }
+        Object contentValue = firstCandidate.get("content");
+        if (!(contentValue instanceof Map<?, ?> content)) {
+            return null;
+        }
+        Object partsValue = content.get("parts");
+        if (!(partsValue instanceof List<?> parts) || parts.isEmpty() || !(parts.get(0) instanceof Map<?, ?> firstPart)) {
+            return null;
+        }
+        Object textValue = firstPart.get("text");
+        return textValue instanceof String text ? text : null;
+    }
+
+    private String handleAiFailure(
+            List<String> skillKeys,
+            TrainingChallenge challenge,
+            int score,
+            String message
+    ) {
+        if (geminiFallbackEnabled) {
+            return "[Gemini ni dosegljiv - prikazujem lokalno oceno, ker je fallback izrecno vklopljen]\n\n"
+                    + buildMockAiFeedback(skillKeys, challenge, score);
+        }
+        throw new IllegalStateException(message);
     }
 
     public TrainingSession updateMentorNote(String sessionId, MentorNoteRequest request) {
@@ -241,7 +293,14 @@ public class TrainingSessionService {
         return false;
     }
 
-    private String buildMockAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
+    private String stripMockPrefix(String value) {
+        if (value == null || value.isBlank()) {
+            return "AI coach je pripravil lokalno oceno.";
+        }
+        return value.replaceFirst("(?i)^\\s*Mock AI:\\s*", "");
+    }
+
+    private String buildMockAiFeedback(List<String> skillKeys, TrainingChallenge challenge, int score) {
         LearningPrompt prompt = promptRepository.findBySkillKeyIgnoreCase(skillKeys.get(0))
                 .stream()
                 .findFirst()
@@ -250,6 +309,7 @@ public class TrainingSessionService {
         String base = prompt == null
                 ? "AI coach je odgovor ocenil glede na jasnost, strukturo, empatijo, relevantnost za scenarij in izvedljiv naslednji korak."
                 : prompt.getSimulatedAiResponse();
+        base = stripMockPrefix(base);
 
         List<String> tips = new ArrayList<>();
         if (score < 55) {

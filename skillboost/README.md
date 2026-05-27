@@ -7,7 +7,7 @@ Projekt vsebuje:
 - React frontend za pregled veščin, simulacijo izziva, knjižnico promptov in poročilo napredka.
 - Spring Boot backend z REST API-jem.
 - MongoDB bazo z začetnimi podatki.
-- Mock AI feedback, ki uporablja seedane prompt podatke iz JSON datoteke.
+- Realno Gemini AI ocenjevanje prek backend API-ja, z lokalnim fallbackom samo kadar je izrecno vklopljen.
 - Docker Compose za zagon celotnega sistema.
 - CI pipeline za GitHub Actions in GitLab CI.
 
@@ -53,7 +53,7 @@ Prva verzija pokriva osnovne funkcionalnosti:
 
 1. Pregled učnih veščin.
 2. Pregled izzivov po veščini.
-3. Simulacija naloge z mock AI ocenjevanjem.
+3. Simulacija naloge z realnim Gemini AI ocenjevanjem.
 4. Shranjevanje rezultatov uporabnika v MongoDB.
 5. Točke, značke in osnovno poročilo napredka.
 6. Knjižnica promptov, ki jih lahko kasneje zamenjate z realnim LLM sistemom.
@@ -68,13 +68,13 @@ Backend ob prvem zagonu samodejno naloži začetne podatke iz:
 backend/src/main/resources/db/skillboost-seed.json
 ```
 
-Dodatna samostojna JSON datoteka, ki predstavlja mock LLM prompt/response podatke, je tukaj:
+Dodatna samostojna JSON datoteka, ki predstavlja primer prompt/response podatkov za lokalni fallback, je tukaj:
 
 ```text
 mongo/skillboost-prompts.seed.json
 ```
 
-Ideja: ta JSON trenutno simulira odgovore chata. Kasneje lahko isti model zamenjate z realnim LLM providerjem, backend pa lahko še vedno uporablja isto domeno `LearningPrompt`.
+Ideja: ta JSON je uporaben samo za lokalni fallback ali razvoj promptov. Produkcijsko ocenjevanje gre prek realnega Gemini klica v backendu.
 
 ## Lokalni zagon brez Dockerja
 
@@ -142,7 +142,6 @@ Oba pipeline-a preverita backend build, frontend build in Docker build.
 ## Naslednji realni koraki
 
 - Dodati pravo avtentikacijo.
-- Zamenjati mock AI servis z realnim LLM servisom.
 - Dodati role: uporabnik, mentor, admin.
 - Dodati bolj strukturirano ocenjevanje po kriterijih.
 - Dodati testne scenarije in integracijske teste z MongoDB Testcontainers.
@@ -161,6 +160,25 @@ Ta verzija vsebuje razširjeno motivacijsko logiko po vzoru učnih aplikacij:
 - `POST /api/sessions` zdaj vrača `SessionSubmissionResponse`, ki vsebuje `session`, `reward` in posodobljenega `user`.
 
 Backend logika je ločena v `GamificationService`, da `TrainingSessionService` ostane osredotočen na simulacijo, scoring in AI feedback.
+
+
+### Gemini AI zagon
+
+Docker Compose ne bere `.env.example`. Najprej naredi lokalni `.env` in vanj dodaj svoj ključ:
+
+```bash
+cp .env.example .env
+# nato v .env nastavi GEMINI_API_KEY
+```
+
+Po spremembi ključa ponovno zgradi in zaženi backend:
+
+```bash
+docker compose down
+docker compose up --build
+```
+
+Privzeto je `GEMINI_FALLBACK_ENABLED=false`, zato backend ne bo več tiho vračal lokalnega/mock odgovora. Če ključ manjka ali Gemini klic pade, bo UI pokazal jasno napako.
 
 ### Security/API key
 

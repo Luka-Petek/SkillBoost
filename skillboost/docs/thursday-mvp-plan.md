@@ -7,7 +7,7 @@
 - Pregled veščin.
 - Izbira izziva.
 - Oddaja odgovora uporabnika.
-- Mock AI feedback.
+- Gemini AI feedback z lokalnim fallbackom samo za razvoj.
 - Shranjevanje rezultata.
 - Poročilo napredka z osnovnimi metrikami.
 - Knjižnica promptov za kasnejši LLM.

@@ -57,6 +57,8 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/skillboost
       SPRING_PROFILES_ACTIVE: docker
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_FALLBACK_ENABLED: ${GEMINI_FALLBACK_ENABLED:-false}
       SKILLBOOST_SECURITY_ENABLED: "true"
       KEYCLOAK_ISSUER_URI: http://localhost:9080/realms/SkillBoost
       KEYCLOAK_JWK_SET_URI: http://skillboost-keycloak:8080/realms/SkillBoost/protocol/openid-connect/certs

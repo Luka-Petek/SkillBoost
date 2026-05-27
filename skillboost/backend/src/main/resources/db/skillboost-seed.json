@@ -178,7 +178,7 @@
       "difficulty": "BEGINNER",
       "systemPrompt": "You are a practical communication coach. Give concise, direct and actionable feedback.",
       "userPromptTemplate": "Evaluate this one-minute pitch. Score clarity, structure and closing. Answer: {{answer}}",
-      "simulatedAiResponse": "Mock AI: focus on a stronger hook, make the problem-solution structure explicit, and finish with one concrete call to action.",
+      "simulatedAiResponse": "focus on a stronger hook, make the problem-solution structure explicit, and finish with one concrete call to action.",
       "tags": [
         "pitch",
         "presentation",
@@ -191,7 +191,7 @@
       "difficulty": "BEGINNER",
       "systemPrompt": "You are a calm workplace mediator. Help the learner lower tension and move toward agreement.",
       "userPromptTemplate": "Review this conflict response. Check tone, empathy, ownership and next step. Answer: {{answer}}",
-      "simulatedAiResponse": "Mock AI: acknowledge the impact without blame, ask one open question, then propose a specific recovery step and deadline.",
+      "simulatedAiResponse": "acknowledge the impact without blame, ask one open question, then propose a specific recovery step and deadline.",
       "tags": [
         "conflict",
         "empathy",
@@ -204,7 +204,7 @@
       "difficulty": "BEGINNER",
       "systemPrompt": "You help teams communicate faster and with less ambiguity.",
       "userPromptTemplate": "Review this daily standup update for clarity and blockers. Answer: {{answer}}",
-      "simulatedAiResponse": "Mock AI: keep the update short, separate done/today/blockers, and clearly state who you need help from.",
+      "simulatedAiResponse": "keep the update short, separate done/today/blockers, and clearly state who you need help from.",
       "tags": [
         "standup",
         "blockers",
@@ -217,7 +217,7 @@
       "difficulty": "INTERMEDIATE",
       "systemPrompt": "You are an interview coach. Evaluate examples using the STAR method and career relevance.",
       "userPromptTemplate": "Evaluate this interview story. Check situation, task, action, result and lesson. Answer: {{answer}}",
-      "simulatedAiResponse": "Mock AI: add measurable result, make your personal action clearer, and end with what the experience taught you.",
+      "simulatedAiResponse": "add measurable result, make your personal action clearer, and end with what the experience taught you.",
       "tags": [
         "interview",
         "career",
