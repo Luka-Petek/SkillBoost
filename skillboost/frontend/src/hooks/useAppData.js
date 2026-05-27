@@ -2,33 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { api } from '../api';
 import keycloak from "../keycloak.js";
 
-const emptyPrompt = {
-    skillKey: 'public-speaking',
-    title: '',
-    difficulty: 'BEGINNER',
-    systemPrompt: 'You are an interactive soft-skills coach. Ask one clarifying question when the answer is vague, evaluate structure, empathy, clarity and actionability, then return concrete next steps.',
-    userPromptTemplate: 'Scenario: {{scenario}}\nCriteria: {{criteria}}\nUser answer: {{answer}}\nGive a score, short praise, improvement points and one follow-up question.',
-    simulatedAiResponse: 'Strukturirana povratna informacija: ocena, kaj deluje, kaj izboljšati, predlagan popravek in eno nadaljnje vprašanje za uporabnika.',
-    tags: []
-};
-
-const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['First simulation', 'Multi-skill learner'] };
-const demoSkills = [
-    { id: 's1', key: 'public-speaking', name: 'Javno nastopanje', category: 'Komunikacija', level: 'BEGINNER', estimatedMinutes: 12, description: 'Jasna struktura, samozavesten nastop in prepričljiv zaključek.', outcomes: ['jasen uvod', 'argument', 'zaključek'] },
-    { id: 's2', key: 'conflict-resolution', name: 'Reševanje konfliktov', category: 'Sodelovanje', level: 'INTERMEDIATE', estimatedMinutes: 15, description: 'Umirjanje napetosti, aktivno poslušanje in skupni dogovor.', outcomes: ['empatija', 'dogovor', 'meje'] },
-    { id: 's3', key: 'team-collaboration', name: 'Timsko sodelovanje', category: 'Ekipa', level: 'BEGINNER', estimatedMinutes: 10, description: 'Usklajevanje nalog, povratna informacija in skupna odgovornost.', outcomes: ['vloge', 'ritem', 'feedback'] },
-    { id: 's4', key: 'job-interview', name: 'Zaposlitveni razgovor', category: 'Kariera', level: 'INTERMEDIATE', estimatedMinutes: 14, description: 'Odgovori na zahtevna vprašanja in predstavitev kompetenc.', outcomes: ['STAR odgovor', 'primeri', 'vprašanja'] }
-];
-const demoChallenges = [
-    { id: 'c1', skillKey: 'public-speaking', title: 'Predstavitev ideje v 2 minutah', scenario: 'Ekipo moraš prepričati, da podpre tvojo idejo za izboljšavo procesa.', expectedOutcome: 'Jasen problem, rešitev in poziv k akciji.', estimatedMinutes: 8, evaluationCriteria: ['jasnost', 'struktura', 'primer', 'zaključek'] },
-    { id: 'c2', skillKey: 'conflict-resolution', title: 'Napet pogovor s sodelavcem', scenario: 'Sodelavec zamuja z nalogo, ti pa potrebuješ njegov del za rok oddaje.', expectedOutcome: 'Mirno izražena potreba in konkreten dogovor.', estimatedMinutes: 10, evaluationCriteria: ['empatija', 'aktivno poslušanje', 'dogovor', 'naslednji korak'] },
-    { id: 'c3', skillKey: 'team-collaboration', title: 'Razdelitev nalog v ekipi', scenario: 'Ekipa ni usklajena, zato moraš predlagati jasnejšo delitev odgovornosti.', expectedOutcome: 'Jasne vloge, rok in način preverjanja napredka.', estimatedMinutes: 9, evaluationCriteria: ['vloge', 'odgovornost', 'komunikacija', 'preverjanje'] },
-    { id: 'c4', skillKey: 'job-interview', title: 'Odgovor na vprašanje o slabosti', scenario: 'Na razgovoru te vprašajo: katero svojo slabost trenutno izboljšuješ?', expectedOutcome: 'Iskren, profesionalen odgovor z dokazom napredka.', estimatedMinutes: 7, evaluationCriteria: ['iskrenost', 'primer', 'učenje', 'samorefleksija'] }
-];
-const demoPrompts = [
-    { id: 'p1', skillKey: 'public-speaking', title: 'Coach za javni nastop', difficulty: 'BEGINNER', systemPrompt: emptyPrompt.systemPrompt, userPromptTemplate: emptyPrompt.userPromptTemplate, simulatedAiResponse: emptyPrompt.simulatedAiResponse, tags: ['struktura', 'jasnost'] },
-    { id: 'p2', skillKey: 'conflict-resolution', title: 'Coach za konflikt', difficulty: 'INTERMEDIATE', systemPrompt: 'Evaluate empathy, boundaries and concrete agreement.', userPromptTemplate: 'Conflict scenario: {{scenario}}\nAnswer: {{answer}}', simulatedAiResponse: 'Ocena + empatija + boljša formulacija + vprašanje za dogovor.', tags: ['empatija', 'dogovor'] }
-];
+import { emptyPrompt, demoChallenges, demoPrompts, demoRivals, demoSkills, demoUser } from '../data/demoContent';
 
 export function useAppData() {
     const [health, setHealth] = useState(null);
@@ -40,9 +14,15 @@ export function useAppData() {
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedSkillKey, setSelectedSkillKey] = useState('public-speaking');
     const [selectedSkillKeys, setSelectedSkillKeys] = useState(['public-speaking']);
+    const [preferredSkillKeys, setPreferredSkillKeys] = useState(['public-speaking']);
     const [selectedChallengeId, setSelectedChallengeId] = useState('');
+    const [competitionMode, setCompetitionMode] = useState(null);
+    const [competitionOpponentId, setCompetitionOpponentId] = useState('');
+    const [lastCompetitionResult, setLastCompetitionResult] = useState(null);
 
     const [answer, setAnswer] = useState('');
+    const [customSituation, setCustomSituation] = useState('');
+    const [dailyChallengeActive, setDailyChallengeActive] = useState(false);
     const [lastSession, setLastSession] = useState(null);
     const [lastReward, setLastReward] = useState(null);
     const [mentorNote, setMentorNote] = useState('');
@@ -66,7 +46,7 @@ export function useAppData() {
     const hydrateDemoData = useCallback((message = '') => {
         setDemoMode(true);
         setHealth({ status: 'DEMO' });
-        setUsers([demoUser]);
+        setUsers([demoUser, ...demoRivals]);
         setSkills(demoSkills);
         setChallenges(demoChallenges);
         setPrompts(demoPrompts);
@@ -97,6 +77,11 @@ export function useAppData() {
         const initialSkill = skillResult[0]?.key || 'public-speaking';
         setSelectedSkillKey(initialSkill);
         setSelectedSkillKeys([initialSkill]);
+        setPreferredSkillKeys([initialSkill]);
+        setDailyChallengeActive(false);
+        setCompetitionMode(null);
+        setCompetitionOpponentId('');
+        setLastCompetitionResult(null);
 
         const firstChallenge = challengeResult.find(c => c.skillKey === initialSkill) || challengeResult[0];
         setSelectedChallengeId(firstChallenge?.id || '');
@@ -202,10 +187,18 @@ export function useAppData() {
         setSelectedSkillKeys((current) => {
             const exists = current.includes(skillKey);
             const next = exists ? current.filter((key) => key !== skillKey) : [...current, skillKey];
-            const safeNext = next.length ? next : [skillKey];
-            setSelectedSkillKey(safeNext[0]);
-            setNewPrompt((prompt) => ({ ...prompt, skillKey: safeNext[0] }));
-            return safeNext;
+            const nextPrimary = next[0] || selectedSkillKey || skills[0]?.key || 'public-speaking';
+            setSelectedSkillKey(nextPrimary);
+            setNewPrompt((prompt) => ({ ...prompt, skillKey: nextPrimary }));
+            return next;
+        });
+    };
+
+    const togglePreferredSkillKey = (skillKey) => {
+        setPreferredSkillKeys((current) => {
+            const exists = current.includes(skillKey);
+            const next = exists ? current.filter((key) => key !== skillKey) : [...current, skillKey];
+            return next.length ? next : [skillKey];
         });
     };
 
@@ -220,9 +213,10 @@ export function useAppData() {
             setError('');
             setLastSession(null);
             setLastReward(null);
+            setLastCompetitionResult(null);
             if (demoMode) {
-                const session = buildDemoSession({ answer, selectedChallenge, selectedSkillKeys });
-                const reward = buildDemoReward(session, selectedSkillKeys);
+                const session = buildDemoSession({ answer, selectedChallenge, selectedSkillKeys, customSituation, dailyChallengeActive });
+                const reward = buildDemoReward(session, selectedSkillKeys, dailyChallengeActive);
                 const updatedDemoUser = {
                     ...demoUser,
                     points: reward.totalPoints,
@@ -235,9 +229,23 @@ export function useAppData() {
                 };
                 setLastSession(session);
                 setLastReward(reward);
+                if (competitionMode) {
+                    setLastCompetitionResult(buildCompetitionResult({
+                        mode: competitionMode,
+                        session,
+                        selectedUser: updatedDemoUser,
+                        opponent: users.find((user) => user.id === competitionOpponentId),
+                        challenge: selectedChallenge,
+                        users: [updatedDemoUser, ...demoRivals]
+                    }));
+                }
                 setAnswer('');
+                setCustomSituation('');
+                setDailyChallengeActive(false);
+                setCompetitionMode(null);
+                setCompetitionOpponentId('');
                 setReport(buildDemoReport(session, selectedSkillKeys, reward, updatedDemoUser));
-                setUsers([updatedDemoUser]);
+                setUsers([updatedDemoUser, ...demoRivals]);
                 return;
             }
             const submission = await api.submitSession({
@@ -245,15 +253,31 @@ export function useAppData() {
                 challengeId: selectedChallengeId,
                 skillKey: selectedSkillKey,
                 skillKeys: selectedSkillKeys,
-                userAnswer: answer
+                userAnswer: answer,
+                customSituation: customSituation.trim(),
+                dailyDoubleXp: dailyChallengeActive
             });
             const session = submission.session || submission;
             setLastSession(session);
             setLastReward(submission.reward || null);
+            if (competitionMode) {
+                setLastCompetitionResult(buildCompetitionResult({
+                    mode: competitionMode,
+                    session,
+                    selectedUser: submission.user || selectedUser,
+                    opponent: users.find((user) => user.id === competitionOpponentId),
+                    challenge: selectedChallenge,
+                    users
+                }));
+            }
+            setCompetitionMode(null);
+            setCompetitionOpponentId('');
             if (submission.user) {
                 setUsers((current) => current.map((user) => user.id === submission.user.id ? submission.user : user));
             }
             setAnswer('');
+            setCustomSituation('');
+            setDailyChallengeActive(false);
             await Promise.all([loadReport(selectedUserId), refreshUsers()]);
         } catch (err) {
             setError(err.message);
@@ -307,6 +331,59 @@ export function useAppData() {
     }, [prompts, selectedSkillKeys]);
     const selectedChallenge = useMemo(() => challenges.find((c) => c.id === selectedChallengeId), [challenges, selectedChallengeId]);
     const selectedSkills = useMemo(() => skills.filter((skill) => selectedSkillKeys.includes(skill.key)), [skills, selectedSkillKeys]);
+    const personalizedDailyChallenge = useMemo(
+        () => pickPersonalizedDailyChallenge(challenges, report, preferredSkillKeys, selectedSkillKeys),
+        [challenges, report, preferredSkillKeys, selectedSkillKeys]
+    );
+    const dailyDuelChallenge = useMemo(() => pickDailyDuelChallenge(challenges), [challenges]);
+    const competitionOpponent = useMemo(
+        () => users.find((user) => user.id === competitionOpponentId) || null,
+        [users, competitionOpponentId]
+    );
+
+    const handleStartDailyDuel = useCallback(() => {
+        if (!dailyDuelChallenge) return;
+        const skillKey = dailyDuelChallenge.skillKey || selectedSkillKey;
+        setSelectedSkillKey(skillKey);
+        setSelectedSkillKeys([skillKey]);
+        setSelectedChallengeId(dailyDuelChallenge.id);
+        setCompetitionMode('daily-duel');
+        setCompetitionOpponentId('');
+        setLastCompetitionResult(null);
+        setAnswer('');
+        setError('');
+    }, [dailyDuelChallenge, selectedSkillKey]);
+
+    const handleStartSkillBattle = useCallback(({ opponentId, challengeId }) => {
+        const challenge = challenges.find((item) => item.id === challengeId) || challenges[0];
+        if (!challenge) return;
+        const skillKey = challenge.skillKey || selectedSkillKey;
+        setSelectedSkillKey(skillKey);
+        setSelectedSkillKeys([skillKey]);
+        setSelectedChallengeId(challenge.id);
+        setCompetitionMode('skill-battle');
+        setCompetitionOpponentId(opponentId || '');
+        setLastCompetitionResult(null);
+        setAnswer('');
+        setError('');
+    }, [challenges, selectedSkillKey]);
+
+    const handleCancelCompetition = useCallback(() => {
+        setCompetitionMode(null);
+        setCompetitionOpponentId('');
+        setLastCompetitionResult(null);
+    }, []);
+
+    const handleStartDailyChallenge = useCallback(() => {
+        if (!personalizedDailyChallenge) return;
+        const primarySkill = personalizedDailyChallenge.skillKey || selectedSkillKey;
+        const nextSkills = [...new Set([primarySkill, ...preferredSkillKeys])].slice(0, 3);
+        setSelectedSkillKey(primarySkill);
+        setSelectedSkillKeys(nextSkills.length ? nextSkills : [primarySkill]);
+        setSelectedChallengeId(personalizedDailyChallenge.id);
+        setDailyChallengeActive(true);
+        setError('');
+    }, [personalizedDailyChallenge, preferredSkillKeys, selectedSkillKey]);
 
     const handleUpdateProfile = async (profileData) => {
         try {
@@ -332,11 +409,18 @@ export function useAppData() {
         setSelectedSkillKey,
         selectedSkillKeys,
         setSelectedSkillKeys,
+        preferredSkillKeys,
+        setPreferredSkillKeys,
         toggleSkillKey,
+        togglePreferredSkillKey,
         selectedChallengeId,
         setSelectedChallengeId,
         answer,
         setAnswer,
+        customSituation,
+        setCustomSituation,
+        dailyChallengeActive,
+        setDailyChallengeActive,
         lastSession,
         lastReward,
         mentorNote,
@@ -358,6 +442,15 @@ export function useAppData() {
         filteredChallenges,
         filteredPrompts,
         selectedChallenge,
+        personalizedDailyChallenge,
+        dailyDuelChallenge,
+        competitionMode,
+        competitionOpponent,
+        lastCompetitionResult,
+        handleStartDailyChallenge,
+        handleStartDailyDuel,
+        handleStartSkillBattle,
+        handleCancelCompetition,
         myProfile,
         handleUpdateProfile,
     };
@@ -368,7 +461,7 @@ function splitCsv(value) {
     return value.split(',').map((item) => item.trim()).filter(Boolean);
 }
 
-function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys }) {
+function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys, customSituation, dailyChallengeActive }) {
     const normalized = answer.toLowerCase();
     const words = normalized.trim() ? normalized.trim().split(/\s+/).length : 0;
     let score = 35 + Math.min(25, words);
@@ -386,14 +479,32 @@ function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys }) {
         skillKeys: selectedSkillKeys,
         challengeId: selectedChallenge?.id,
         userAnswer: answer,
+        customSituation,
+        dailyDoubleXp: dailyChallengeActive,
         mentorNote: '',
-        aiFeedback: `Ocena: ${score}/100\nIzbrane veščine: ${selectedSkillKeys.join(', ')}\n\nKaj je dobro:\n- Odgovor je povezan s scenarijem "${selectedChallenge?.title || 'simulacija'}".\n- Pokazal/a si pripravljenost za konkretno komunikacijo.\n\nKaj izboljšati:\n- Dodaj še bolj jasen naslednji korak: kdo naredi kaj in do kdaj.\n- Vključi eno vprašanje, s katerim preveriš razumevanje sogovornika.\n\nBoljša verzija:\n- Razumem situacijo. Predlagam, da najprej uskladimo cilj, nato določimo odgovornosti in se dogovorimo za kratek pregled napredka.\n\nVprašanje za nadaljevanje:\n- Kako bi ta odgovor povedal/a bolj kratko, mirno in samozavestno?`
+        aiFeedback: `Ocena: ${score}/100
+Izbrane veščine: ${selectedSkillKeys.join(', ')}
+
+V čem si dober:
+- Odgovor je povezan s scenarijem "${selectedChallenge?.title || 'simulacija'}".
+- Pokazal/a si pripravljenost za konkretno komunikacijo.
+
+Kje še izboljšaj:
+- Dodaj še bolj jasen naslednji korak: kdo naredi kaj in do kdaj.
+- Vključi eno vprašanje, s katerim preveriš razumevanje sogovornika.
+
+Boljša verzija:
+- Razumem situacijo. Predlagam, da najprej uskladimo cilj, nato določimo odgovornosti in se dogovorimo za kratek pregled napredka.
+
+Naslednji mini izziv:
+- Kako bi ta odgovor povedal/a bolj kratko, mirno in samozavestno?${dailyChallengeActive ? '\n\nBonus: Dnevni personaliziran izziv je aktiviral 2x XP.' : ''}`
     };
 }
 
-function buildDemoReward(session, selectedSkillKeys) {
+function buildDemoReward(session, selectedSkillKeys, dailyChallengeActive = false) {
     const earnedStars = scoreToStars(session.score);
-    const earnedXp = Math.max(5, session.score + Math.max(0, selectedSkillKeys.length - 1) * 5 + earnedStars * 5);
+    const baseXp = Math.max(5, session.score + Math.max(0, selectedSkillKeys.length - 1) * 5 + earnedStars * 5);
+    const earnedXp = dailyChallengeActive ? baseXp * 2 : baseXp;
     const totalPoints = demoUser.points + earnedXp;
     const level = totalPoints >= 250 ? 3 : totalPoints >= 100 ? 2 : 1;
     const levelStart = level === 3 ? 250 : level === 2 ? 100 : 0;
@@ -415,17 +526,42 @@ function buildDemoReward(session, selectedSkillKeys) {
         nextLevelXp: nextLevelTarget - levelStart,
         streakDays: demoUser.streakDays + 1,
         newBadges: [...new Set(newBadges)],
-        dailyQuests: buildDemoDailyQuests(session.score >= 70, selectedSkillKeys.length)
+        dailyQuests: buildDemoDailyQuests(session.score >= 70, selectedSkillKeys.length, dailyChallengeActive)
     };
 }
 
-function buildDemoDailyQuests(strongAnswerCompleted, selectedSkillCount) {
+function buildDemoDailyQuests(strongAnswerCompleted, selectedSkillCount, dailyDoubleXpCompleted = false) {
     const multiSkillCompleted = selectedSkillCount >= 2;
     return [
         { id: 'practice-once', label: 'Reši 1 simulacijo danes', completed: true, current: 1, target: 1, rewardText: '+20 XP disciplina' },
+        { id: 'daily-double-xp', label: 'Personaliziran dnevni izziv', completed: dailyDoubleXpCompleted, current: dailyDoubleXpCompleted ? 1 : 0, target: 1, rewardText: '2x XP' },
         { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: strongAnswerCompleted, current: strongAnswerCompleted ? 1 : 0, target: 1, rewardText: 'močnejši score' },
         { id: 'multi-skill', label: 'Vadi vsaj 2 veščini hkrati', completed: multiSkillCompleted, current: Math.min(selectedSkillCount, 2), target: 2, rewardText: '+5 XP bonus' }
     ];
+}
+
+function pickPersonalizedDailyChallenge(challenges, report, preferredSkillKeys, selectedSkillKeys) {
+    const safeChallenges = challenges || [];
+    if (!safeChallenges.length) return null;
+
+    const progress = report?.skillProgress || [];
+    const weakestSkillKeys = progress
+        .slice()
+        .sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0))
+        .map((item) => item.skillKey);
+
+    const priority = [...new Set([
+        ...(preferredSkillKeys || []),
+        ...weakestSkillKeys,
+        ...(selectedSkillKeys || [])
+    ])].filter(Boolean);
+
+    for (const skillKey of priority) {
+        const match = safeChallenges.find((challenge) => challenge.skillKey === skillKey);
+        if (match) return match;
+    }
+
+    return safeChallenges[0];
 }
 
 function scoreToStars(score) {
@@ -461,4 +597,118 @@ function buildDemoReport(session, selectedSkillKeys, reward, user) {
             'Naslednjič izberi še eno povezano veščino za širši učni načrt.'
         ]
     };
+}
+
+
+function pickDailyDuelChallenge(challenges) {
+    const safeChallenges = challenges || [];
+    if (!safeChallenges.length) return null;
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const index = Math.abs(hashString(`daily-duel-${todayKey}`)) % safeChallenges.length;
+    return safeChallenges[index];
+}
+
+function buildCompetitionResult({ mode, session, selectedUser, opponent, challenge, users = [] }) {
+    if (!mode || !session) return null;
+    const userName = selectedUser?.name || 'Ti';
+    const normalizedUsers = ensureCompetitionUsers(users, selectedUser);
+
+    if (mode === 'daily-duel') {
+        const leaderboard = normalizedUsers
+            .map((user) => ({
+                userId: user.id,
+                name: user.id === selectedUser?.id ? userName : user.name,
+                score: user.id === selectedUser?.id
+                    ? session.score
+                    : buildDeterministicOpponentScore(user, challenge, 'daily-duel'),
+                avatar: initials(user.name)
+            }))
+            .sort((a, b) => b.score - a.score)
+            .map((entry, index) => ({ ...entry, rank: index + 1 }));
+        const current = leaderboard.find((entry) => entry.userId === selectedUser?.id) || leaderboard[0];
+        const nextAbove = leaderboard.find((entry) => entry.rank === current.rank - 1);
+
+        return {
+            mode,
+            title: 'Daily Duel rezultat',
+            challengeTitle: challenge?.title || 'Današnji skupni izziv',
+            userScore: session.score,
+            userRank: current?.rank || 1,
+            winnerName: leaderboard[0]?.name || userName,
+            message: nextAbove
+                ? `Do naslednjega mesta ti manjka ${Math.max(1, nextAbove.score - session.score)} točk.`
+                : 'Trenutno vodiš današnji duel.',
+            leaderboard
+        };
+    }
+
+    const resolvedOpponent = opponent || normalizedUsers.find((user) => user.id !== selectedUser?.id);
+    const opponentScore = buildDeterministicOpponentScore(resolvedOpponent, challenge, 'skill-battle');
+    const diff = session.score - opponentScore;
+
+    return {
+        mode,
+        title: 'Skill Battle rezultat',
+        challengeTitle: challenge?.title || 'Battle izziv',
+        userName,
+        opponentName: resolvedOpponent?.name || 'SkillBot Rival',
+        userScore: session.score,
+        opponentScore,
+        result: diff > 0 ? 'win' : diff < 0 ? 'loss' : 'draw',
+        message: diff > 0
+            ? `Zmagal/a si za ${diff} točk in dobiš mentalni momentum za naslednjo vajo.`
+            : diff < 0
+                ? `Rival je bil boljši za ${Math.abs(diff)} točk. Poskusi rematch z bolj konkretnim primerom.`
+                : 'Izenačeno. Rematch je idealen naslednji korak.',
+        leaderboard: [
+            { userId: selectedUser?.id || 'me', name: userName, score: session.score, rank: diff >= 0 ? 1 : 2, avatar: initials(userName) },
+            { userId: resolvedOpponent?.id || 'opponent', name: resolvedOpponent?.name || 'SkillBot Rival', score: opponentScore, rank: diff >= 0 ? 2 : 1, avatar: initials(resolvedOpponent?.name || 'SkillBot Rival') }
+        ].sort((a, b) => b.score - a.score).map((entry, index) => ({ ...entry, rank: index + 1 }))
+    };
+}
+
+function ensureCompetitionUsers(users = [], selectedUser) {
+    const base = users?.length ? users : [];
+    const fallback = [
+        { id: 'rival-ana', name: 'Ana Novak', points: 340, level: 3, streakDays: 4 },
+        { id: 'rival-luka', name: 'Luka Kovač', points: 275, level: 3, streakDays: 2 },
+        { id: 'rival-eva', name: 'Eva Medved', points: 205, level: 2, streakDays: 1 }
+    ];
+    const withSelected = selectedUser && !base.some((user) => user.id === selectedUser.id)
+        ? [selectedUser, ...base]
+        : base;
+    const merged = [...withSelected];
+    fallback.forEach((candidate) => {
+        if (!merged.some((user) => user.id === candidate.id || user.name === candidate.name)) {
+            merged.push(candidate);
+        }
+    });
+    return merged.slice(0, 8);
+}
+
+function buildDeterministicOpponentScore(user, challenge, mode) {
+    const seed = `${user?.id || user?.name || 'rival'}-${challenge?.id || challenge?.title || 'challenge'}-${mode}-${new Date().toISOString().slice(0, 10)}`;
+    const base = 58 + (Math.abs(hashString(seed)) % 31);
+    const levelBonus = Math.min(8, Math.max(0, user?.level || 1));
+    const streakBonus = Math.min(6, Math.max(0, user?.streakDays || 0));
+    return Math.max(45, Math.min(96, base + levelBonus + streakBonus - 4));
+}
+
+function initials(name = '') {
+    return name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase() || '?';
+}
+
+function hashString(value) {
+    let hash = 0;
+    for (let index = 0; index < value.length; index += 1) {
+        hash = ((hash << 5) - hash) + value.charCodeAt(index);
+        hash |= 0;
+    }
+    return hash;
 }

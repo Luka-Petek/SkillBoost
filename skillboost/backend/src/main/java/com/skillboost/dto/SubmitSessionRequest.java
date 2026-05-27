@@ -9,6 +9,8 @@ public record SubmitSessionRequest(
         @NotBlank String challengeId,
         String skillKey,
         List<String> skillKeys,
-        @NotBlank String userAnswer
+        @NotBlank String userAnswer,
+        String customSituation,
+        boolean dailyDoubleXp
 ) {
 }

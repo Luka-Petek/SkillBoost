@@ -199,3 +199,21 @@ Ko želiš strožje testiranje z JWT/Keycloak, nastavi:
 ```bash
 SKILLBOOST_SECURITY_ENABLED=true
 ```
+
+## Katalog življenjskih veščin
+
+Ta verzija doda večji, bolj interaktiven katalog veščin:
+
+- 24 praktičnih veščin iz komunikacije, odnosov, kariere, osebne učinkovitosti, čustvene inteligence in vsakdanjega življenja.
+- 24 konkretnih trening izzivov, po eden za vsako veščino.
+- Iskanje po veščinah, filtriranje po sekciji in težavnosti.
+- Preseti za hiter izbor: Karierni boost, Boljši odnosi, Fokus in disciplina, Mir pod pritiskom.
+- Podrobni panel za izbrano veščino z izidi, vajami in direktnim prehodom v simulator.
+- Seeder zdaj sinhronizira manjkajoče veščine, izzive in prompte tudi, če baza že obstaja, zato za nove katalog podatke ni nujno vedno brisati Mongo volume.
+
+Če želiš čisto sveže testne podatke, lahko še vedno uporabiš:
+
+```bash
+docker compose down -v
+docker compose up --build
+```

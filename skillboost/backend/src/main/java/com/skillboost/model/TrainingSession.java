@@ -26,6 +26,8 @@ public class TrainingSession {
     private int score;
     private int earnedXp;
     private int earnedStars;
+    private boolean dailyDoubleXp;
+    private String customSituation;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public TrainingSession() {
@@ -117,6 +119,22 @@ public class TrainingSession {
 
     public void setEarnedStars(int earnedStars) {
         this.earnedStars = earnedStars;
+    }
+
+    public boolean isDailyDoubleXp() {
+        return dailyDoubleXp;
+    }
+
+    public void setDailyDoubleXp(boolean dailyDoubleXp) {
+        this.dailyDoubleXp = dailyDoubleXp;
+    }
+
+    public String getCustomSituation() {
+        return customSituation;
+    }
+
+    public void setCustomSituation(String customSituation) {
+        this.customSituation = customSituation;
     }
 
     public LocalDateTime getCreatedAt() {
