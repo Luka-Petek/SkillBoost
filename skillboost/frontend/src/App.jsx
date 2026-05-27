@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import mammoth from 'mammoth/mammoth.browser';
 import { useAuth } from './hooks/useAuth';
 import { useTheme } from './hooks/useTheme';
 import { useAppData } from './hooks/useAppData';
@@ -273,6 +274,125 @@ function SkillSelector({ skills, selectedSkillKeys, toggleSkillKey }) {
 function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallenges, selectedChallengeId, setSelectedChallengeId, selectedChallenge, answer, setAnswer, saving, authenticated, handleSubmitSession, lastSession, lastReward, mentorNote, setMentorNote, handleMentorNote }) {
     const answerStats = useMemo(() => getAnswerStats(answer), [answer]);
     const selectedSkillNames = skills.filter((skill) => selectedSkillKeys.includes(skill.key)).map((skill) => skill.name);
+    const fileInputRef = useRef(null);
+    const recognitionRef = useRef(null);
+    const [isListening, setIsListening] = useState(false);
+    const [voiceStatus, setVoiceStatus] = useState('');
+    const [fileStatus, setFileStatus] = useState('');
+    const [attachedFiles, setAttachedFiles] = useState([]);
+
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+        };
+    }, []);
+
+    const appendToAnswer = useCallback((text) => {
+        const cleanText = text.trim();
+        if (!cleanText) return;
+        setAnswer((current) => `${current}${current.trim() ? '\n\n' : ''}${cleanText}`);
+    }, [setAnswer]);
+
+    const handleVoiceToggle = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setVoiceStatus('Tvoj brskalnik ne podpira glasovnega vnosa. Poskusi Chrome ali Edge.');
+            return;
+        }
+
+        if (isListening && recognitionRef.current) {
+            recognitionRef.current.stop();
+            setIsListening(false);
+            setVoiceStatus('Snemanje ustavljeno.');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'sl-SI';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        recognition.onstart = () => {
+            setIsListening(true);
+            setVoiceStatus('Poslušam ... govori svoj odgovor.');
+        };
+
+        recognition.onresult = (event) => {
+            let finalTranscript = '';
+            let interimTranscript = '';
+
+            for (let index = event.resultIndex; index < event.results.length; index += 1) {
+                const transcript = event.results[index][0].transcript;
+                if (event.results[index].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            if (finalTranscript.trim()) {
+                appendToAnswer(finalTranscript);
+            }
+            if (interimTranscript.trim()) {
+                setVoiceStatus(`Slišim: ${interimTranscript.trim()}`);
+            }
+        };
+
+        recognition.onerror = (event) => {
+            setIsListening(false);
+            setVoiceStatus(event.error === 'not-allowed'
+                ? 'Dovoli uporabo mikrofona v brskalniku.'
+                : 'Mikrofon trenutno ni dosegljiv. Poskusi znova.');
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+            setVoiceStatus((current) => current.includes('Slišim:') ? 'Glasovni vnos je dodan v odgovor.' : current);
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
+
+    const handleFilePick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFilesSelected = async (event) => {
+        const files = Array.from(event.target.files || []);
+        if (!files.length) return;
+
+        setFileStatus('Berem datoteke ...');
+        const parsedFiles = [];
+        const failedFiles = [];
+
+        for (const file of files) {
+            try {
+                const extractedText = await extractTextFromFile(file);
+                if (!extractedText.trim()) {
+                    failedFiles.push(`${file.name} (brez berljivega besedila)`);
+                    continue;
+                }
+
+                const clippedText = extractedText.trim().slice(0, 12000);
+                parsedFiles.push({ name: file.name, size: file.size, textLength: extractedText.trim().length });
+                appendToAnswer(`[Pripeta datoteka: ${file.name}]\n${clippedText}${extractedText.length > clippedText.length ? '\n... (besedilo je skrajšano)' : ''}\n[/Pripeta datoteka]`);
+            } catch (error) {
+                failedFiles.push(`${file.name} (${error.message})`);
+            }
+        }
+
+        if (parsedFiles.length) {
+            setAttachedFiles((current) => [...current, ...parsedFiles]);
+        }
+        setFileStatus([
+            parsedFiles.length ? `Dodano: ${parsedFiles.map((file) => file.name).join(', ')}` : '',
+            failedFiles.length ? `Ni uspelo prebrati: ${failedFiles.join(', ')}` : ''
+        ].filter(Boolean).join(' · '));
+        event.target.value = '';
+    };
 
     return (
         <div className="content-section">
@@ -323,13 +443,58 @@ function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallen
                 </div>
 
                 <label>Tvoj odgovor
-                    <textarea
-                        rows="9"
-                        value={answer}
-                        onChange={(e) => setAnswer(e.target.value)}
-                        placeholder="Napiši, kaj bi rekel v situaciji. Poskusi vključiti kontekst, empatijo, jasen predlog in naslednji korak."
-                    />
+                    <div className="answer-composer">
+                           <textarea
+                            rows="9"
+                            value={answer}
+                            onChange={(e) => setAnswer(e.target.value)}
+                            placeholder="Napiši ali povej, kaj bi rekel v situaciji. Lahko pripneš tudi datoteko, ki jo AI upošteva pri odgovoru."
+                        />
+                        <div className="composer-toolbar" aria-label="Orodja za odgovor">
+                            <button
+                                type="button"
+                                className={`composer-icon-button mic-button ${isListening ? 'recording' : ''}`}
+                                onClick={handleVoiceToggle}
+                                aria-pressed={isListening}
+                                title="Odgovori z mikrofonom"
+                            >
+                                <MicrophoneIcon />
+                                {isListening ? 'Ustavi' : 'Mikrofon'}
+                            </button>
+                            <button
+                                type="button"
+                                className="composer-icon-button attach-button"
+                                onClick={handleFilePick}
+                                title="Dodaj datoteko"
+                            >
+                                <span aria-hidden="true">+</span>
+                                Datoteka
+                            </button>
+                            <input
+                                ref={fileInputRef}
+                                className="visually-hidden"
+                                type="file"
+                                multiple
+                                accept=".docx,.txt,.md,.csv,.json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,application/json"
+                                onChange={handleFilesSelected}
+                            />
+                        </div>
+                    </div>
                 </label>
+
+                {(voiceStatus || fileStatus || attachedFiles.length > 0) && (
+                    <div className="input-assist-status" aria-live="polite">
+                        {voiceStatus && <p>{voiceStatus}</p>}
+                        {fileStatus && <p>{fileStatus}</p>}
+                        {attachedFiles.length > 0 && (
+                            <div className="attachment-list">
+                                {attachedFiles.map((file, index) => (
+                                    <span key={`${file.name}-${index}`}><FileIcon /> {file.name}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {saving && (
                     <AiThinkingCard
@@ -351,6 +516,28 @@ function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallen
 
             {lastSession && !saving && <FeedbackCard lastSession={lastSession} reward={lastReward} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
         </div>
+    );
+}
+
+function MicrophoneIcon() {
+    return (
+        <svg className="composer-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
+            <path d="M19 11a7 7 0 0 1-14 0" />
+            <path d="M12 18v4" />
+            <path d="M8 22h8" />
+        </svg>
+    );
+}
+
+function FileIcon() {
+    return (
+        <svg className="attachment-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M7 3h7l4 4v14H7V3Z" />
+            <path d="M14 3v5h4" />
+            <path d="M9 13h6" />
+            <path d="M9 17h6" />
+        </svg>
     );
 }
 
@@ -678,6 +865,26 @@ function scoreToStars(score) {
 
 function renderStars(count) {
     return '★'.repeat(count) + '☆'.repeat(Math.max(0, 3 - count));
+}
+
+async function extractTextFromFile(file) {
+    const extension = file.name.split('.').pop()?.toLowerCase();
+
+    if (extension === 'docx') {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value || '';
+    }
+
+    if (['txt', 'md', 'csv', 'json'].includes(extension)) {
+        return file.text();
+    }
+
+    if (file.type.startsWith('text/')) {
+        return file.text();
+    }
+
+    throw new Error('podprte so .docx, .txt, .md, .csv in .json datoteke');
 }
 
 function getAnswerStats(answer) {

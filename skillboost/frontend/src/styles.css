@@ -1162,3 +1162,118 @@ code {
     align-items: flex-start;
   }
 }
+
+.answer-composer {
+  display: grid;
+  gap: 10px;
+}
+
+.composer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.composer-icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--panel-strong);
+  color: var(--text);
+  font-weight: 900;
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.composer-icon-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+
+.composer-icon-button.recording {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel-strong));
+  color: var(--danger);
+}
+
+.composer-icon-button.attach-button span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.composer-svg-icon,
+.attachment-svg-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.composer-svg-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.attachment-svg-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.input-assist-status {
+  display: grid;
+  gap: 8px;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 8%, var(--panel-strong)), color-mix(in srgb, var(--accent) 7%, var(--panel-strong)));
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.input-assist-status p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.attachment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+  color: var(--text);
+  font-size: 0.84rem;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
