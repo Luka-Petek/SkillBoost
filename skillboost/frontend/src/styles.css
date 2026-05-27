@@ -943,3 +943,222 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+/* Fast AI feedback experience */
+.ai-thinking-card {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--primary) 20%, transparent), transparent 32%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel-strong) 86%, transparent), color-mix(in srgb, var(--accent) 10%, var(--panel-strong)));
+  box-shadow: var(--soft-shadow);
+  overflow: hidden;
+}
+
+.ai-thinking-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-weight: 950;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.ai-thinking-orb::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: inherit;
+  border: 2px solid color-mix(in srgb, var(--primary) 34%, transparent);
+  animation: aiPulse 1.35s ease-out infinite;
+}
+
+.ai-thinking-main {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ai-thinking-head,
+.ai-thinking-grid,
+.ai-signal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-thinking-head {
+  justify-content: space-between;
+}
+
+.ai-thinking-head strong {
+  display: block;
+  font-size: 1.02rem;
+}
+
+.ai-thinking-head p,
+.ai-thinking-grid p {
+  margin: 3px 0 0;
+  color: var(--muted);
+}
+
+.ai-thinking-head > span {
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--panel-strong));
+  color: var(--primary);
+  font-weight: 950;
+}
+
+.ai-thinking-progress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 16%, transparent);
+}
+
+.ai-thinking-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--accent-2));
+  transition: width 0.35s ease;
+}
+
+.ai-thinking-grid {
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.ai-thinking-grid > div {
+  flex: 1 1 160px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-strong) 72%, transparent);
+}
+
+.ai-thinking-grid small {
+  color: var(--muted);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ai-signal-row {
+  flex-wrap: wrap;
+}
+
+.ai-signal-row span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel-strong) 80%, transparent);
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.ai-signal-row span.done {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel-strong));
+  color: var(--accent);
+}
+
+.submit-button.is-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.92;
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, white 46%, transparent);
+  border-top-color: white;
+  animation: spin 0.75s linear infinite;
+}
+
+.feedback-sections {
+  display: grid;
+  gap: 12px;
+}
+
+.feedback-section {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+}
+
+.feedback-section.good {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+}
+
+.feedback-section.improve {
+  border-color: color-mix(in srgb, var(--accent-2) 34%, var(--border));
+}
+
+.feedback-section.example {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 11%, var(--panel-strong)), color-mix(in srgb, var(--panel-strong) 84%, transparent));
+}
+
+.feedback-section-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 10%, var(--panel-strong));
+  font-size: 1.2rem;
+}
+
+.feedback-section h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.feedback-section p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.feedback-section p + p {
+  margin-top: 6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes aiPulse {
+  0% { transform: scale(0.92); opacity: 0.7; }
+  100% { transform: scale(1.24); opacity: 0; }
+}
+
+@media (max-width: 720px) {
+  .ai-thinking-card,
+  .feedback-section {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-thinking-head {
+    align-items: flex-start;
+  }
+}

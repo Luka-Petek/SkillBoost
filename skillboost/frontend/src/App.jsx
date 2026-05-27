@@ -331,13 +331,94 @@ function SimulatorSection({ skills, demoMode, selectedSkillKeys, filteredChallen
                     />
                 </label>
 
-                <button className="primary submit-button" disabled={saving || (!authenticated && !demoMode)}>
-                    {saving ? 'Ocenjujem...' : authenticated || demoMode ? 'Oddaj in prejmi AI povratno informacijo' : 'Za ocenjevanje se moraš prijaviti'}
+                {saving && (
+                    <AiThinkingCard
+                        answerStats={answerStats}
+                        selectedSkillNames={selectedSkillNames}
+                        selectedChallenge={selectedChallenge}
+                    />
+                )}
+
+                <button className={`primary submit-button ${saving ? 'is-loading' : ''}`} disabled={saving || (!authenticated && !demoMode)}>
+                    {saving ? (
+                        <>
+                            <span className="button-spinner" aria-hidden="true" />
+                            AI coach pripravlja odgovor...
+                        </>
+                    ) : authenticated || demoMode ? 'Oddaj in prejmi AI povratno informacijo' : 'Za ocenjevanje se moraš prijaviti'}
                 </button>
             </form>
 
-            {lastSession && <FeedbackCard lastSession={lastSession} reward={lastReward} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
+            {lastSession && !saving && <FeedbackCard lastSession={lastSession} reward={lastReward} mentorNote={mentorNote} setMentorNote={setMentorNote} authenticated={authenticated} handleMentorNote={handleMentorNote} />}
         </div>
+    );
+}
+
+function AiThinkingCard({ answerStats, selectedSkillNames, selectedChallenge }) {
+    const steps = [
+        'Berem tvoj odgovor',
+        'Preverjam jasnost in strukturo',
+        'Iščem empatijo in konkreten primer',
+        'Sestavljam boljšo verzijo odgovora'
+    ];
+    const [activeStep, setActiveStep] = useState(0);
+    const [seconds, setSeconds] = useState(0);
+
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            setActiveStep((current) => (current + 1) % steps.length);
+            setSeconds((current) => current + 1);
+        }, 1200);
+
+        return () => window.clearInterval(interval);
+    }, [steps.length]);
+
+    const signalItems = [
+        { label: 'Dolžina', done: answerStats.words >= 25 },
+        { label: 'Empatija', done: answerStats.percent >= 45 },
+        { label: 'Akcijski korak', done: answerStats.percent >= 70 }
+    ];
+
+    return (
+        <article className="ai-thinking-card" aria-live="polite">
+            <div className="ai-thinking-orb" aria-hidden="true">AI</div>
+            <div className="ai-thinking-main">
+                <div className="ai-thinking-head">
+                    <div>
+                        <strong>AI coach analizira odgovor</strong>
+                        <p>{steps[activeStep]} · {seconds}s</p>
+                    </div>
+                    <span>{Math.max(20, answerStats.percent)}%</span>
+                </div>
+
+                <div className="ai-thinking-progress">
+                    <span style={{ width: `${Math.max(22, Math.min(96, answerStats.percent + activeStep * 6))}%` }} />
+                </div>
+
+                <div className="ai-thinking-grid">
+                    <div>
+                        <small>Scenarij</small>
+                        <p>{selectedChallenge?.title || 'Izbran izziv'}</p>
+                    </div>
+                    <div>
+                        <small>Veščine</small>
+                        <p>{selectedSkillNames.join(', ') || 'mehke veščine'}</p>
+                    </div>
+                    <div>
+                        <small>Osnutek</small>
+                        <p>{answerStats.words} besed</p>
+                    </div>
+                </div>
+
+                <div className="ai-signal-row">
+                    {signalItems.map((item) => (
+                        <span key={item.label} className={item.done ? 'done' : ''}>
+                            {item.done ? '✓' : '•'} {item.label}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        </article>
     );
 }
 
@@ -346,7 +427,7 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
     const stars = reward?.earnedStars ?? lastSession.earnedStars ?? scoreToStars(lastSession.score);
     return (
         <article className={`feedback-card ${scoreMeta.tone}`}>
-            <div className="score-circle">
+            <div className="score-circle" style={{ '--score': lastSession.score }}>
                 <strong>{lastSession.score}</strong>
                 <span>{scoreMeta.label}</span>
             </div>
@@ -361,9 +442,9 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
                 )}
                 <div className="section-title compact-title">
                     <span>AI povratna informacija</span>
-                    <small>ocena je kombinacija strukture, jasnosti, empatije in akcijskih korakov</small>
+                    <small>hitro razdeljeno na pohvalo, izboljšavo, primer in naslednje vprašanje</small>
                 </div>
-                <pre>{lastSession.aiFeedback}</pre>
+                <FeedbackSections text={lastSession.aiFeedback} score={lastSession.score} />
                 {reward?.newBadges?.length > 0 && <div className="new-badges">{reward.newBadges.map((badge) => <span key={badge}>🏅 {badge}</span>)}</div>}
                 {lastSession.mentorNote && <p className="mentor-note"><strong>Mentor:</strong> {lastSession.mentorNote}</p>}
                 <div className="mentor-row">
@@ -372,6 +453,24 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
                 </div>
             </div>
         </article>
+    );
+}
+
+function FeedbackSections({ text, score }) {
+    const sections = parseFeedbackSections(text, score);
+
+    return (
+        <div className="feedback-sections">
+            {sections.map((section) => (
+                <section key={section.key} className={`feedback-section ${section.key}`}>
+                    <div className="feedback-section-icon" aria-hidden="true">{section.icon}</div>
+                    <div>
+                        <h3>{section.title}</h3>
+                        {section.lines.map((line, index) => <p key={`${section.key}-${index}`}>{line}</p>)}
+                    </div>
+                </section>
+            ))}
+        </div>
     );
 }
 
@@ -505,6 +604,69 @@ function ReportSection({ report }) {
             </article>
         </div>
     );
+}
+
+
+function parseFeedbackSections(text, score) {
+    const fallback = (text || '').trim() || 'AI coach ni vrnil besedila, ocena pa je shranjena.';
+    const sectionMeta = {
+        score: { title: 'Ocena', icon: '🎯' },
+        good: { title: 'Dobro', icon: '✅' },
+        improve: { title: 'Izboljšaj', icon: '🔧' },
+        example: { title: 'Boljša verzija', icon: '💬' },
+        question: { title: 'Vprašanje', icon: '✨' },
+        summary: { title: 'Povzetek', icon: '🧠' }
+    };
+
+    const labelToKey = (label) => {
+        const normalized = label
+            .toLowerCase()
+            .replaceAll('š', 's')
+            .replaceAll('ž', 'z')
+            .replaceAll('č', 'c');
+
+        if (normalized.includes('ocena')) return 'score';
+        if (normalized.includes('dobro')) return 'good';
+        if (normalized.includes('izboljs') || normalized.includes('kaj izboljsati')) return 'improve';
+        if (normalized.includes('boljsa') || normalized.includes('verzija') || normalized.includes('primer')) return 'example';
+        if (normalized.includes('vprasanje')) return 'question';
+        return null;
+    };
+
+    const sections = [];
+    let current = null;
+
+    fallback.split(/\n+/).forEach((rawLine) => {
+        const line = rawLine.replace(/^[-•*]\s*/, '').trim();
+        if (!line) return;
+
+        const match = line.match(/^(?:\d+[).]\s*)?([^:]{3,32}):\s*(.*)$/);
+        const key = match ? labelToKey(match[1]) : null;
+
+        if (key) {
+            current = { key, ...sectionMeta[key], lines: [] };
+            if (match[2]) current.lines.push(match[2]);
+            sections.push(current);
+            return;
+        }
+
+        if (!current) {
+            current = { key: 'summary', ...sectionMeta.summary, lines: [] };
+            sections.push(current);
+        }
+        current.lines.push(line);
+    });
+
+    if (!sections.some((section) => section.key === 'score')) {
+        sections.unshift({ key: 'score', ...sectionMeta.score, lines: [`${score}/100`] });
+    }
+
+    return sections
+        .map((section) => ({
+            ...section,
+            lines: section.lines.length ? section.lines : ['Ni dodatnega besedila.']
+        }))
+        .slice(0, 6);
 }
 
 function scoreToStars(score) {

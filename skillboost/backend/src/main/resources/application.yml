@@ -17,8 +17,12 @@ spring:
     api:
       key: ${GEMINI_API_KEY:}
       base-url: ${GEMINI_API_BASE_URL:https://generativelanguage.googleapis.com}
-    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    model: ${GEMINI_MODEL:gemini-3.1-flash-lite}
     fallback-enabled: ${GEMINI_FALLBACK_ENABLED:false}
+    max-output-tokens: ${GEMINI_MAX_OUTPUT_TOKENS:320}
+    temperature: ${GEMINI_TEMPERATURE:0.25}
+    thinking-budget: ${GEMINI_THINKING_BUDGET:0}
+    thinking-level: ${GEMINI_THINKING_LEVEL:minimal}
 
 skillboost:
   security:

@@ -16,12 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +39,16 @@ public class TrainingSessionService {
     private final LearningPromptRepository promptRepository;
     private final GamificationService gamificationService;
 
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient = RestClient.builder()
+            .requestFactory(createRequestFactory())
+            .build();
+
+    private static SimpleClientHttpRequestFactory createRequestFactory() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(4_000);
+        factory.setReadTimeout(18_000);
+        return factory;
+    }
 
     @Value("${spring.gemini.api.key:}")
     private String apiKey;
@@ -45,11 +56,23 @@ public class TrainingSessionService {
     @Value("${spring.gemini.api.base-url:https://generativelanguage.googleapis.com}")
     private String geminiApiBaseUrl;
 
-    @Value("${spring.gemini.model:gemini-2.5-flash}")
+    @Value("${spring.gemini.model:gemini-3.1-flash-lite}")
     private String geminiModel;
 
     @Value("${spring.gemini.fallback-enabled:false}")
     private boolean geminiFallbackEnabled;
+
+    @Value("${spring.gemini.max-output-tokens:320}")
+    private int geminiMaxOutputTokens;
+
+    @Value("${spring.gemini.temperature:0.25}")
+    private double geminiTemperature;
+
+    @Value("${spring.gemini.thinking-budget:0}")
+    private int geminiThinkingBudget;
+
+    @Value("${spring.gemini.thinking-level:minimal}")
+    private String geminiThinkingLevel;
 
     public TrainingSessionService(
             TrainingSessionRepository sessionRepository,
@@ -157,10 +180,12 @@ public class TrainingSessionService {
                     ? promptTemplate.getUserPromptTemplate()
                     : "Evaluate this answer: {{answer}}";
 
-            String criteria = String.join(", ", challenge.getEvaluationCriteria());
+            String criteria = challenge.getEvaluationCriteria() == null
+                    ? ""
+                    : String.join(", ", challenge.getEvaluationCriteria());
             String finalUserPrompt = userTemplate
-                    .replace("{{answer}}", answer == null ? "" : answer)
-                    .replace("{{scenario}}", challenge.getScenario() == null ? "" : challenge.getScenario())
+                    .replace("{{answer}}", limitText(answer, 1_400))
+                    .replace("{{scenario}}", limitText(challenge.getScenario(), 700))
                     .replace("{{criteria}}", criteria);
 
             String url = String.format(
@@ -170,14 +195,26 @@ public class TrainingSessionService {
                     apiKey
             );
             String fullAiPrompt = String.format(
-                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario title: %s\n- Selected skills: %s\n- Expected outcome: %s\n- Internal score: %d/100\n\nReturn feedback in Slovenian with these sections: 1) Ocena, 2) Kaj je dobro, 3) Kaj izboljšati, 4) Boljša verzija odgovora, 5) Vprašanje za nadaljevanje.",
-                    systemPrompt,
+                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario: %s\n- Skills: %s\n- Expected outcome: %s\n- Local score: %d/100\n\nReturn only Slovenian feedback. Keep it under 110 words. Use exactly these labels, each on a new line: Ocena:, Dobro:, Izboljšaj:, Boljša verzija:, Vprašanje:. No long intro, no markdown table.",
+                    limitText(systemPrompt, 700),
                     finalUserPrompt,
-                    challenge.getTitle(),
+                    limitText(challenge.getTitle(), 180),
                     String.join(", ", skillKeys),
-                    challenge.getExpectedOutcome(),
+                    limitText(challenge.getExpectedOutcome(), 280),
                     score
             );
+
+            Map<String, Object> generationConfig = new LinkedHashMap<>();
+            generationConfig.put("temperature", geminiTemperature);
+            generationConfig.put("maxOutputTokens", geminiMaxOutputTokens);
+            generationConfig.put("candidateCount", 1);
+            generationConfig.put("topP", 0.8);
+
+            if (geminiModel.toLowerCase(Locale.ROOT).startsWith("gemini-3")) {
+                generationConfig.put("thinkingConfig", Map.of("thinkingLevel", geminiThinkingLevel));
+            } else {
+                generationConfig.put("thinkingConfig", Map.of("thinkingBudget", geminiThinkingBudget));
+            }
 
             Map<String, Object> requestBody = Map.of(
                     "contents", List.of(
@@ -185,7 +222,8 @@ public class TrainingSessionService {
                                     "role", "user",
                                     "parts", List.of(Map.of("text", fullAiPrompt))
                             )
-                    )
+                    ),
+                    "generationConfig", generationConfig
             );
 
             Map<String, Object> response = restClient.post()
@@ -205,6 +243,18 @@ public class TrainingSessionService {
             log.warn("Gemini API call failed: {}", e.getMessage());
             return handleAiFailure(skillKeys, challenge, score, "Gemini API call failed: " + e.getMessage());
         }
+    }
+
+
+    private String limitText(String value, int maxChars) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        String normalized = value.trim();
+        if (normalized.length() <= maxChars) {
+            return normalized;
+        }
+        return normalized.substring(0, Math.max(0, maxChars - 1)).trim() + "…";
     }
 
     private String extractGeminiText(Map<String, Object> response) {
@@ -255,6 +305,10 @@ public class TrainingSessionService {
         score += Math.min(24, words);
         if (words >= 35) score += 8;
         if (words >= 70) score += 6;
+
+        if (criteria == null) {
+            criteria = List.of();
+        }
 
         for (String criterion : criteria) {
             if (criterion == null || criterion.isBlank()) continue;

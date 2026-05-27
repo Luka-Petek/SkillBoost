@@ -218,6 +218,8 @@ export function useAppData() {
         try {
             setSaving(true);
             setError('');
+            setLastSession(null);
+            setLastReward(null);
             if (demoMode) {
                 const session = buildDemoSession({ answer, selectedChallenge, selectedSkillKeys });
                 const reward = buildDemoReward(session, selectedSkillKeys);
