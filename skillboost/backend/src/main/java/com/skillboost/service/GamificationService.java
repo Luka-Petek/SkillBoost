@@ -23,6 +23,9 @@ public class GamificationService {
         int oldLevel = safeLevel(user.getLevel());
         int earnedStars = calculateStars(session.getScore());
         int earnedXp = calculateEarnedXp(session.getScore(), session.getSkillKeys(), earnedStars);
+        if (session.isDailyDoubleXp()) {
+            earnedXp *= 2;
+        }
 
         session.setEarnedStars(earnedStars);
         session.setEarnedXp(earnedXp);
@@ -89,9 +92,12 @@ public class GamificationService {
             maxSkillCountToday = Math.max(maxSkillCountToday, sessionSkillKeys(currentSession).size());
         }
         boolean multiSkillToday = maxSkillCountToday >= 2;
+        boolean dailyDoubleXpDone = sessions.stream().anyMatch(TrainingSession::isDailyDoubleXp)
+                || (currentSession != null && currentSession.isDailyDoubleXp());
 
         return List.of(
                 new DailyQuest("practice-once", "Reši 1 simulacijo danes", totalToday >= 1, Math.min(totalToday, 1), 1, "+20 XP disciplina"),
+                new DailyQuest("daily-double-xp", "Personaliziran dnevni izziv", dailyDoubleXpDone, dailyDoubleXpDone ? 1 : 0, 1, "2x XP"),
                 new DailyQuest("strong-answer", "Dosezi vsaj 70/100", strongAnswerToday, strongAnswerToday ? 1 : 0, 1, "močnejši score"),
                 new DailyQuest("multi-skill", "Vadi vsaj 2 veščini hkrati", multiSkillToday, Math.min(maxSkillCountToday, 2), 2, "+5 XP bonus")
         );
@@ -132,6 +138,7 @@ public class GamificationService {
         if (user.getTotalStars() >= 10) addBadgeIfMissing(badges, newBadges, "Star collector");
         if (user.getLevel() >= 5) addBadgeIfMissing(badges, newBadges, "Level 5 learner");
         if (user.getStreakDays() >= 3) addBadgeIfMissing(badges, newBadges, "3-day streak");
+        if (session.isDailyDoubleXp()) addBadgeIfMissing(badges, newBadges, "Daily double XP");
         if (skillKeys.stream().anyMatch("conflict-resolution"::equalsIgnoreCase)) {
             addBadgeIfMissing(badges, newBadges, "Calm resolver");
         }

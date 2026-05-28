@@ -107,7 +107,11 @@ public class TrainingSessionService {
         String storedSkillKey = String.join(",", skillKeys);
 
         int score = calculateScore(request.userAnswer(), challenge.getEvaluationCriteria(), skillKeys);
-        String feedback = generateRealAiFeedback(skillKeys, challenge, request.userAnswer(), score);
+        String customSituation = normalizeOptionalText(request.customSituation());
+        List<TrainingSession> todaysSessions = findTodaysSessions(user.getId());
+        boolean dailyDoubleXp = request.dailyDoubleXp()
+                && todaysSessions.stream().noneMatch(TrainingSession::isDailyDoubleXp);
+        String feedback = generateRealAiFeedback(skillKeys, challenge, request.userAnswer(), score, customSituation, dailyDoubleXp);
 
         TrainingSession session = new TrainingSession();
         session.setUserId(user.getId());
@@ -117,9 +121,10 @@ public class TrainingSessionService {
         session.setUserAnswer(request.userAnswer());
         session.setScore(score);
         session.setAiFeedback(feedback);
+        session.setCustomSituation(customSituation);
+        session.setDailyDoubleXp(dailyDoubleXp);
         session.setCreatedAt(LocalDateTime.now());
 
-        List<TrainingSession> todaysSessions = findTodaysSessions(user.getId());
         List<TrainingSession> sessionsIncludingCurrent = new ArrayList<>(todaysSessions);
         sessionsIncludingCurrent.add(session);
 
@@ -156,7 +161,14 @@ public class TrainingSessionService {
         return new ArrayList<>(keys);
     }
 
-    private String generateRealAiFeedback(List<String> skillKeys, TrainingChallenge challenge, String answer, int score) {
+    private String generateRealAiFeedback(
+            List<String> skillKeys,
+            TrainingChallenge challenge,
+            String answer,
+            int score,
+            String customSituation,
+            boolean dailyDoubleXp
+    ) {
         String primarySkillKey = skillKeys.get(0);
         if (apiKey == null || apiKey.isBlank()) {
             return handleAiFailure(
@@ -183,9 +195,12 @@ public class TrainingSessionService {
             String criteria = challenge.getEvaluationCriteria() == null
                     ? ""
                     : String.join(", ", challenge.getEvaluationCriteria());
+            String effectiveScenario = customSituation == null || customSituation.isBlank()
+                    ? challenge.getScenario()
+                    : customSituation;
             String finalUserPrompt = userTemplate
-                    .replace("{{answer}}", limitText(answer, 1_400))
-                    .replace("{{scenario}}", limitText(challenge.getScenario(), 700))
+                    .replace("{{answer}}", limitText(answer, 1_200))
+                    .replace("{{scenario}}", limitText(effectiveScenario, 700))
                     .replace("{{criteria}}", criteria);
 
             String url = String.format(
@@ -195,13 +210,15 @@ public class TrainingSessionService {
                     apiKey
             );
             String fullAiPrompt = String.format(
-                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Scenario: %s\n- Skills: %s\n- Expected outcome: %s\n- Local score: %d/100\n\nReturn only Slovenian feedback. Keep it under 110 words. Use exactly these labels, each on a new line: Ocena:, Dobro:, Izboljšaj:, Boljša verzija:, Vprašanje:. No long intro, no markdown table.",
-                    limitText(systemPrompt, 700),
+                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Challenge title: %s\n- Situation to evaluate: %s\n- Skills: %s\n- Expected outcome: %s\n- Local score: %d/100\n- Daily double XP active: %s\n\nReturn only Slovenian feedback. Keep it under 130 words. Use exactly these labels, each on a new line: Ocena:, V čem si dober:, Kje še izboljšaj:, Boljša verzija:, Naslednji mini izziv:. Be specific, practical and encouraging. No markdown table.",
+                    limitText(systemPrompt, 650),
                     finalUserPrompt,
                     limitText(challenge.getTitle(), 180),
+                    limitText(effectiveScenario, 500),
                     String.join(", ", skillKeys),
-                    limitText(challenge.getExpectedOutcome(), 280),
-                    score
+                    limitText(challenge.getExpectedOutcome(), 240),
+                    score,
+                    dailyDoubleXp ? "yes" : "no"
             );
 
             Map<String, Object> generationConfig = new LinkedHashMap<>();
@@ -245,6 +262,10 @@ public class TrainingSessionService {
         }
     }
 
+
+    private String normalizeOptionalText(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
 
     private String limitText(String value, int maxChars) {
         if (value == null || value.isBlank()) {

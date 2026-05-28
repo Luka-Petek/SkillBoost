@@ -1,0 +1,687 @@
+/* Personalized focus, selected skill dock and skills catalog */
+@media (max-width: 720px) {
+  .ai-thinking-card,
+  .feedback-section {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-thinking-head {
+    align-items: flex-start;
+  }
+}
+
+.answer-composer {
+  display: grid;
+  gap: 10px;
+}
+
+.composer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.composer-icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--panel-strong);
+  color: var(--text);
+  font-weight: 900;
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.composer-icon-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+
+.composer-icon-button.recording {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel-strong));
+  color: var(--danger);
+}
+
+.composer-icon-button.attach-button span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.composer-svg-icon,
+.attachment-svg-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.composer-svg-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.attachment-svg-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.input-assist-status {
+  display: grid;
+  gap: 8px;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 8%, var(--panel-strong)), color-mix(in srgb, var(--accent) 7%, var(--panel-strong)));
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.input-assist-status p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.attachment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+  color: var(--text);
+  font-size: 0.84rem;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Personalized coaching additions */
+.growth-focus-panel {
+  display: grid;
+  gap: 16px;
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.growth-focus-panel h2,
+.growth-focus-panel p {
+  margin: 0;
+}
+
+.growth-focus-panel > p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.skill-chip-list.compact {
+  gap: 8px;
+}
+
+.skill-chip-list.compact .skill-chip {
+  padding: 9px 10px;
+  font-size: 0.86rem;
+}
+
+.growth-mini-insights {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.growth-mini-insights > div {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+}
+
+.growth-mini-insights small,
+.insight-tile span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+
+.growth-mini-insights strong {
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.daily-double-card,
+.personalized-challenge-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--panel-strong)), color-mix(in srgb, var(--primary) 9%, var(--panel-strong)));
+  box-shadow: var(--soft-shadow);
+}
+
+.daily-double-card {
+  display: grid;
+  gap: 8px;
+  padding: 15px;
+}
+
+.daily-double-card.active,
+.personalized-challenge-card.active {
+  border-color: color-mix(in srgb, var(--accent) 62%, var(--border));
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--accent) 17%, transparent);
+}
+
+.double-xp-badge {
+  width: fit-content;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.daily-double-card p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.personalized-challenge-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+}
+
+.personalized-challenge-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel-strong));
+  font-size: 1.55rem;
+}
+
+.personalized-challenge-card h3,
+.personalized-challenge-card p {
+  margin: 0;
+}
+
+.personalized-challenge-card h3 {
+  margin-bottom: 6px;
+}
+
+.personalized-challenge-card p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.personalized-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.custom-situation-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 38%, var(--border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--primary) 6%, var(--panel-strong));
+}
+
+.custom-situation-card small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.feedback-insight-summary,
+.growth-insight-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.feedback-insight-summary {
+  margin-top: 12px;
+}
+
+.insight-tile,
+.growth-insight-board article {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+}
+
+.insight-tile strong {
+  display: block;
+  line-height: 1.4;
+}
+
+.insight-tile.positive,
+.growth-insight-board article:first-child {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+}
+
+.insight-tile.focus,
+.growth-insight-board article:last-child {
+  border-color: color-mix(in srgb, var(--accent-2) 34%, var(--border));
+}
+
+.insight-tile.bonus {
+  grid-column: 1 / -1;
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 11%, var(--panel-strong)), color-mix(in srgb, var(--accent) 9%, var(--panel-strong)));
+}
+
+.growth-insight-board {
+  margin: 8px 0 14px;
+}
+
+.growth-insight-board article {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.growth-insight-board strong {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.insight-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 10%, var(--panel-strong));
+}
+
+@media (max-width: 900px) {
+  .personalized-challenge-card {
+    grid-template-columns: 1fr;
+  }
+
+  .personalized-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .feedback-insight-summary,
+  .growth-insight-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Skill catalog upgrade */
+.skill-catalog-section {
+  gap: 20px;
+}
+
+.catalog-hero-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 18%, transparent), transparent 18rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, var(--panel-strong)), color-mix(in srgb, var(--panel-strong) 86%, transparent));
+  box-shadow: var(--soft-shadow);
+}
+
+.catalog-hero-card h3 {
+  margin-bottom: 8px;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+
+.catalog-hero-card p:not(.eyebrow),
+.catalog-detail-panel p,
+.catalog-detail-challenges p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.catalog-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(82px, 1fr));
+  gap: 10px;
+  min-width: 290px;
+}
+
+.catalog-stats span {
+  display: grid;
+  gap: 3px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+  color: var(--muted);
+  font-weight: 850;
+  text-align: center;
+}
+
+.catalog-stats strong {
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.catalog-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+  align-items: end;
+}
+
+.catalog-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.catalog-category-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-strong);
+  color: var(--text);
+  padding: 9px 13px;
+  font-weight: 900;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.catalog-category-tabs button:hover,
+.catalog-preset:hover,
+.catalog-card-open:hover {
+  transform: translateY(-1px);
+}
+
+.catalog-category-tabs button.active {
+  border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+  background: color-mix(in srgb, var(--primary) 12%, var(--panel-strong));
+  color: var(--primary);
+}
+
+.catalog-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.catalog-preset {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 2px 10px;
+  align-items: center;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+  color: var(--text);
+  padding: 13px;
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.catalog-preset span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.catalog-preset small {
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+.catalog-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+  align-items: start;
+}
+
+.catalog-groups {
+  display: grid;
+  gap: 18px;
+}
+
+.catalog-group {
+  display: grid;
+  gap: 12px;
+}
+
+.catalog-group-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.catalog-group-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+}
+
+.catalog-group-head small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.catalog-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.catalog-skill-card {
+  display: grid;
+  gap: 12px;
+}
+
+.catalog-skill-card.expanded {
+  outline: 3px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.catalog-card-open {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  transition: transform 0.18s ease;
+}
+
+.skill-emoji {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 15%, var(--panel-strong)), color-mix(in srgb, var(--accent) 11%, var(--panel-strong)));
+  font-size: 1.35rem;
+}
+
+.skill-emoji.large {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  font-size: 1.65rem;
+}
+
+.catalog-card-open p,
+.catalog-card-open h3 {
+  margin: 0;
+}
+
+.catalog-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.catalog-meta-row span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.catalog-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.catalog-card-actions .primary,
+.catalog-card-actions .secondary,
+.catalog-detail-panel > button,
+.catalog-detail-challenges button {
+  padding: 9px 12px;
+  font-size: 0.85rem;
+}
+
+.catalog-detail-panel {
+  position: sticky;
+  top: 112px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+  box-shadow: var(--soft-shadow);
+}
+
+.catalog-detail-head {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.catalog-detail-head h3,
+.catalog-detail-head p {
+  margin: 0;
+}
+
+.catalog-detail-head small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.catalog-outcome-list {
+  display: grid;
+  gap: 8px;
+}
+
+.catalog-outcome-list span {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.catalog-detail-challenges {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.catalog-detail-challenges h4 {
+  margin: 0;
+}
+
+.catalog-detail-challenges article {
+  display: grid;
+  gap: 8px;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--panel) 74%, transparent);
+}
+
+
+/* SVG icons for catalog and growth cards */
+.skill-emoji .app-icon,
+.personalized-challenge-icon .app-icon,
+.insight-icon .app-icon {
+  width: 1.25em;
+  height: 1.25em;
+  stroke-width: 2.2;
+}
+
+.catalog-preset > span,
+.catalog-category-tabs button > span,
+.catalog-group-head h3 > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-outcome-list span .app-icon {
+  color: var(--accent);
+}

@@ -39,189 +39,849 @@
       "currentLevelXp": 0,
       "nextLevelXp": 100,
       "streakDays": 0
+    },
+    {
+      "name": "Ana Novak",
+      "email": "ana@student.skillboost.local",
+      "role": "STUDENT",
+      "goals": [
+        "Daily Duel top 3",
+        "Improve empathy"
+      ],
+      "targetSkills": [
+        "empathy",
+        "active-listening"
+      ],
+      "points": 340,
+      "badges": [
+        "Strong answer",
+        "3-day streak"
+      ],
+      "keycloakId": null,
+      "totalStars": 11,
+      "level": 3,
+      "currentLevelXp": 90,
+      "nextLevelXp": 200,
+      "streakDays": 4
+    },
+    {
+      "name": "Luka Kovač",
+      "email": "luka@student.skillboost.local",
+      "role": "STUDENT",
+      "goals": [
+        "Win skill battles",
+        "Handle conflict calmly"
+      ],
+      "targetSkills": [
+        "conflict-resolution",
+        "feedback-giving"
+      ],
+      "points": 275,
+      "badges": [
+        "First star",
+        "Calm resolver"
+      ],
+      "keycloakId": null,
+      "totalStars": 8,
+      "level": 3,
+      "currentLevelXp": 25,
+      "nextLevelXp": 200,
+      "streakDays": 2
+    },
+    {
+      "name": "Eva Medved",
+      "email": "eva@student.skillboost.local",
+      "role": "STUDENT",
+      "goals": [
+        "Prepare for interviews"
+      ],
+      "targetSkills": [
+        "job-interview",
+        "self-confidence"
+      ],
+      "points": 205,
+      "badges": [
+        "AI-ready communicator"
+      ],
+      "keycloakId": null,
+      "totalStars": 6,
+      "level": 2,
+      "currentLevelXp": 105,
+      "nextLevelXp": 150,
+      "streakDays": 1
+    },
+    {
+      "name": "Marko Hribar",
+      "email": "marko@student.skillboost.local",
+      "role": "STUDENT",
+      "goals": [
+        "Better digital communication"
+      ],
+      "targetSkills": [
+        "digital-communication",
+        "clear-writing"
+      ],
+      "points": 185,
+      "badges": [
+        "First simulation"
+      ],
+      "keycloakId": null,
+      "totalStars": 5,
+      "level": 2,
+      "currentLevelXp": 85,
+      "nextLevelXp": 150,
+      "streakDays": 3
     }
   ],
   "skills": [
     {
       "key": "public-speaking",
-      "name": "Public speaking",
-      "category": "Communication",
-      "description": "Practice clear structure, confident delivery and strong closing statements.",
+      "name": "Javno nastopanje",
+      "category": "Komunikacija",
+      "description": "Zgradi jasen nastop, prepričljivo strukturo in samozavesten zaključek.",
       "level": "BEGINNER",
-      "estimatedMinutes": 15,
+      "estimatedMinutes": 12,
       "outcomes": [
-        "Clear opening",
-        "Structured message",
-        "Actionable closing"
+        "jasen uvod",
+        "ključna poanta",
+        "močan zaključek"
+      ]
+    },
+    {
+      "key": "active-listening",
+      "name": "Aktivno poslušanje",
+      "category": "Komunikacija",
+      "description": "Vadi poslušanje brez prekinjanja, povzemanje in boljša vprašanja.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 10,
+      "outcomes": [
+        "povzetek",
+        "vprašanja",
+        "razumevanje"
+      ]
+    },
+    {
+      "key": "clear-writing",
+      "name": "Jasno pisno izražanje",
+      "category": "Komunikacija",
+      "description": "Piši sporočila, ki so kratka, spoštljiva in imajo jasen naslednji korak.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 9,
+      "outcomes": [
+        "kratkost",
+        "jasnost",
+        "CTA"
+      ]
+    },
+    {
+      "key": "feedback-giving",
+      "name": "Dajanje povratne informacije",
+      "category": "Komunikacija",
+      "description": "Podaj feedback brez napada: opazovanje, vpliv, predlog in dogovor.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 14,
+      "outcomes": [
+        "opazovanje",
+        "vpliv",
+        "dogovor"
       ]
     },
     {
       "key": "conflict-resolution",
-      "name": "Conflict resolution",
-      "category": "Teamwork",
-      "description": "Learn to respond calmly, identify needs and move conflict toward a concrete next step.",
-      "level": "BEGINNER",
-      "estimatedMinutes": 20,
+      "name": "Reševanje konfliktov",
+      "category": "Odnosi",
+      "description": "Umiri napet pogovor, prepoznaj potrebe in vodi pogovor do dogovora.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 15,
       "outcomes": [
-        "Calm tone",
-        "Needs discovery",
-        "Agreed next step"
+        "miren ton",
+        "potrebe",
+        "dogovor"
       ]
     },
     {
-      "key": "team-collaboration",
-      "name": "Team collaboration",
-      "category": "Workplace",
-      "description": "Improve daily communication, ownership, handoffs and accountability in a team.",
+      "key": "empathy",
+      "name": "Empatija",
+      "category": "Odnosi",
+      "description": "Prepoznaj čustva druge osebe in odgovori tako, da se počuti slišano.",
       "level": "BEGINNER",
+      "estimatedMinutes": 10,
+      "outcomes": [
+        "validacija",
+        "spoštovanje",
+        "topel ton"
+      ]
+    },
+    {
+      "key": "boundaries",
+      "name": "Postavljanje mej",
+      "category": "Odnosi",
+      "description": "Reci ne ali postavi mejo brez občutka krivde in brez nepotrebnega konflikta.",
+      "level": "INTERMEDIATE",
       "estimatedMinutes": 12,
       "outcomes": [
-        "Clear updates",
-        "Blocked work visibility",
-        "Shared ownership"
+        "jasna meja",
+        "spoštljiv ton",
+        "alternativa"
+      ]
+    },
+    {
+      "key": "networking",
+      "name": "Grajenje poznanstev",
+      "category": "Odnosi",
+      "description": "Začni naraven pogovor, predstavi se in ohrani stik brez vsiljivosti.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 11,
+      "outcomes": [
+        "uvod",
+        "interes",
+        "follow-up"
       ]
     },
     {
       "key": "job-interview",
-      "name": "Job interview storytelling",
-      "category": "Career",
-      "description": "Use STAR-style examples to explain your experience and value in interviews.",
+      "name": "Zaposlitveni razgovor",
+      "category": "Kariera in delo",
+      "description": "Odgovarjaj na zahtevna vprašanja s konkretnimi primeri in mirno samozavestjo.",
       "level": "INTERMEDIATE",
-      "estimatedMinutes": 18,
+      "estimatedMinutes": 14,
       "outcomes": [
-        "Situation",
-        "Action",
-        "Result",
-        "Reflection"
+        "STAR odgovor",
+        "primer",
+        "refleksija"
+      ]
+    },
+    {
+      "key": "negotiation",
+      "name": "Pogajanje",
+      "category": "Kariera in delo",
+      "description": "Predstavi svoje interese, poslušaj drugo stran in poišči win-win dogovor.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 16,
+      "outcomes": [
+        "interesi",
+        "ponudba",
+        "kompromis"
+      ]
+    },
+    {
+      "key": "leadership-basics",
+      "name": "Osnove vodenja",
+      "category": "Kariera in delo",
+      "description": "Vodi pogovor z ekipo, razjasni odgovornosti in motiviraj brez mikromanagementa.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 16,
+      "outcomes": [
+        "smer",
+        "odgovornost",
+        "motivacija"
+      ]
+    },
+    {
+      "key": "meeting-facilitation",
+      "name": "Vodenje sestankov",
+      "category": "Kariera in delo",
+      "description": "Naredi sestanke krajše, bolj jasne in usmerjene v odločitve.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 10,
+      "outcomes": [
+        "agenda",
+        "odločitev",
+        "akcije"
+      ]
+    },
+    {
+      "key": "time-management",
+      "name": "Upravljanje časa",
+      "category": "Osebna učinkovitost",
+      "description": "Razporedi čas, zaščiti fokus in pravočasno sporoči prioritete.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 10,
+      "outcomes": [
+        "prioritete",
+        "blok časa",
+        "realen rok"
+      ]
+    },
+    {
+      "key": "prioritization",
+      "name": "Prioritizacija",
+      "category": "Osebna učinkovitost",
+      "description": "Odloči, kaj je pomembno, kaj lahko počaka in kaj je treba delegirati.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 12,
+      "outcomes": [
+        "pomembnost",
+        "nujnost",
+        "odločitev"
+      ]
+    },
+    {
+      "key": "decision-making",
+      "name": "Sprejemanje odločitev",
+      "category": "Osebna učinkovitost",
+      "description": "Sprejemaj odločitve z manj odlašanja, jasnimi kriteriji in boljšim tveganjem.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 14,
+      "outcomes": [
+        "kriteriji",
+        "tveganja",
+        "odločitev"
+      ]
+    },
+    {
+      "key": "focus-discipline",
+      "name": "Fokus in disciplina",
+      "category": "Osebna učinkovitost",
+      "description": "Zmanjšaj motnje, začni nalogo in vztrajaj tudi, ko motivacija pade.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 9,
+      "outcomes": [
+        "začetek",
+        "okolje",
+        "ritem"
+      ]
+    },
+    {
+      "key": "stress-management",
+      "name": "Obvladovanje stresa",
+      "category": "Čustvena inteligenca",
+      "description": "Prepoznaj pritisk, umiri odziv in izberi naslednji korak namesto panike.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 11,
+      "outcomes": [
+        "umiritev",
+        "perspektiva",
+        "korak"
+      ]
+    },
+    {
+      "key": "emotional-regulation",
+      "name": "Uravnavanje čustev",
+      "category": "Čustvena inteligenca",
+      "description": "Odgovori premišljeno tudi takrat, ko si jezen, razočaran ali pod pritiskom.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 13,
+      "outcomes": [
+        "premor",
+        "poimenovanje",
+        "odziv"
+      ]
+    },
+    {
+      "key": "self-confidence",
+      "name": "Samozavest",
+      "category": "Čustvena inteligenca",
+      "description": "Predstavi svoje mnenje brez opravičevanja in z zdravim spoštovanjem do sebe.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 12,
+      "outcomes": [
+        "samozavesten ton",
+        "argument",
+        "mirnost"
+      ]
+    },
+    {
+      "key": "resilience",
+      "name": "Odpornost po neuspehu",
+      "category": "Čustvena inteligenca",
+      "description": "Po napaki ali zavrnitvi se hitro uči, popravi smer in nadaljuje.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 13,
+      "outcomes": [
+        "učenje",
+        "popravek",
+        "vztrajnost"
+      ]
+    },
+    {
+      "key": "personal-finance",
+      "name": "Denarni pogovori",
+      "category": "Vsakdanje življenje",
+      "description": "Mirno govori o ceni, proračunu, stroških in pričakovanjih brez nelagodja.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 10,
+      "outcomes": [
+        "jasnost",
+        "realen okvir",
+        "dogovor"
+      ]
+    },
+    {
+      "key": "asking-for-help",
+      "name": "Prošnja za pomoč",
+      "category": "Vsakdanje življenje",
+      "description": "Jasno povej, kje si zataknjen, kaj si že poskusil in kakšno pomoč potrebuješ.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 8,
+      "outcomes": [
+        "kontekst",
+        "poskus",
+        "konkretna prošnja"
+      ]
+    },
+    {
+      "key": "difficult-conversations",
+      "name": "Težki pogovori",
+      "category": "Vsakdanje življenje",
+      "description": "Odpri občutljivo temo spoštljivo, neposredno in z namenom rešitve.",
+      "level": "INTERMEDIATE",
+      "estimatedMinutes": 15,
+      "outcomes": [
+        "spoštljiv uvod",
+        "dejstva",
+        "rešitev"
+      ]
+    },
+    {
+      "key": "digital-communication",
+      "name": "Digitalna komunikacija",
+      "category": "Vsakdanje življenje",
+      "description": "Piši sporočila v chatu/mailu tako, da ni nesporazumov in nepotrebnega pritiska.",
+      "level": "BEGINNER",
+      "estimatedMinutes": 9,
+      "outcomes": [
+        "ton",
+        "kontekst",
+        "naslednji korak"
       ]
     }
   ],
   "challenges": [
     {
       "skillKey": "public-speaking",
-      "title": "One-minute product pitch",
-      "scenario": "You have one minute to present a new learning app to a small group of classmates.",
-      "expectedOutcome": "The listener understands the problem, the solution and the next step.",
+      "title": "Predstavitev ideje v 2 minutah",
+      "scenario": "Ekipo moraš prepričati, da podpre tvojo idejo za izboljšavo procesa.",
+      "expectedOutcome": "Jasen problem, rešitev in poziv k akciji.",
       "difficulty": "BEGINNER",
       "estimatedMinutes": 8,
       "evaluationCriteria": [
-        "clear opening",
-        "problem",
-        "solution",
-        "next step",
-        "closing"
+        "jasnost",
+        "struktura",
+        "primer",
+        "zaključek"
       ]
     },
     {
-      "skillKey": "public-speaking",
-      "title": "Status update to stakeholders",
-      "scenario": "Explain project progress, current risks and what help you need from stakeholders.",
-      "expectedOutcome": "Stakeholders understand progress, risk and requested decision.",
-      "difficulty": "INTERMEDIATE",
-      "estimatedMinutes": 12,
+      "skillKey": "active-listening",
+      "title": "Sogovornik je razočaran",
+      "scenario": "Prijatelj ali sodelavec ti razlaga, da se počuti preslišanega. Tvoja naloga je odgovoriti brez prekinjanja in svetovanja.",
+      "expectedOutcome": "Povzetek občutka, validacija in eno odprto vprašanje.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
       "evaluationCriteria": [
-        "progress",
-        "risk",
-        "decision",
-        "action plan"
+        "povzemanje",
+        "empatija",
+        "odprto vprašanje"
+      ]
+    },
+    {
+      "skillKey": "clear-writing",
+      "title": "Kratek mail z jasnim dogovorom",
+      "scenario": "Napisati moraš sporočilo, kjer prosiš za potrditev roka in odgovornosti.",
+      "expectedOutcome": "Kratko sporočilo z jasnim kontekstom in naslednjim korakom.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
+      "evaluationCriteria": [
+        "kratkost",
+        "kontekst",
+        "jasen CTA"
+      ]
+    },
+    {
+      "skillKey": "feedback-giving",
+      "title": "Feedback brez napada",
+      "scenario": "Sodelavec je oddal površno delo. Povej mu, kaj naj popravi, brez da zveniš napadalno.",
+      "expectedOutcome": "Specifičen feedback z učinkom in predlogom izboljšave.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 9,
+      "evaluationCriteria": [
+        "specifičnost",
+        "spoštovanje",
+        "dogovor"
       ]
     },
     {
       "skillKey": "conflict-resolution",
-      "title": "Teammate misses a deadline",
-      "scenario": "A teammate missed an agreed deadline and your work is now blocked. Respond without escalating the conflict.",
-      "expectedOutcome": "You acknowledge the issue, ask for context and agree on a concrete recovery plan.",
-      "difficulty": "BEGINNER",
+      "title": "Napet pogovor zaradi zamude",
+      "scenario": "Sodelavec zamuja z nalogo, ti pa potrebuješ njegov del za svoj rok.",
+      "expectedOutcome": "Mirno izražena potreba in konkreten dogovor.",
+      "difficulty": "INTERMEDIATE",
       "estimatedMinutes": 10,
       "evaluationCriteria": [
-        "calm tone",
-        "context",
-        "impact",
-        "next step",
-        "agreement"
+        "empatija",
+        "meja",
+        "naslednji korak"
       ]
     },
     {
-      "skillKey": "team-collaboration",
-      "title": "Daily standup update",
-      "scenario": "Give a short standup update: what you did, what you will do and where you are blocked.",
-      "expectedOutcome": "The team can quickly understand progress and blockers.",
+      "skillKey": "empathy",
+      "title": "Oseba je pod stresom",
+      "scenario": "Nekdo ti pove, da ne zmore več zaradi pritiska. Odgovori empatično in ne minimaliziraj problema.",
+      "expectedOutcome": "Topel odziv, validacija in ponudba podpore.",
       "difficulty": "BEGINNER",
-      "estimatedMinutes": 5,
+      "estimatedMinutes": 7,
       "evaluationCriteria": [
-        "yesterday",
-        "today",
-        "blocker",
-        "help"
+        "validacija",
+        "ton",
+        "podpora"
+      ]
+    },
+    {
+      "skillKey": "boundaries",
+      "title": "Reci ne dodatni nalogi",
+      "scenario": "Nekdo te prosi za dodatno nalogo, ti pa si že preobremenjen. Postavi mejo.",
+      "expectedOutcome": "Spoštljiv ne z razlogom in možno alternativo.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "jasna meja",
+        "alternativa",
+        "samozaupanje"
+      ]
+    },
+    {
+      "skillKey": "networking",
+      "title": "Prvi stik po dogodku",
+      "scenario": "Po dogodku želiš osebi poslati LinkedIn/Email follow-up, da ohraniš stik.",
+      "expectedOutcome": "Naraven uvod, konkreten razlog in lahek naslednji korak.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "osebni kontekst",
+        "vrednost",
+        "follow-up"
       ]
     },
     {
       "skillKey": "job-interview",
-      "title": "Tell me about a challenge",
-      "scenario": "Answer an interview question about a difficult challenge you solved.",
-      "expectedOutcome": "The answer includes situation, task, action, result and what you learned.",
-      "difficulty": "INTERMEDIATE",
-      "estimatedMinutes": 15,
+      "title": "Vprašanje o slabosti",
+      "scenario": "Na razgovoru te vprašajo, katero slabost trenutno izboljšuješ.",
+      "expectedOutcome": "Iskren odgovor s primerom učenja in napredka.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
       "evaluationCriteria": [
-        "situation",
-        "task",
-        "action",
-        "result",
-        "reflection"
+        "iskrenost",
+        "primer",
+        "refleksija"
+      ]
+    },
+    {
+      "skillKey": "negotiation",
+      "title": "Dogovor o višji ceni",
+      "scenario": "Stranka želi nižjo ceno, ti pa moraš zaščititi vrednost svojega dela.",
+      "expectedOutcome": "Mirna razlaga vrednosti in predlog kompromisa.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 10,
+      "evaluationCriteria": [
+        "vrednost",
+        "interesi",
+        "ponudba"
+      ]
+    },
+    {
+      "skillKey": "leadership-basics",
+      "title": "Ekipa izgublja motivacijo",
+      "scenario": "V ekipi pada energija, rok pa se bliža. Kot vodja moraš dati smer brez pritiska.",
+      "expectedOutcome": "Jasna smer, priznanje stanja in konkreten plan.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 11,
+      "evaluationCriteria": [
+        "smer",
+        "motivacija",
+        "odgovornosti"
+      ]
+    },
+    {
+      "skillKey": "meeting-facilitation",
+      "title": "Sestanek brez fokusa",
+      "scenario": "Sestanek se oddaljuje od teme. Prevzemi vodenje in vrni skupino k odločitvi.",
+      "expectedOutcome": "Vljuden prehod nazaj na agendo in zaključek z akcijami.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "agenda",
+        "čas",
+        "akcije"
+      ]
+    },
+    {
+      "skillKey": "time-management",
+      "title": "Preveč nalog v enem dnevu",
+      "scenario": "Imaš preveč nalog in moraš realno sporočiti, kaj bo narejeno danes.",
+      "expectedOutcome": "Prioritete, realen rok in proaktivna komunikacija.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "prioritete",
+        "realnost",
+        "komunikacija"
+      ]
+    },
+    {
+      "skillKey": "prioritization",
+      "title": "Kaj naj naredim najprej?",
+      "scenario": "Dobiš tri nujne naloge hkrati. Razloži, kako boš izbral vrstni red.",
+      "expectedOutcome": "Kriteriji za izbor in jasen plan izvedbe.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "kriteriji",
+        "vpliv",
+        "odločitev"
+      ]
+    },
+    {
+      "skillKey": "decision-making",
+      "title": "Odločitev z nepopolnimi podatki",
+      "scenario": "Nimaš vseh informacij, a moraš predlagati odločitev do konca dneva.",
+      "expectedOutcome": "Odločitev z razlogi, tveganji in načinom preverjanja.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 9,
+      "evaluationCriteria": [
+        "kriteriji",
+        "tveganja",
+        "preverjanje"
+      ]
+    },
+    {
+      "skillKey": "focus-discipline",
+      "title": "Telefon te stalno moti",
+      "scenario": "Želiš zaključiti pomembno nalogo, a te ves čas zmoti telefon in chat.",
+      "expectedOutcome": "Konkreten plan za okolje, časovni blok in začetek.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
+      "evaluationCriteria": [
+        "okolje",
+        "blok časa",
+        "začetek"
+      ]
+    },
+    {
+      "skillKey": "stress-management",
+      "title": "Mirno pod pritiskom",
+      "scenario": "Rok se bliža in čutiš paniko. Napiši, kako se boš umiril in organiziral naslednji korak.",
+      "expectedOutcome": "Umiritev, razbitje naloge in prva akcija.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
+      "evaluationCriteria": [
+        "umiritev",
+        "prioriteta",
+        "akcija"
+      ]
+    },
+    {
+      "skillKey": "emotional-regulation",
+      "title": "Jezen odgovor v chatu",
+      "scenario": "Prejel si provokativno sporočilo. Odgovori tako, da ne eskaliraš konflikta.",
+      "expectedOutcome": "Premor, miren ton in usmeritev v rešitev.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "premor",
+        "ton",
+        "rešitev"
+      ]
+    },
+    {
+      "skillKey": "self-confidence",
+      "title": "Predlagaj svoje mnenje",
+      "scenario": "Na sestanku imaš drugačno mnenje, ampak te skrbi, da bo izpadlo neumno. Povej ga samozavestno.",
+      "expectedOutcome": "Jasno mnenje, razlog in odprtost za odziv.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "mnenje",
+        "argument",
+        "mirnost"
+      ]
+    },
+    {
+      "skillKey": "resilience",
+      "title": "Po zavrnitvi nadaljuj",
+      "scenario": "Tvoja ideja je bila zavrnjena. Odgovori tako, da pokažeš zrelost in pripravljenost na izboljšavo.",
+      "expectedOutcome": "Sprejem feedbacka, učenje in naslednji korak.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 8,
+      "evaluationCriteria": [
+        "sprejemanje",
+        "učenje",
+        "vztrajnost"
+      ]
+    },
+    {
+      "skillKey": "personal-finance",
+      "title": "Pogovor o strošku",
+      "scenario": "S prijateljem ali partnerjem se moraš pogovoriti o delitvi stroškov brez napetosti.",
+      "expectedOutcome": "Jasen okvir, spoštljiv ton in dogovor.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
+      "evaluationCriteria": [
+        "jasnost",
+        "spoštovanje",
+        "dogovor"
+      ]
+    },
+    {
+      "skillKey": "asking-for-help",
+      "title": "Prosi za pomoč brez panike",
+      "scenario": "Zataknil si se pri nalogi. Prosi za pomoč tako, da pokažeš, kaj si že poskusil.",
+      "expectedOutcome": "Kontekst, poskusi in konkretno vprašanje.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 6,
+      "evaluationCriteria": [
+        "kontekst",
+        "poskus",
+        "vprašanje"
+      ]
+    },
+    {
+      "skillKey": "difficult-conversations",
+      "title": "Odpri občutljivo temo",
+      "scenario": "Nekoga moraš opozoriti na navado, ki ti povzroča težavo.",
+      "expectedOutcome": "Spoštljiv uvod, dejstvo, vpliv in predlog rešitve.",
+      "difficulty": "INTERMEDIATE",
+      "estimatedMinutes": 10,
+      "evaluationCriteria": [
+        "uvod",
+        "dejstva",
+        "meja",
+        "rešitev"
+      ]
+    },
+    {
+      "skillKey": "digital-communication",
+      "title": "Sporočilo brez napačnega tona",
+      "scenario": "V chatu moraš opozoriti na napako, brez da zveniš pasivno agresivno.",
+      "expectedOutcome": "Kratek, jasen in spoštljiv digitalni odziv.",
+      "difficulty": "BEGINNER",
+      "estimatedMinutes": 7,
+      "evaluationCriteria": [
+        "ton",
+        "jasnost",
+        "naslednji korak"
       ]
     }
   ],
   "prompts": [
     {
       "skillKey": "public-speaking",
-      "title": "Pitch feedback coach",
+      "title": "Coach za jasen nastop",
       "difficulty": "BEGINNER",
-      "systemPrompt": "You are a practical communication coach. Give concise, direct and actionable feedback.",
-      "userPromptTemplate": "Evaluate this one-minute pitch. Score clarity, structure and closing. Answer: {{answer}}",
-      "simulatedAiResponse": "focus on a stronger hook, make the problem-solution structure explicit, and finish with one concrete call to action.",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
       "tags": [
-        "pitch",
-        "presentation",
-        "clarity"
+        "struktura",
+        "samozavest"
+      ]
+    },
+    {
+      "skillKey": "active-listening",
+      "title": "Coach za poslušanje",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "empatija",
+        "vprašanja"
       ]
     },
     {
       "skillKey": "conflict-resolution",
-      "title": "Conflict de-escalation coach",
-      "difficulty": "BEGINNER",
-      "systemPrompt": "You are a calm workplace mediator. Help the learner lower tension and move toward agreement.",
-      "userPromptTemplate": "Review this conflict response. Check tone, empathy, ownership and next step. Answer: {{answer}}",
-      "simulatedAiResponse": "acknowledge the impact without blame, ask one open question, then propose a specific recovery step and deadline.",
+      "title": "Coach za konflikt",
+      "difficulty": "INTERMEDIATE",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
       "tags": [
-        "conflict",
-        "empathy",
-        "teamwork"
+        "meje",
+        "dogovor"
       ]
     },
     {
-      "skillKey": "team-collaboration",
-      "title": "Standup update coach",
-      "difficulty": "BEGINNER",
-      "systemPrompt": "You help teams communicate faster and with less ambiguity.",
-      "userPromptTemplate": "Review this daily standup update for clarity and blockers. Answer: {{answer}}",
-      "simulatedAiResponse": "keep the update short, separate done/today/blockers, and clearly state who you need help from.",
+      "skillKey": "feedback-giving",
+      "title": "Coach za feedback",
+      "difficulty": "INTERMEDIATE",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
       "tags": [
-        "standup",
-        "blockers",
-        "team"
+        "feedback",
+        "spoštovanje"
       ]
     },
     {
       "skillKey": "job-interview",
-      "title": "STAR interview coach",
+      "title": "Coach za razgovor",
       "difficulty": "INTERMEDIATE",
-      "systemPrompt": "You are an interview coach. Evaluate examples using the STAR method and career relevance.",
-      "userPromptTemplate": "Evaluate this interview story. Check situation, task, action, result and lesson. Answer: {{answer}}",
-      "simulatedAiResponse": "add measurable result, make your personal action clearer, and end with what the experience taught you.",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
       "tags": [
-        "interview",
-        "career",
-        "STAR"
+        "STAR",
+        "kariera"
+      ]
+    },
+    {
+      "skillKey": "time-management",
+      "title": "Coach za čas",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "prioritete",
+        "fokus"
+      ]
+    },
+    {
+      "skillKey": "stress-management",
+      "title": "Coach za stres",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "umiritev",
+        "akcija"
+      ]
+    },
+    {
+      "skillKey": "boundaries",
+      "title": "Coach za meje",
+      "difficulty": "INTERMEDIATE",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "meje",
+        "samozaupanje"
+      ]
+    },
+    {
+      "skillKey": "digital-communication",
+      "title": "Coach za digitalni ton",
+      "difficulty": "BEGINNER",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "chat",
+        "mail"
+      ]
+    },
+    {
+      "skillKey": "negotiation",
+      "title": "Coach za pogajanje",
+      "difficulty": "INTERMEDIATE",
+      "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+      "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+      "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
+      "tags": [
+        "vrednost",
+        "kompromis"
       ]
     }
   ]

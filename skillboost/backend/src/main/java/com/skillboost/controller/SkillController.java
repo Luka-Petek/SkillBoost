@@ -22,7 +22,8 @@ public class SkillController {
     public List<Skill> getSkills() {
         return skillRepository.findAll()
                 .stream()
-                .sorted(Comparator.comparing(Skill::getName))
+                .sorted(Comparator.comparing(Skill::getCategory, Comparator.nullsLast(String::compareToIgnoreCase))
+                        .thenComparing(Skill::getName, Comparator.nullsLast(String::compareToIgnoreCase)))
                 .toList();
     }
 }

@@ -1,6 +1,8 @@
 package com.skillboost.seed;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skillboost.model.LearningPrompt;
+import com.skillboost.model.TrainingChallenge;
 import com.skillboost.repository.LearningPromptRepository;
 import com.skillboost.repository.SkillRepository;
 import com.skillboost.repository.TrainingChallengeRepository;
@@ -12,6 +14,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DatabaseSeeder implements ApplicationRunner {
@@ -42,26 +46,58 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        boolean hasData = userRepository.count() > 0
-                || skillRepository.count() > 0
-                || challengeRepository.count() > 0
-                || promptRepository.count() > 0;
+        SeedData data = objectMapper.readValue(seedFile.getInputStream(), SeedData.class);
 
-        if (hasData) {
-            log.info("SkillBoost seed skipped because database already contains data.");
-            return;
+        int insertedUsers = 0;
+        if (userRepository.count() == 0) {
+            userRepository.saveAll(data.getUsers());
+            insertedUsers = data.getUsers().size();
         }
 
-        SeedData data = objectMapper.readValue(seedFile.getInputStream(), SeedData.class);
-        userRepository.saveAll(data.getUsers());
-        skillRepository.saveAll(data.getSkills());
-        challengeRepository.saveAll(data.getChallenges());
-        promptRepository.saveAll(data.getPrompts());
+        int insertedSkills = 0;
+        for (var skill : data.getSkills()) {
+            if (skillRepository.findByKeyIgnoreCase(skill.getKey()).isEmpty()) {
+                skillRepository.save(skill);
+                insertedSkills++;
+            }
+        }
 
-        log.info("SkillBoost seed completed: users={}, skills={}, challenges={}, prompts={}",
-                data.getUsers().size(),
-                data.getSkills().size(),
-                data.getChallenges().size(),
-                data.getPrompts().size());
+        List<TrainingChallenge> existingChallenges = challengeRepository.findAll();
+        int insertedChallenges = 0;
+        for (TrainingChallenge challenge : data.getChallenges()) {
+            boolean exists = existingChallenges.stream().anyMatch(existing ->
+                    equalsIgnoreCase(existing.getSkillKey(), challenge.getSkillKey())
+                            && equalsIgnoreCase(existing.getTitle(), challenge.getTitle())
+            );
+            if (!exists) {
+                challengeRepository.save(challenge);
+                existingChallenges.add(challenge);
+                insertedChallenges++;
+            }
+        }
+
+        List<LearningPrompt> existingPrompts = promptRepository.findAll();
+        int insertedPrompts = 0;
+        for (LearningPrompt prompt : data.getPrompts()) {
+            boolean exists = existingPrompts.stream().anyMatch(existing ->
+                    equalsIgnoreCase(existing.getSkillKey(), prompt.getSkillKey())
+                            && equalsIgnoreCase(existing.getTitle(), prompt.getTitle())
+            );
+            if (!exists) {
+                promptRepository.save(prompt);
+                existingPrompts.add(prompt);
+                insertedPrompts++;
+            }
+        }
+
+        log.info("SkillBoost seed synced: users={}, skills={}, challenges={}, prompts={}",
+                insertedUsers, insertedSkills, insertedChallenges, insertedPrompts);
+    }
+
+    private boolean equalsIgnoreCase(String left, String right) {
+        if (left == null || right == null) {
+            return left == right;
+        }
+        return left.equalsIgnoreCase(right);
     }
 }
