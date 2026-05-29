@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Document("users")
 public class UserProfile {
@@ -33,6 +35,7 @@ public class UserProfile {
     private LocalDate lastPracticeDate;
 
     private List<String> badges = new ArrayList<>();
+    private Map<String, Object> avatarConfig = new HashMap<>();
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -157,6 +160,14 @@ public class UserProfile {
 
     public void setBadges(List<String> badges) {
         this.badges = badges == null ? new ArrayList<>() : badges;
+    }
+
+    public Map<String, Object> getAvatarConfig() {
+        return avatarConfig;
+    }
+
+    public void setAvatarConfig(Map<String, Object> avatarConfig) {
+        this.avatarConfig = avatarConfig == null ? new HashMap<>() : avatarConfig;
     }
 
     public LocalDateTime getCreatedAt() {

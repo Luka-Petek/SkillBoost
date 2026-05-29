@@ -64,6 +64,7 @@ public class UserService {
         user.setName(request.name());
         user.setGoals(request.goals());
         user.setTargetSkills(request.targetSkills());
+        user.setAvatarConfig(request.avatarConfig());
         user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user);

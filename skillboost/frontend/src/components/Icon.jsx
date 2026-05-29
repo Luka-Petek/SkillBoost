@@ -285,6 +285,25 @@ const iconMap = {
             <circle cx="15" cy="9" r="1.5" />
         </>
     ),
+
+    chart: (
+        <>
+            <path d="M4 19V5" />
+            <path d="M4 19h16" />
+            <path d="M8 16v-4" />
+            <path d="M12 16V8" />
+            <path d="M16 16v-6" />
+        </>
+    ),
+    moon: (
+        <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.7 6.7 0 0 0 9.8 9.8Z" />
+    ),
+    sun: (
+        <>
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </>
+    ),
     arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
     search: (
         <>

@@ -1,0 +1,408 @@
+/* Avatar Studio: more lifelike stylized full-body character */
+.profile-avatar--model {
+  width: 128px;
+  height: 128px;
+  overflow: visible;
+  background:
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 52%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 96%, white 4%), color-mix(in srgb, var(--panel) 94%, transparent));
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.16);
+}
+
+.avatar--model {
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.avatar-studio {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(320px, 1.08fr);
+  gap: 18px;
+  padding: 18px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 34rem),
+    radial-gradient(circle at 88% 22%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 22rem),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, white 4%), color-mix(in srgb, var(--panel) 92%, transparent));
+}
+
+.avatar-studio__preview-panel,
+.avatar-studio__editor-panel {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 96%, white 4%), color-mix(in srgb, var(--panel-strong) 82%, transparent));
+  box-shadow: 0 20px 45px rgba(2, 6, 23, 0.12);
+}
+
+.avatar-studio__preview-panel {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.avatar-studio__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.avatar-studio__header h3,
+.avatar-studio__header p {
+  margin: 0;
+}
+
+.avatar-studio__header span {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.86rem;
+}
+
+.avatar-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 408px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.75), transparent 10%),
+    radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 32%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 98%, white 2%), color-mix(in srgb, var(--panel) 90%, transparent));
+}
+
+.avatar-stage::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  pointer-events: none;
+}
+
+.avatar-stage__grid {
+  position: absolute;
+  inset: auto 0 0;
+  height: 34%;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(15, 23, 42, 0.02)),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.14) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+  mask-image: linear-gradient(180deg, transparent, black 15%, black);
+}
+
+.avatar-stage__halo {
+  position: absolute;
+  width: min(84%, 360px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: conic-gradient(from 180deg, transparent, color-mix(in srgb, var(--primary) 10%, transparent), transparent 38%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 82%);
+  filter: blur(8px);
+  opacity: 0.82;
+  animation: avatar-halo-spin 16s linear infinite;
+}
+
+.avatar-studio__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.avatar-save-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.avatar-studio__editor-panel {
+  padding: 16px;
+}
+
+.avatar-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+}
+
+.avatar-tabs button {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.avatar-tabs button.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+.avatar-editor-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.avatar-option-group,
+.avatar-presets {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 82%, white 4%), color-mix(in srgb, var(--panel) 74%, transparent));
+}
+
+.avatar-option-group > span,
+.avatar-presets > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.avatar-option-group > div,
+.avatar-presets > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.avatar-option-group button,
+.avatar-presets button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 92%, white 4%);
+  color: var(--text);
+  font-weight: 850;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.06);
+}
+
+.avatar-option-group button:hover,
+.avatar-presets button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
+}
+
+.avatar-option-group button.active,
+.avatar-presets button.active {
+  border-color: color-mix(in srgb, var(--primary) 46%, var(--border));
+  background: color-mix(in srgb, var(--primary) 12%, white 88%);
+  color: var(--primary);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.avatar-color-group button i {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.avatar-model {
+  position: relative;
+  width: 260px;
+  height: 352px;
+}
+
+.avatar-model--hero {
+  width: 116px;
+  height: 152px;
+}
+
+.avatar-model--mini {
+  width: 58px;
+  height: 72px;
+}
+
+.avatar-model--interactive {
+  animation: avatar-float 6.2s ease-in-out infinite;
+}
+
+.avatar-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 18px 34px rgba(15, 23, 42, 0.14));
+}
+
+.avatar-svg__avatar {
+  transform-origin: 50% 64%;
+  animation: avatar-breathe 4.8s ease-in-out infinite;
+}
+
+.avatar-svg__eyes {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: avatar-blink 8s ease-in-out infinite;
+}
+
+.avatar-svg__spark {
+  opacity: 0.65;
+}
+
+.avatar-svg__spark--one {
+  animation: avatar-spark 3s ease-in-out infinite;
+}
+
+.avatar-svg__spark--two {
+  animation: avatar-spark 3s ease-in-out infinite 1.4s;
+}
+
+.avatar-svg__badge-icon {
+  overflow: visible;
+}
+
+.avatar-svg__badge-icon-inner {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.avatar-model--hero .avatar-svg,
+.avatar-model--mini .avatar-svg {
+  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.12));
+}
+
+@keyframes avatar-float {
+  0%, 100% { transform: translateY(0) rotateY(-2deg); }
+  50% { transform: translateY(-10px) rotateY(2deg); }
+}
+
+@keyframes avatar-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.008); }
+}
+
+@keyframes avatar-blink {
+  0%, 45%, 48%, 100% { transform: scaleY(1); }
+  46%, 47% { transform: scaleY(0.12); }
+}
+
+@keyframes avatar-halo-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes avatar-spark {
+  0%, 100% { opacity: 0.18; transform: scale(0.7); }
+  50% { opacity: 0.9; transform: scale(1.25); }
+}
+
+@media (max-width: 1180px) {
+  .avatar-studio {
+    grid-template-columns: 1fr;
+  }
+
+  .avatar-stage {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 720px) {
+  .avatar-studio,
+  .avatar-studio__preview-panel,
+  .avatar-studio__editor-panel {
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .avatar-studio__header,
+  .avatar-studio__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .avatar-tabs {
+    overflow-x: auto;
+  }
+
+  .avatar-tabs button {
+    min-width: 96px;
+  }
+
+  .avatar-option-group > div,
+  .avatar-presets > div {
+    flex-direction: column;
+  }
+
+  .avatar-option-group button,
+  .avatar-presets button {
+    justify-content: center;
+  }
+
+  .avatar-model {
+    width: 226px;
+    height: 304px;
+  }
+
+  .avatar-model--hero {
+    width: 112px;
+    height: 146px;
+  }
+}
+
+/* Shared avatar rendering outside profile: keeps saved avatar consistent everywhere. */
+.avatar.avatar--model {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.avatar--leaderboard {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--panel-strong) 88%, transparent)) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border)) !important;
+  overflow: hidden !important;
+}
+
+.avatar--leaderboard .avatar-model--mini {
+  width: 52px;
+  height: 58px;
+  transform: translateY(6px);
+}
+
+.right-card--profile .avatar--large.avatar--model {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  border-radius: 22px;
+  overflow: hidden !important;
+  background: radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--panel-strong) 92%, transparent)) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+}
+
+.right-card--profile .avatar-model--mini {
+  width: 76px;
+  height: 86px;
+  transform: translateY(9px);
+}

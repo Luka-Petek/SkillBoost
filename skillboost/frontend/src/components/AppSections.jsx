@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Icon } from './Icon';
+import { AvatarMini } from './AvatarStudio';
 
 const scoreLabels = [
     { min: 85, label: 'Odlično', tone: 'great' },
@@ -7,6 +8,238 @@ const scoreLabels = [
     { min: 50, label: 'V razvoju', tone: 'warn' },
     { min: 0, label: 'Za vajo', tone: 'danger' }
 ];
+
+
+export function EngagementDashboard({
+    user,
+    report,
+    skills = [],
+    selectedSkills = [],
+    selectedSkillNames,
+    challenges = [],
+    selectedChallenge,
+    dailyDuelChallenge,
+    personalizedDailyChallenge,
+    lastReward,
+    lastSession,
+    onStartSimulator,
+    onOpenSkills,
+    onOpenCompetition,
+    onOpenReport,
+    onStartDailyChallenge,
+    onStartDailyDuel
+}) {
+    const level = user?.level || report?.level || 1;
+    const currentLevelXp = user?.currentLevelXp ?? report?.currentLevelXp ?? 0;
+    const nextLevelXp = user?.nextLevelXp ?? report?.nextLevelXp ?? 100;
+    const xpProgress = Math.min(100, Math.round((currentLevelXp / Math.max(1, nextLevelXp)) * 100));
+    const streakDays = user?.streakDays ?? report?.streakDays ?? 0;
+    const totalStars = user?.totalStars ?? report?.totalStars ?? 0;
+    const averageScore = Math.round(report?.averageScore ?? lastSession?.score ?? 0);
+    const sessionsCount = report?.sessionsCount ?? report?.totalSessions ?? 0;
+    const activeSkills = selectedSkills.length ? selectedSkills : skills.slice(0, 3);
+    const skillProgress = (report?.skillProgress || [])
+        .filter((item) => item?.skillKey)
+        .slice()
+        .sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0));
+    const focusSkill = skillProgress[0]
+        ? skills.find((skill) => skill.key === skillProgress[0].skillKey)
+        : activeSkills[0];
+    const strongestSkill = skillProgress[skillProgress.length - 1]
+        ? skills.find((skill) => skill.key === skillProgress[skillProgress.length - 1].skillKey)
+        : activeSkills[0];
+    const nextChallenge = personalizedDailyChallenge || selectedChallenge || challenges[0];
+    const quickChallenge = dailyDuelChallenge || challenges[1] || nextChallenge;
+    const dailyQuests = lastReward?.dailyQuests || report?.dailyQuests || [];
+    const completedQuests = dailyQuests.filter((quest) => quest.completed).length;
+    const questProgress = dailyQuests.length ? Math.round((completedQuests / dailyQuests.length) * 100) : 0;
+    const retentionScore = Math.min(100, Math.round((xpProgress * 0.28) + (Math.min(streakDays, 7) / 7 * 34) + (questProgress * 0.22) + (averageScore * 0.16)));
+    const weeklyRows = buildWeeklyRows(streakDays, sessionsCount, averageScore);
+
+    return (
+        <div className="engagement-dashboard">
+            <section className="engagement-hero">
+                <div className="engagement-hero__copy">
+                    <p className="eyebrow">Današnji plan</p>
+                    <h2>Naslednja vaja je pripravljena.</h2>
+                    <p>
+                        Odpri priporočeni izziv, oddaj odgovor in takoj vidiš, kaj izboljšati. Vse ključne akcije so v prvem pogledu.
+                    </p>
+                    <div className="engagement-actions">
+                        <button type="button" className="primary" onClick={onStartSimulator}>
+                            <Icon name="bolt" size={17} />
+                            Začni naslednjo vajo
+                        </button>
+                        <button type="button" className="secondary" onClick={onStartDailyDuel}>
+                            <Icon name="trophy" size={17} />
+                            Daily Duel
+                        </button>
+                        <button type="button" className="secondary" onClick={onOpenSkills}>
+                            <Icon name="target" size={17} />
+                            Uredi fokus
+                        </button>
+                    </div>
+                </div>
+
+                <div className="engagement-score-card">
+                    <div className="engagement-score-ring" style={{ '--score': `${retentionScore}%` }}>
+                        <span>{retentionScore}</span>
+                        <small>focus</small>
+                    </div>
+                    <div>
+                        <strong>{user?.name || 'Gost'}</strong>
+                        <p>Level {level} · {streakDays} dni streak · {totalStars} zvezdic</p>
+                    </div>
+                </div>
+            </section>
+
+            <section className="engagement-grid">
+                <article className="engagement-card engagement-card--primary">
+                    <div className="engagement-card__head">
+                        <span className="engagement-icon"><Icon name="rocket" /></span>
+                        <div>
+                            <p className="eyebrow">Naslednja akcija</p>
+                            <h3>{nextChallenge?.title || 'Začni prvo vajo'}</h3>
+                        </div>
+                    </div>
+                    <p>{nextChallenge?.scenario || 'Izberi veščino in začni kratko simulacijo. Cilj je manj trenja in hitrejša prva akcija.'}</p>
+                    <div className="engagement-card__footer">
+                        <span><Icon name="timer" size={15} /> 3–8 min</span>
+                        <span><Icon name="star" size={15} /> +XP</span>
+                        <button type="button" className="primary" onClick={onStartDailyChallenge}>Odpri</button>
+                    </div>
+                </article>
+
+                <article className="engagement-card">
+                    <div className="engagement-card__head">
+                        <span className="engagement-icon"><Icon name="chart" /></span>
+                        <div>
+                            <p className="eyebrow">Napredek</p>
+                            <h3>{currentLevelXp}/{nextLevelXp} XP</h3>
+                        </div>
+                    </div>
+                    <div className="engagement-progress">
+                        <span style={{ width: `${xpProgress}%` }} />
+                    </div>
+                    <p>Še {Math.max(0, nextLevelXp - currentLevelXp)} XP do novega levela.</p>
+                </article>
+
+                <article className="engagement-card">
+                    <div className="engagement-card__head">
+                        <span className="engagement-icon"><Icon name="flame" /></span>
+                        <div>
+                            <p className="eyebrow">Dnevni loop</p>
+                            <h3>{completedQuests}/{dailyQuests.length || 3} questov</h3>
+                        </div>
+                    </div>
+                    <div className="engagement-progress">
+                        <span style={{ width: `${questProgress}%` }} />
+                    </div>
+                    <p>{questProgress >= 100 ? 'Dnevni loop je zaključen.' : 'Zaključi mini quest in obdrži dnevni ritem.'}</p>
+                </article>
+            </section>
+
+            <section className="engagement-lower-grid">
+                <article className="engagement-panel">
+                    <div className="engagement-panel__title">
+                        <div>
+                            <p className="eyebrow">Skill momentum</p>
+                            <h3>Fokus za danes</h3>
+                        </div>
+                        <button type="button" onClick={onOpenSkills}>Uredi</button>
+                    </div>
+                    <div className="engagement-skill-list">
+                        {activeSkills.slice(0, 5).map((skill, index) => (
+                            <div key={skill.key || index} className="engagement-skill-row">
+                                <span className="engagement-skill-icon">{skillIcon(skill.key, skill.category)}</span>
+                                <div>
+                                    <strong>{skill.name}</strong>
+                                    <small>{skill.category || 'Fokus'}</small>
+                                </div>
+                                <span>{skill.estimatedMinutes || 8} min</span>
+                            </div>
+                        ))}
+                    </div>
+                </article>
+
+                <article className="engagement-panel">
+                    <div className="engagement-panel__title">
+                        <div>
+                            <p className="eyebrow">Tedenski ritem</p>
+                            <h3>Aktivnost</h3>
+                        </div>
+                        <button type="button" onClick={onOpenReport}>Poročilo</button>
+                    </div>
+                    <div className="week-strip">
+                        {weeklyRows.map((day) => (
+                            <span key={day.label} className={day.done ? 'done' : ''}>
+                                <Icon name={day.done ? 'check' : 'circle'} size={14} />
+                                {day.label}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="insight-callout">
+                        <Icon name="brain" size={18} />
+                        <p>
+                            {focusSkill?.name
+                                ? `Naslednji najpametnejši fokus: ${focusSkill.name}.`
+                                : 'Dodaj fokus, da lahko app priporoča bolj osebne vaje.'}
+                        </p>
+                    </div>
+                </article>
+
+                <article className="engagement-panel engagement-panel--arena">
+                    <div className="engagement-panel__title">
+                        <div>
+                            <p className="eyebrow">Tekmovanje</p>
+                            <h3>Daily Duel</h3>
+                        </div>
+                        <button type="button" onClick={onOpenCompetition}>Odpri</button>
+                    </div>
+                    <div className="arena-preview">
+                        <div>
+                            <span><Icon name="swords" /></span>
+                            <strong>{quickChallenge?.title || 'Skill Battle'}</strong>
+                            <small>Odpri kratek duel in primerjaj rezultat.</small>
+                        </div>
+                        <button type="button" className="primary" onClick={onOpenCompetition}>Tekmuj</button>
+                    </div>
+                </article>
+
+                <article className="engagement-panel">
+                    <div className="engagement-panel__title">
+                        <div>
+                            <p className="eyebrow">Coach insight</p>
+                            <h3>Kaj trenirati</h3>
+                        </div>
+                    </div>
+                    <div className="dual-insight">
+                        <div>
+                            <span><Icon name="checkCircle" /></span>
+                            <small>Močna točka</small>
+                            <strong>{strongestSkill?.name || selectedSkillNames}</strong>
+                        </div>
+                        <div>
+                            <span><Icon name="target" /></span>
+                            <small>Izboljšaj</small>
+                            <strong>{focusSkill?.name || 'Izberi fokus'}</strong>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </div>
+    );
+}
+
+function buildWeeklyRows(streakDays = 0, sessionsCount = 0, averageScore = 0) {
+    const labels = ['P', 'T', 'S', 'Č', 'P', 'S', 'N'];
+    const completed = Math.min(7, Math.max(streakDays, sessionsCount > 0 ? Math.ceil(Math.min(7, sessionsCount) / 2) : 0));
+    return labels.map((label, index) => ({
+        label,
+        done: index < completed || (averageScore >= 75 && index < 2)
+    }));
+}
+
 
 export function PlayerStatus({ user, report }) {
     const level = user?.level || report?.level || 1;
@@ -542,7 +775,7 @@ function CompetitionLeaderboard({ entries = [], highlightName }) {
             {entries.map((entry) => (
                 <div key={`${entry.userId}-${entry.rank}`} className={`competition-leaderboard-row ${entry.name === highlightName || entry.userId === 'demo-user' ? 'me' : ''}`}>
                     <span className="rank">#{entry.rank}</span>
-                    <span className="avatar">{entry.avatar || initialsOfName(entry.name)}</span>
+                    <span className={`avatar ${entry.avatarConfig ? 'avatar--model avatar--leaderboard' : ''}`}>{entry.avatarConfig ? <AvatarMini config={entry.avatarConfig} /> : (entry.avatar || initialsOfName(entry.name))}</span>
                     <strong>{entry.name}</strong>
                     <span>{entry.score}/100</span>
                 </div>
@@ -1141,7 +1374,7 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                         </label>
                     </div>
                     <div className="battle-preview-card">
-                        <span className="avatar">{initialsOfName(battleOpponent?.name)}</span>
+                        <span className={`avatar ${battleOpponent?.avatarConfig ? 'avatar--model avatar--leaderboard' : ''}`}>{battleOpponent?.avatarConfig ? <AvatarMini config={battleOpponent.avatarConfig} /> : initialsOfName(battleOpponent?.name)}</span>
                         <div>
                             <strong>{battleOpponent?.name || 'SkillBot Rival'}</strong>
                             <p>Predviden rival score danes: {battlePreviewScore}/100</p>
@@ -1326,7 +1559,8 @@ function buildCompetitionPreviewLeaderboard(rivals, selectedUser, challenge, mod
             userId: user.id || `preview-${index}`,
             name: user.name || 'Uporabnik',
             score: user.id === me.id ? '??' : buildPreviewScore(user, challenge, mode),
-            avatar: initialsOfName(user.name)
+            avatar: initialsOfName(user.name),
+            avatarConfig: user.avatarConfig
         }))
         .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
         .map((entry, index) => ({ ...entry, rank: index + 1 }));
