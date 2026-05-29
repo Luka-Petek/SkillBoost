@@ -1,0 +1,739 @@
+/* Compact app redesign: no long landing scroll, left nav + center workspace + right status panel */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.app-shell--dashboard {
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 14px;
+  overflow: hidden;
+}
+
+.app-sidebar,
+.app-frame,
+.app-main-panel,
+.app-right-panel {
+  min-height: 0;
+}
+
+.app-sidebar {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--primary) 15%, transparent), transparent 18rem),
+    color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 22px 70px rgba(2, 6, 23, 0.18);
+  overflow: hidden;
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.app-sidebar__mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 70% 20%, rgba(34, 211, 238, 0.24), transparent 45%), color-mix(in srgb, var(--panel-strong) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.app-sidebar__mark img {
+  width: 128%;
+  height: 128%;
+  object-fit: contain;
+  transform: translate(-2%, 2%) rotate(-4deg);
+  filter: drop-shadow(0 9px 16px rgba(2, 6, 23, 0.28));
+}
+
+.app-sidebar__brand strong,
+.app-sidebar__brand small {
+  display: block;
+}
+
+.app-sidebar__brand strong {
+  font-size: 1.08rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.app-sidebar__brand small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.app-sidebar__nav {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.app-sidebar__nav button,
+.app-sidebar__footer button,
+.app-header__actions button,
+.right-section-title button,
+.right-skill-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-sidebar__nav button {
+  width: 100%;
+  justify-content: flex-start;
+  border: 1px solid transparent;
+  border-radius: 17px;
+  padding: 12px 13px;
+  color: var(--muted);
+  background: transparent;
+  font-weight: 900;
+  transition: background 0.18s ease, transform 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.app-sidebar__nav button:hover {
+  transform: translateX(2px);
+  color: var(--text);
+  background: color-mix(in srgb, var(--panel-strong) 70%, transparent);
+}
+
+.app-sidebar__nav button.active {
+  color: white;
+  border-color: color-mix(in srgb, var(--primary) 38%, transparent);
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.app-sidebar__status {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+}
+
+.app-sidebar__status strong,
+.app-sidebar__status small {
+  display: block;
+}
+
+.app-sidebar__status small {
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 850;
+}
+
+.app-sidebar__footer {
+  display: grid;
+  gap: 8px;
+}
+
+.app-sidebar__footer .primary,
+.app-sidebar__footer .secondary,
+.app-sidebar__footer .theme-toggle {
+  justify-content: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.app-frame {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 12px;
+  overflow: hidden;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  min-height: 86px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 16%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 16rem),
+    color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 18px 60px rgba(2, 6, 23, 0.12);
+  backdrop-filter: blur(22px);
+}
+
+.app-header h1,
+.app-header p,
+.app-header span {
+  margin: 0;
+}
+
+.app-header h1 {
+  margin-top: 2px;
+  font-size: clamp(1.45rem, 2.6vw, 2.1rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.app-header > div > span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 750;
+}
+
+.app-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.app-header__actions .primary,
+.app-header__actions .secondary {
+  min-height: 42px;
+  padding: 10px 14px;
+}
+
+.app-alert,
+.app-loading {
+  margin: 0;
+}
+
+.app-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 318px;
+  gap: 14px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-workbench--skills,
+.app-workbench--report,
+.app-workbench--competition,
+.app-workbench--prompts,
+.app-workbench--profile {
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.app-main-panel,
+.app-right-panel {
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 20px 70px rgba(2, 6, 23, 0.13);
+  backdrop-filter: blur(22px);
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.app-main-panel {
+  padding: 16px;
+}
+
+.app-right-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 14px;
+}
+
+.app-main-panel::-webkit-scrollbar,
+.app-right-panel::-webkit-scrollbar,
+.app-sidebar__nav::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app-main-panel::-webkit-scrollbar-thumb,
+.app-right-panel::-webkit-scrollbar-thumb,
+.app-sidebar__nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.right-card {
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel-strong) 70%, transparent);
+}
+
+.right-card__head {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.right-card__head strong,
+.right-card__head small {
+  display: block;
+}
+
+.right-card__head small {
+  color: var(--muted);
+  margin-top: 3px;
+  font-weight: 850;
+}
+
+.avatar--large {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+}
+
+.compact-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.compact-metrics .metric-card {
+  padding: 10px;
+  min-height: 86px;
+  border-radius: 18px;
+}
+
+.compact-metrics .metric-card p,
+.compact-metrics .metric-card h3 {
+  margin: 0;
+}
+
+.compact-metrics .metric-card h3 {
+  margin-top: 4px;
+  font-size: 1.32rem;
+}
+
+.compact-metrics .metric-card span,
+.compact-metrics .metric-card small {
+  font-size: 0.72rem;
+}
+
+.right-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.right-section-title span {
+  font-weight: 950;
+}
+
+.right-section-title button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+  color: var(--muted);
+  padding: 7px 10px;
+  font-weight: 900;
+}
+
+.right-skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.right-skill-chips button {
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.right-skill-chips p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.right-card--selector .skill-selector,
+.right-card--growth .growth-focus-panel {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+
+.right-card--selector .skill-selector > p:not(.eyebrow),
+.right-card--growth .growth-focus-panel > p:not(.eyebrow),
+.right-card--growth .daily-double-card,
+.right-card--growth .growth-mini-insights {
+  display: none;
+}
+
+.right-card--selector .skill-selector h2,
+.right-card--growth .growth-focus-panel h2 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.right-card--selector .selected-mini-panel {
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.right-card--selector .selector-scroll-list {
+  max-height: 210px;
+}
+
+.right-card--selector .skill-search-label input {
+  height: 40px;
+}
+
+.right-card--growth .skill-chip-list.compact {
+  max-height: 160px;
+}
+
+.app-main-panel > .content-section {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.app-main-panel .section-title {
+  margin-bottom: 12px;
+}
+
+.app-main-panel .section-title span {
+  font-size: 1.1rem;
+}
+
+/* Compact simulator: challenge and answer remain above the fold */
+.app-workbench--simulator .content-section {
+  display: grid;
+  gap: 12px;
+}
+
+.app-workbench--simulator .personalized-challenge-card,
+.app-workbench--simulator .competition-mode-banner {
+  padding: 13px;
+  border-radius: 22px;
+}
+
+.app-workbench--simulator .personalized-challenge-card {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.app-workbench--simulator .personalized-challenge-icon,
+.app-workbench--simulator .competition-mode-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+}
+
+.app-workbench--simulator .personalized-challenge-card h3,
+.app-workbench--simulator .competition-mode-banner h3 {
+  font-size: 1rem;
+}
+
+.app-workbench--simulator .personalized-challenge-card p,
+.app-workbench--simulator .competition-mode-banner p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.app-workbench--simulator .simulation-form {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.app-workbench--simulator .simulation-form > label:first-child,
+.app-workbench--simulator .challenge-card,
+.app-workbench--simulator .custom-situation-card,
+.app-workbench--simulator .coach-box,
+.app-workbench--simulator .input-assist-status,
+.app-workbench--simulator .ai-thinking-card {
+  grid-column: 1;
+}
+
+.app-workbench--simulator .simulation-form > label:has(.answer-composer),
+.app-workbench--simulator .submit-button {
+  grid-column: 2;
+}
+
+.app-workbench--simulator .challenge-card {
+  min-height: 164px;
+  align-items: start;
+}
+
+.app-workbench--simulator .challenge-card h3 {
+  font-size: 1.08rem;
+}
+
+.app-workbench--simulator .challenge-card > div > p:last-of-type {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.app-workbench--simulator .custom-situation-card textarea {
+  min-height: 92px;
+}
+
+.app-workbench--simulator .coach-box {
+  padding: 12px;
+}
+
+.app-workbench--simulator .quick-actions {
+  gap: 6px;
+}
+
+.app-workbench--simulator .quick-actions button {
+  padding: 8px 10px;
+  font-size: 0.78rem;
+}
+
+.app-workbench--simulator .answer-composer textarea {
+  min-height: 365px;
+  rows: 12;
+}
+
+.app-workbench--simulator .submit-button {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  min-height: 54px;
+  margin-top: 0;
+}
+
+.app-workbench--simulator .feedback-card,
+.app-workbench--simulator .competition-result-card {
+  margin-top: 0;
+}
+
+.app-workbench--skills .app-right-panel .right-card--selector,
+.app-workbench--skills .app-right-panel .right-card--growth {
+  display: none;
+}
+
+.app-workbench--skills .catalog-toolbar,
+.app-workbench--skills .skill-playlist-bar,
+.app-workbench--skills .catalog-detail-panel {
+  position: static;
+}
+
+.app-workbench--skills .catalog-hero-card {
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.app-workbench--skills .catalog-layout {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+/* More dramatic logo fly-in, closer to the generated GIF preview */
+.logo-intro__mark {
+  animation: intro-logo-fly-advanced 1.62s cubic-bezier(0.13, 0.92, 0.2, 1) 0.08s forwards !important;
+}
+
+.logo-intro__trail--one {
+  transform: translate(-70%, 118px) rotate(-28deg) scaleX(0.06);
+  animation: intro-trail-advanced 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards !important;
+}
+
+.logo-intro__trail--two {
+  transform: translate(-73%, 148px) rotate(-30deg) scaleX(0.06);
+  animation: intro-trail-advanced 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.14s forwards !important;
+}
+
+@keyframes intro-logo-fly-advanced {
+  0% {
+    opacity: 0;
+    transform: translate3d(-48vw, 28vh, 0) scale(0.22) rotate(-28deg);
+    filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.1)) drop-shadow(0 18px 40px rgba(2, 6, 23, 0.5));
+  }
+  24% {
+    opacity: 1;
+  }
+  58% {
+    opacity: 1;
+    transform: translate3d(4.5vw, -3.2vh, 0) scale(1.18) rotate(6deg);
+    filter: drop-shadow(0 0 26px rgba(34, 211, 238, 0.62)) drop-shadow(0 24px 56px rgba(2, 6, 23, 0.68));
+  }
+  76% {
+    transform: translate3d(-1vw, 0.7vh, 0) scale(0.96) rotate(-2deg);
+  }
+  90% {
+    transform: translate3d(0.25vw, -0.2vh, 0) scale(1.025) rotate(0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.45)) drop-shadow(0 18px 40px rgba(2, 6, 23, 0.62));
+  }
+}
+
+@keyframes intro-trail-advanced {
+  0% { opacity: 0; transform: translate(-76%, 150px) rotate(-30deg) scaleX(0.05); }
+  18% { opacity: 1; }
+  54% { opacity: 0.86; transform: translate(-48%, 82px) rotate(-28deg) scaleX(1.25); }
+  100% { opacity: 0; transform: translate(-40%, 62px) rotate(-28deg) scaleX(1.55); }
+}
+
+@media (max-width: 1180px) {
+  body { overflow: auto; }
+
+  .app-shell--dashboard {
+    height: auto;
+    min-height: 100dvh;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .app-sidebar {
+    position: sticky;
+    top: 10px;
+    z-index: 80;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto;
+    align-items: center;
+  }
+
+  .app-sidebar__nav {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .app-sidebar__nav button {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .app-sidebar__status {
+    display: none;
+  }
+
+  .app-sidebar__footer {
+    display: flex;
+    align-items: center;
+  }
+
+  .app-frame,
+  .app-workbench,
+  .app-main-panel,
+  .app-right-panel {
+    overflow: visible;
+  }
+
+  .app-workbench,
+  .app-workbench--skills,
+  .app-workbench--report,
+  .app-workbench--competition,
+  .app-workbench--prompts,
+  .app-workbench--profile {
+    grid-template-columns: 1fr;
+  }
+
+  .app-right-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-workbench--simulator .simulation-form {
+    grid-template-columns: 1fr;
+  }
+
+  .app-workbench--simulator .simulation-form > label:first-child,
+  .app-workbench--simulator .challenge-card,
+  .app-workbench--simulator .custom-situation-card,
+  .app-workbench--simulator .coach-box,
+  .app-workbench--simulator .input-assist-status,
+  .app-workbench--simulator .ai-thinking-card,
+  .app-workbench--simulator .simulation-form > label:has(.answer-composer),
+  .app-workbench--simulator .submit-button {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell--dashboard {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .app-sidebar {
+    grid-template-columns: 1fr;
+    border-radius: 24px;
+  }
+
+  .app-sidebar__footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-header {
+    display: grid;
+    border-radius: 24px;
+  }
+
+  .app-header__actions {
+    justify-content: stretch;
+  }
+
+  .app-header__actions button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .app-main-panel,
+  .app-right-panel {
+    border-radius: 24px;
+    padding: 12px;
+  }
+
+  .app-right-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .compact-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app-workbench--skills .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+}

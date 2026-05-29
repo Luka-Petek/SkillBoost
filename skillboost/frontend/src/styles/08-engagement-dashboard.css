@@ -1,0 +1,460 @@
+
+/* Engagement-first dashboard layout */
+.app-workbench--dashboard {
+  grid-template-columns: minmax(0, 1fr) 330px;
+}
+
+.app-workbench--dashboard .app-main-panel {
+  min-height: 0;
+  overflow: visible;
+}
+
+.app-workbench--dashboard .app-right-panel {
+  gap: 12px;
+}
+
+.engagement-dashboard {
+  display: grid;
+  gap: 16px;
+  min-height: calc(100vh - 146px);
+}
+
+.engagement-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 18rem),
+    radial-gradient(circle at 6% 105%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 18rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel-strong) 94%, transparent), color-mix(in srgb, var(--panel) 84%, transparent));
+  box-shadow: 0 24px 80px rgba(2, 6, 23, 0.22);
+}
+
+.engagement-hero::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  top: -120px;
+  width: 300px;
+  height: 300px;
+  border-radius: 999px;
+  background: conic-gradient(from 160deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 0.34), rgba(139, 92, 246, 0.32), rgba(34, 211, 238, 0.22), rgba(59, 130, 246, 0));
+  filter: blur(18px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.engagement-hero__copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+}
+
+.engagement-hero__copy h2 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 4.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.08em;
+}
+
+.engagement-hero__copy p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.engagement-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.engagement-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.engagement-score-card {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+  text-align: center;
+}
+
+.engagement-score-card strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.engagement-score-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.engagement-score-ring {
+  --score: 0%;
+  display: grid;
+  place-items: center;
+  width: 158px;
+  height: 158px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, var(--panel-strong) 58%, transparent 60%),
+    conic-gradient(var(--accent) var(--score), color-mix(in srgb, var(--border) 64%, transparent) 0);
+  box-shadow:
+    inset 0 0 36px rgba(0, 0, 0, 0.16),
+    0 0 38px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.engagement-score-ring span {
+  font-size: 2.7rem;
+  font-weight: 950;
+  letter-spacing: -0.08em;
+}
+
+.engagement-score-ring small {
+  margin-top: -38px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.engagement-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(210px, 0.8fr));
+  gap: 14px;
+}
+
+.engagement-card,
+.engagement-panel {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow: 0 18px 50px rgba(2, 6, 23, 0.14);
+}
+
+.engagement-card {
+  display: grid;
+  gap: 13px;
+  padding: 18px;
+}
+
+.engagement-card--primary {
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 13rem),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+}
+
+.engagement-card__head,
+.engagement-panel__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.engagement-card__head {
+  justify-content: flex-start;
+}
+
+.engagement-card__head h3,
+.engagement-panel__title h3 {
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.engagement-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.engagement-icon,
+.engagement-skill-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, var(--panel-strong)), color-mix(in srgb, var(--accent) 14%, var(--panel-strong)));
+  color: var(--primary);
+}
+
+.engagement-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+}
+
+.engagement-card__footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.engagement-card__footer button {
+  margin-left: auto;
+}
+
+.engagement-progress {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.engagement-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.engagement-lower-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.engagement-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 230px;
+  padding: 16px;
+}
+
+.engagement-panel__title button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: var(--panel-strong);
+  color: var(--text);
+  font-weight: 850;
+}
+
+.engagement-skill-list {
+  display: grid;
+  gap: 10px;
+}
+
+.engagement-skill-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel-strong) 72%, transparent);
+}
+
+.engagement-skill-row strong,
+.engagement-skill-row small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.engagement-skill-row small,
+.engagement-skill-row > span:last-child {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.engagement-skill-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.week-strip span {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-height: 56px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  background: color-mix(in srgb, var(--panel-strong) 68%, transparent);
+}
+
+.week-strip span.done {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel-strong));
+}
+
+.insight-callout {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: 16px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.insight-callout p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.arena-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 9rem),
+    color-mix(in srgb, var(--panel-strong) 72%, transparent);
+}
+
+.arena-preview > div {
+  display: grid;
+  gap: 8px;
+}
+
+.arena-preview span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 17px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.arena-preview strong,
+.arena-preview small {
+  display: block;
+}
+
+.arena-preview small {
+  color: var(--muted);
+}
+
+.dual-insight {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.dual-insight > div {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--panel-strong) 70%, transparent);
+}
+
+.dual-insight span {
+  color: var(--accent);
+}
+
+.dual-insight small {
+  color: var(--muted);
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dual-insight strong {
+  line-height: 1.2;
+}
+
+@media (max-width: 1500px) {
+  .engagement-lower-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .engagement-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1180px) {
+  .app-workbench--dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .engagement-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .engagement-dashboard {
+    min-height: 0;
+  }
+
+  .engagement-hero {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .engagement-actions,
+  .engagement-card__footer {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .engagement-card__footer button {
+    margin-left: 0;
+  }
+
+  .engagement-lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .week-strip {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}

@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import keycloak from "../keycloak.js";
 
+const LOGIN_INTRO_PENDING_KEY = 'skillboost_login_intro_pending';
+
+function markLoginIntroPending() {
+    try {
+        sessionStorage.setItem(LOGIN_INTRO_PENDING_KEY, 'true');
+    } catch {
+        // ignore storage access issues
+    }
+}
+
 export function useAuth(onAuthSuccess, onAuthFail) {
     const [authenticated, setAuthenticated] = useState(false);
     const isRun = useRef(false);
@@ -43,8 +53,14 @@ export function useAuth(onAuthSuccess, onAuthFail) {
 
     const currentRedirectUri = () => window.location.origin + '/';
 
-    const handleLogin = () => keycloak.login({ redirectUri: currentRedirectUri() });
-    const handleRegister = () => keycloak.register({ redirectUri: currentRedirectUri() });
+    const handleLogin = () => {
+        markLoginIntroPending();
+        return keycloak.login({ redirectUri: currentRedirectUri() });
+    };
+    const handleRegister = () => {
+        markLoginIntroPending();
+        return keycloak.register({ redirectUri: currentRedirectUri() });
+    };
     const handleLogout = () => keycloak.logout({ redirectUri: currentRedirectUri() });
 
     return {

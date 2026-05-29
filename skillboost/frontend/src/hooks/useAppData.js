@@ -37,6 +37,50 @@ export function useAppData() {
 
     const [myProfile, setMyProfile] = useState(null);
 
+    const mergeProfileIntoUser = useCallback((user, profileData = {}) => {
+        if (!user) return user;
+        return {
+            ...user,
+            ...profileData,
+            id: user.id,
+            keycloakId: user.keycloakId ?? profileData.keycloakId,
+            email: profileData.email || user.email,
+            role: profileData.role || user.role
+        };
+    }, []);
+
+    const applyProfileEverywhere = useCallback((profileData = {}) => {
+        if (!profileData) return null;
+
+        setMyProfile((current) => ({
+            ...(current || {}),
+            ...profileData,
+            avatarConfig: profileData.avatarConfig || current?.avatarConfig
+        }));
+
+        setUsers((current) => current.map((user) => {
+            const isSelected = user.id === selectedUserId;
+            const sameProfileId = profileData.id && user.id === profileData.id;
+            const sameEmail = profileData.email && user.email && user.email === profileData.email;
+            const sameKeycloak = profileData.keycloakId && user.keycloakId && user.keycloakId === profileData.keycloakId;
+            return isSelected || sameProfileId || sameEmail || sameKeycloak
+                ? mergeProfileIntoUser(user, profileData)
+                : user;
+        }));
+
+        setLastCompetitionResult((current) => current ? {
+            ...current,
+            userName: profileData.name || current.userName,
+            leaderboard: (current.leaderboard || []).map((entry) => (
+                entry.userId === selectedUserId || entry.name === current.userName
+                    ? { ...entry, name: profileData.name || entry.name, avatarConfig: profileData.avatarConfig || entry.avatarConfig }
+                    : entry
+            ))
+        } : current);
+
+        return profileData;
+    }, [mergeProfileIntoUser, selectedUserId]);
+
     const refreshUsers = async () => {
         if (demoMode) return;
         const freshUsers = await api.getUsers();
@@ -320,7 +364,16 @@ export function useAppData() {
         }
     };
 
-    const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
+    const selectedUser = useMemo(() => {
+        const baseUser = users.find((u) => u.id === selectedUserId);
+        if (!baseUser) return null;
+        const profileMatches = myProfile && (
+            myProfile.id === baseUser.id ||
+            (myProfile.email && baseUser.email && myProfile.email === baseUser.email) ||
+            (myProfile.keycloakId && baseUser.keycloakId && myProfile.keycloakId === baseUser.keycloakId)
+        );
+        return profileMatches ? mergeProfileIntoUser(baseUser, myProfile) : baseUser;
+    }, [users, selectedUserId, myProfile, mergeProfileIntoUser]);
     const filteredChallenges = useMemo(() => {
         if (!selectedSkillKeys.length) return challenges;
         return challenges.filter((challenge) => selectedSkillKeys.includes(challenge.skillKey));
@@ -389,10 +442,33 @@ export function useAppData() {
         try {
             setSaving(true);
             setError('');
+
+            if (demoMode) {
+                const selectedDemoUser = users.find((user) => user.id === selectedUserId) || demoUser;
+                const updatedDemoProfile = {
+                    ...(myProfile || selectedDemoUser),
+                    ...profileData,
+                    id: myProfile?.id || selectedDemoUser.id,
+                    email: myProfile?.email || selectedDemoUser.email,
+                    role: myProfile?.role || selectedDemoUser.role
+                };
+                applyProfileEverywhere(updatedDemoProfile);
+                return updatedDemoProfile;
+            }
+
             const updated = await api.updateProfile(profileData);
-            setMyProfile(updated);
+            const normalized = {
+                ...(myProfile || {}),
+                ...updated,
+                ...profileData,
+                avatarConfig: updated?.avatarConfig || profileData.avatarConfig,
+                name: updated?.name || profileData.name || myProfile?.name
+            };
+            applyProfileEverywhere(normalized);
+            return normalized;
         } catch (err) {
             setError('Napaka pri posodabljanju profila: ' + err.message);
+            throw err;
         } finally {
             setSaving(false);
         }
@@ -621,7 +697,8 @@ function buildCompetitionResult({ mode, session, selectedUser, opponent, challen
                 score: user.id === selectedUser?.id
                     ? session.score
                     : buildDeterministicOpponentScore(user, challenge, 'daily-duel'),
-                avatar: initials(user.name)
+                avatar: initials(user.name),
+                avatarConfig: user.id === selectedUser?.id ? selectedUser?.avatarConfig : user.avatarConfig
             }))
             .sort((a, b) => b.score - a.score)
             .map((entry, index) => ({ ...entry, rank: index + 1 }));
@@ -661,8 +738,8 @@ function buildCompetitionResult({ mode, session, selectedUser, opponent, challen
                 ? `Rival je bil boljši za ${Math.abs(diff)} točk. Poskusi rematch z bolj konkretnim primerom.`
                 : 'Izenačeno. Rematch je idealen naslednji korak.',
         leaderboard: [
-            { userId: selectedUser?.id || 'me', name: userName, score: session.score, rank: diff >= 0 ? 1 : 2, avatar: initials(userName) },
-            { userId: resolvedOpponent?.id || 'opponent', name: resolvedOpponent?.name || 'SkillBot Rival', score: opponentScore, rank: diff >= 0 ? 2 : 1, avatar: initials(resolvedOpponent?.name || 'SkillBot Rival') }
+            { userId: selectedUser?.id || 'me', name: userName, score: session.score, rank: diff >= 0 ? 1 : 2, avatar: initials(userName), avatarConfig: selectedUser?.avatarConfig },
+            { userId: resolvedOpponent?.id || 'opponent', name: resolvedOpponent?.name || 'SkillBot Rival', score: opponentScore, rank: diff >= 0 ? 2 : 1, avatar: initials(resolvedOpponent?.name || 'SkillBot Rival'), avatarConfig: resolvedOpponent?.avatarConfig }
         ].sort((a, b) => b.score - a.score).map((entry, index) => ({ ...entry, rank: index + 1 }))
     };
 }

@@ -8,7 +8,7 @@ export const emptyPrompt = {
     tags: []
 };
 
-export const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['First simulation', 'Multi-skill learner'] };
+export const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['First simulation', 'Multi-skill learner'], avatarConfig: { presentation: 'neutral', bodyStyle: 'balanced', skinTone: 'warm-medium', hairStyle: 'short-wave', hairColor: 'midnight', outfit: 'coach-hoodie', accent: 'violet', accessory: 'round-glasses' } };
 export const demoRivals = [
     { id: 'demo-rival-ana', name: 'Ana Novak', role: 'STUDENT', points: 340, totalStars: 11, level: 3, currentLevelXp: 90, nextLevelXp: 200, streakDays: 4, badges: ['Strong answer', '3-day streak'] },
     { id: 'demo-rival-luka', name: 'Luka Kovač', role: 'STUDENT', points: 275, totalStars: 8, level: 3, currentLevelXp: 25, nextLevelXp: 200, streakDays: 2, badges: ['First star', 'Calm resolver'] },

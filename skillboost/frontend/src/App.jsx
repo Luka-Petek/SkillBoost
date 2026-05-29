@@ -1,25 +1,93 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useTheme } from './hooks/useTheme';
 import { useAppData } from './hooks/useAppData';
 import { ProfileSection } from './components/ProfileSection';
+import { LogoIntro } from './components/LogoIntro';
 import { Icon } from './components/Icon';
+import { AvatarMini } from './components/AvatarStudio';
 import {
     CompetitionSection,
     DailyQuests,
+    EngagementDashboard,
     GrowthFocusPanel,
     MetricCard,
-    PlayerStatus,
     PromptsSection,
     ReportSection,
-    SelectedSkillsDock,
     SimulatorSection,
     SkillSelector,
     SkillsSection
 } from './components/AppSections';
 
+const LOGIN_INTRO_PENDING_KEY = 'skillboost_login_intro_pending';
+
+const navItems = [
+    { key: 'dashboard', label: 'Dashboard', icon: 'chart' },
+    { key: 'simulator', label: 'Simulator', icon: 'message' },
+    { key: 'skills', label: 'Veščine', icon: 'target' },
+    { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
+    { key: 'prompts', label: 'Prompti', icon: 'sparkles' },
+    { key: 'report', label: 'Poročilo', icon: 'chart' },
+    { key: 'profile', label: 'Profil', icon: 'users', protected: true }
+];
+
+const sectionMeta = {
+    dashboard: {
+        eyebrow: 'Tvoj growth cockpit',
+        title: 'Dashboard',
+        helper: 'Najhitrejša pot do naslednje vaje, XP-ja in izboljšave.'
+    },
+    simulator: {
+        eyebrow: 'Današnji trening',
+        title: 'AI simulator',
+        helper: 'Vadi odgovor, oddaj in dobi takojšen feedback.'
+    },
+    skills: {
+        eyebrow: 'Tvoj fokus',
+        title: 'Katalog veščin',
+        helper: 'Izberi veščine brez odpiranja dolge landing strani.'
+    },
+    competition: {
+        eyebrow: 'Igraj proti drugim',
+        title: 'Competition hub',
+        helper: 'Daily duel in skill battle v bolj kompaktnem pogledu.'
+    },
+    prompts: {
+        eyebrow: 'AI nastavitve',
+        title: 'Prompti',
+        helper: 'Pripravi in testiraj AI coach navodila.'
+    },
+    report: {
+        eyebrow: 'Napredek',
+        title: 'Poročilo',
+        helper: 'Poglej rezultate, močne točke in naslednji fokus.'
+    },
+    profile: {
+        eyebrow: 'Račun',
+        title: 'Moj profil',
+        helper: 'Uredi osebni profil in preference.'
+    }
+};
+
+function readPendingLoginIntro() {
+    try {
+        return sessionStorage.getItem(LOGIN_INTRO_PENDING_KEY) === 'true';
+    } catch {
+        return false;
+    }
+}
+
+function clearPendingLoginIntro() {
+    try {
+        sessionStorage.removeItem(LOGIN_INTRO_PENDING_KEY);
+    } catch {
+        // ignore storage access issues
+    }
+}
+
 export default function App() {
-    const [activeSection, setActiveSection] = useState('simulator');
+    const [activeSection, setActiveSection] = useState('dashboard');
+    const [introPlayKey, setIntroPlayKey] = useState(0);
     const { theme, toggleTheme } = useTheme();
     const data = useAppData();
 
@@ -28,125 +96,140 @@ export default function App() {
         data.loadPublicData
     );
 
+    useEffect(() => {
+        if (authenticated && readPendingLoginIntro()) {
+            clearPendingLoginIntro();
+            setIntroPlayKey((current) => current + 1);
+        }
+    }, [authenticated]);
+
     const selectedSkillNames = data.selectedSkills.map((skill) => skill.name).join(', ') || 'Izberi veščine';
+    const selectedSkills = data.skills.filter((skill) => data.selectedSkillKeys.includes(skill.key));
     const player = data.selectedUser || {};
     const level = player.level || data.report?.level || 1;
     const totalStars = player.totalStars ?? data.report?.totalStars ?? 0;
     const streakDays = player.streakDays ?? data.report?.streakDays ?? 0;
+    const currentMeta = sectionMeta[activeSection] || sectionMeta.simulator;
+
+    const nav = useMemo(
+        () => navItems.filter((item) => authenticated || !item.protected),
+        [authenticated]
+    );
+
+    const handleNavigate = (sectionKey) => {
+        setActiveSection(sectionKey);
+    };
 
     return (
-        <div className="app-shell">
-            <header className="topbar">
-                <a className="brand" href="#top" aria-label="SkillBoost home">
-                    <span className="brand-mark">SB</span>
-                    <span>SkillBoost</span>
-                </a>
-                <nav className="nav-pill" aria-label="Glavna navigacija">
-                    <button onClick={() => setActiveSection('simulator')} className={activeSection === 'simulator' ? 'active' : ''}>Simulator</button>
-                    <button onClick={() => setActiveSection('skills')} className={activeSection === 'skills' ? 'active' : ''}>Veščine</button>
-                    <button onClick={() => setActiveSection('competition')} className={activeSection === 'competition' ? 'active' : ''}>Tekmovanje</button>
-                    <button onClick={() => setActiveSection('prompts')} className={activeSection === 'prompts' ? 'active' : ''}>Prompti</button>
-                    <button onClick={() => setActiveSection('report')} className={activeSection === 'report' ? 'active' : ''}>Poročilo</button>
-                </nav>
-                <div className="topbar-actions">
-                    <button className="theme-toggle" onClick={toggleTheme}>{theme === 'light' ? 'Temni način' : 'Svetli način'}</button>
-                    {!authenticated ? (
-                        <>
-                            <button className="secondary" onClick={handleLogin}>Prijava</button>
-                            <button className="primary" onClick={handleRegister}>Registracija</button>
-                        </>
-                    ) : (
-                        <>
-                            <button className={`secondary ${activeSection === 'profile' ? 'active' : ''}`} onClick={() => setActiveSection('profile')}>
-                                Moj profil
+        <>
+            <LogoIntro playKey={introPlayKey} />
+            <div className="app-shell app-shell--dashboard">
+                <aside className="app-sidebar" aria-label="Glavna navigacija">
+                    <a className="app-sidebar__brand" href="#top" aria-label="SkillBoost home" onClick={() => handleNavigate('simulator')}>
+                        <span className="app-sidebar__mark" aria-hidden="true">
+                            <img src="/brand/skillboost-mark.png" alt="" />
+                        </span>
+                        <span>
+                            <strong>SkillBoost</strong>
+                            <small>AI coach</small>
+                        </span>
+                    </a>
+
+                    <nav className="app-sidebar__nav">
+                        {nav.map((item) => (
+                            <button
+                                key={item.key}
+                                type="button"
+                                className={activeSection === item.key ? 'active' : ''}
+                                onClick={() => handleNavigate(item.key)}
+                            >
+                                <Icon name={item.icon} size={18} />
+                                <span>{item.label}</span>
                             </button>
-                            <button className="secondary" onClick={handleLogout}>
-                                Odjava ({username})
-                            </button>
-                        </>
-                    )}
-                </div>
-            </header>
+                        ))}
+                    </nav>
 
-            <main id="top">
-                <section className="hero-grid">
-                    <article className="hero-card">
-                        <p className="eyebrow">AI trener mehkih veščin</p>
-                        <h1>Vadi realne situacije, dobi pametno povratno informacijo in spremljaj napredek.</h1>
-                        <p>
-                            SkillBoost združuje personaliziran učni načrt, več izbranih veščin naenkrat, simulacije pogovorov,
-                            mentorjeve zapiske in napredno poročilo o napredku.
-                        </p>
-                        <div className="hero-actions">
-                            <button className="primary" onClick={() => setActiveSection('simulator')}>Začni simulacijo</button>
-                            <button className="secondary" onClick={() => setActiveSection('skills')}>Izberi več veščin</button>
+                    <div className="app-sidebar__status">
+                        <span className={`status-dot ${data.health?.status === 'UP' || data.health?.status === 'DEMO' ? 'ok' : ''}`} />
+                        <div>
+                            <strong>Backend</strong>
+                            <small>{data.health?.status || 'Preverjam...'}</small>
                         </div>
-                        <div className="hero-strip" aria-label="Trenutni fokus">
-                            <span>Fokus</span>
-                            <strong>{selectedSkillNames}</strong>
-                        </div>
-                    </article>
+                    </div>
 
-                    <aside className="status-stack" aria-label="Stanje sistema">
-                        <div className="status-card compact">
-                            <span className={`status-dot ${data.health?.status === 'UP' || data.health?.status === 'DEMO' ? 'ok' : ''}`} />
-                            <div>
-                                <strong>Backend</strong>
-                                <p>{data.health?.status || 'Preverjam...'}</p>
-                            </div>
-                        </div>
-                        <div className="coach-preview">
-                            <span className="spark">AI</span>
-                            <h2>Interaktivni coach</h2>
-                            <p>Po oddaji odgovora dobiš oceno, razlago, vprašanje za razmislek in naslednji korak.</p>
-                        </div>
-                    </aside>
-                </section>
-
-                {data.error && <div className="alert">{data.error}</div>}
-                {data.loading && <div className="loading-card">Nalagam SkillBoost podatke...</div>}
-
-                {!data.loading && (
-                    <>
-                        <section className="metrics-grid" aria-label="Metrike napredka">
-                            <MetricCard label="Aktivni uporabnik" value={data.selectedUser?.name || 'Gost'} helper={data.selectedUser?.role || 'Prijava odklene shranjevanje'} />
-                            <MetricCard label="Level" value={level} helper={`${player.currentLevelXp ?? data.report?.currentLevelXp ?? 0}/${player.nextLevelXp ?? data.report?.nextLevelXp ?? 100} XP do naslednjega`} />
-                            <MetricCard label="Zvezdice" value={totalStars} helper="Zbirajo se po simulacijah" />
-                            <MetricCard label="Streak" value={<span className="metric-inline"><Icon name="flame" size={19} />{streakDays}</span>} helper="dnevni niz vaj" />
-                        </section>
-
-                        <PlayerStatus user={data.selectedUser} report={data.report} />
-
-                        {activeSection !== 'skills' && (
-                            <SelectedSkillsDock
-                                skills={data.skills}
-                                selectedSkillKeys={data.selectedSkillKeys}
-                                toggleSkillKey={data.toggleSkillKey}
-                                clearSkills={() => data.setSelectedSkillKeys([])}
-                                openSkills={() => setActiveSection('skills')}
-                                startSimulator={() => setActiveSection('simulator')}
-                            />
+                    <div className="app-sidebar__footer">
+                        <button className="theme-toggle" onClick={toggleTheme}>
+                            <Icon name={theme === 'light' ? 'moon' : 'sun'} size={16} />
+                            {theme === 'light' ? 'Temni način' : 'Svetli način'}
+                        </button>
+                        {!authenticated ? (
+                            <>
+                                <button className="secondary" onClick={handleLogin}>Prijava</button>
+                                <button className="primary" onClick={handleRegister}>Registracija</button>
+                            </>
+                        ) : (
+                            <button className="secondary" onClick={handleLogout}>Odjava ({username})</button>
                         )}
+                    </div>
+                </aside>
 
-                        <section className={`workspace-grid ${activeSection === 'skills' ? 'workspace-grid--catalog' : ''}`}>
-                            <aside className="panel side-panel">
-                                <SkillSelector
-                                    skills={data.skills}
-                                    selectedSkillKeys={data.selectedSkillKeys}
-                                    toggleSkillKey={data.toggleSkillKey}
-                                />
-                                <GrowthFocusPanel
-                                    skills={data.skills}
-                                    report={data.report}
-                                    preferredSkillKeys={data.preferredSkillKeys}
-                                    togglePreferredSkillKey={data.togglePreferredSkillKey}
-                                    personalizedDailyChallenge={data.personalizedDailyChallenge}
-                                    dailyChallengeActive={data.dailyChallengeActive}
-                                    onStartDailyChallenge={data.handleStartDailyChallenge}
-                                />
-                            </aside>
+                <div className="app-frame">
+                    <header className="app-header" id="top">
+                        <div>
+                            <p className="eyebrow">{currentMeta.eyebrow}</p>
+                            <h1>{currentMeta.title}</h1>
+                            <span>{currentMeta.helper}</span>
+                        </div>
+                        <div className="app-header__actions">
+                            <button className="secondary" onClick={() => handleNavigate('dashboard')}>
+                                <Icon name="chart" size={16} />
+                                Pregled
+                            </button>
+                            <button className="secondary" onClick={() => handleNavigate('skills')}>
+                                <Icon name="target" size={16} />
+                                Fokus
+                            </button>
+                            <button className="primary" onClick={() => handleNavigate('simulator')}>
+                                <Icon name="bolt" size={16} />
+                                Začni vajo
+                            </button>
+                        </div>
+                    </header>
 
-                            <section className="panel main-panel">
+                    {data.error && <div className="alert app-alert">{data.error}</div>}
+                    {data.loading && <div className="loading-card app-loading">Nalagam SkillBoost podatke...</div>}
+
+                    {!data.loading && (
+                        <main className={`app-workbench app-workbench--${activeSection}`}>
+                            <section className="app-main-panel">
+                                {activeSection === 'dashboard' && (
+                                    <EngagementDashboard
+                                        user={data.selectedUser}
+                                        report={data.report}
+                                        skills={data.skills}
+                                        selectedSkills={selectedSkills}
+                                        selectedSkillNames={selectedSkillNames}
+                                        challenges={data.challenges}
+                                        selectedChallenge={data.selectedChallenge}
+                                        dailyDuelChallenge={data.dailyDuelChallenge}
+                                        personalizedDailyChallenge={data.personalizedDailyChallenge}
+                                        lastReward={data.lastReward}
+                                        lastSession={data.lastSession}
+                                        onStartSimulator={() => handleNavigate('simulator')}
+                                        onOpenSkills={() => handleNavigate('skills')}
+                                        onOpenCompetition={() => handleNavigate('competition')}
+                                        onOpenReport={() => handleNavigate('report')}
+                                        onStartDailyChallenge={() => {
+                                            data.handleStartDailyChallenge();
+                                            handleNavigate('simulator');
+                                        }}
+                                        onStartDailyDuel={() => {
+                                            data.handleStartDailyDuel();
+                                            handleNavigate('simulator');
+                                        }}
+                                    />
+                                )}
+
                                 {activeSection === 'simulator' && (
                                     <SimulatorSection
                                         skills={data.skills}
@@ -190,7 +273,7 @@ export default function App() {
                                         setSelectedSkillKey={data.setSelectedSkillKey}
                                         setSelectedSkillKeys={data.setSelectedSkillKeys}
                                         setSelectedChallengeId={data.setSelectedChallengeId}
-                                        openSimulator={() => setActiveSection('simulator')}
+                                        openSimulator={() => handleNavigate('simulator')}
                                     />
                                 )}
 
@@ -205,11 +288,11 @@ export default function App() {
                                         lastCompetitionResult={data.lastCompetitionResult}
                                         onStartDailyDuel={() => {
                                             data.handleStartDailyDuel();
-                                            setActiveSection('simulator');
+                                            handleNavigate('simulator');
                                         }}
                                         onStartSkillBattle={(payload) => {
                                             data.handleStartSkillBattle(payload);
-                                            setActiveSection('simulator');
+                                            handleNavigate('simulator');
                                         }}
                                     />
                                 )}
@@ -232,20 +315,75 @@ export default function App() {
                                 {activeSection === 'profile' && (
                                     <ProfileSection
                                         profile={data.myProfile}
+                                        selectedUser={data.selectedUser}
+                                        report={data.report}
+                                        skills={data.skills}
+                                        selectedSkillKeys={data.selectedSkillKeys}
                                         onUpdate={data.handleUpdateProfile}
                                         saving={data.saving}
                                     />
                                 )}
                             </section>
 
-                            <aside className="panel side-panel progress-panel">
-                                <DailyQuests quests={data.lastReward?.dailyQuests || data.report?.dailyQuests} />
+                            <aside className="app-right-panel" aria-label="Napredek in fokus">
+                                <section className="right-card right-card--profile">
+                                    <div className="right-card__head">
+                                        <span className="avatar avatar--large avatar--model"><AvatarMini config={data.myProfile?.avatarConfig || data.selectedUser?.avatarConfig} /></span>
+                                        <div>
+                                            <strong>{data.selectedUser?.name || 'Gost'}</strong>
+                                            <small>{data.selectedUser?.role || 'Demo način'}</small>
+                                        </div>
+                                    </div>
+                                    <div className="compact-metrics">
+                                        <MetricCard label="Level" value={level} helper={`${player.currentLevelXp ?? data.report?.currentLevelXp ?? 0}/${player.nextLevelXp ?? data.report?.nextLevelXp ?? 100} XP`} />
+                                        <MetricCard label="Streak" value={<span className="metric-inline"><Icon name="flame" size={17} />{streakDays}</span>} helper="dni" />
+                                        <MetricCard label="Zvezdice" value={totalStars} helper="skupno" />
+                                    </div>
+                                </section>
+
+                                <section className="right-card">
+                                    <div className="right-section-title">
+                                        <span>Izbrane veščine</span>
+                                        <button type="button" onClick={() => handleNavigate('skills')}>Uredi</button>
+                                    </div>
+                                    <div className="right-skill-chips">
+                                        {selectedSkills.length ? selectedSkills.map((skill) => (
+                                            <button key={skill.key} type="button" onClick={() => data.toggleSkillKey(skill.key)}>
+                                                {skill.name}
+                                                <Icon name="x" size={12} />
+                                            </button>
+                                        )) : <p>Izberi veščine za personaliziran trening.</p>}
+                                    </div>
+                                </section>
+
+                                <section className="right-card right-card--selector">
+                                    <SkillSelector
+                                        skills={data.skills}
+                                        selectedSkillKeys={data.selectedSkillKeys}
+                                        toggleSkillKey={data.toggleSkillKey}
+                                    />
+                                </section>
+
+                                <section className="right-card right-card--growth">
+                                    <GrowthFocusPanel
+                                        skills={data.skills}
+                                        report={data.report}
+                                        preferredSkillKeys={data.preferredSkillKeys}
+                                        togglePreferredSkillKey={data.togglePreferredSkillKey}
+                                        personalizedDailyChallenge={data.personalizedDailyChallenge}
+                                        dailyChallengeActive={data.dailyChallengeActive}
+                                        onStartDailyChallenge={data.handleStartDailyChallenge}
+                                    />
+                                </section>
+
+                                <section className="right-card">
+                                    <DailyQuests quests={data.lastReward?.dailyQuests || data.report?.dailyQuests} />
+                                </section>
                             </aside>
-                        </section>
-                    </>
-                )}
-            </main>
-        </div>
+                        </main>
+                    )}
+                </div>
+            </div>
+        </>
     );
 }
-
