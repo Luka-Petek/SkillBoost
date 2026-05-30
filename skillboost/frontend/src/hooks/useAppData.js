@@ -366,11 +366,38 @@ export function useAppData() {
         try {
             setSaving(true);
             setError('');
-            const updated = await api.updateMentorNote(lastSession.id, { mentorNote });
+            const updated = await api.updateMentorNote(lastSession.id, { mentorNote: mentorNote.trim() });
             setLastSession(updated);
             setMentorNote('');
+            await Promise.all([loadReport(selectedUserId), loadMentorDashboard()]);
         } catch (err) {
             setError(err.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleMentorSessionNote = async (sessionId, note) => {
+        if (!sessionId || !note?.trim()) return null;
+        try {
+            setSaving(true);
+            setError('');
+            const updated = await api.updateMentorNote(sessionId, { mentorNote: note.trim() });
+            setMentorDashboard((current) => current ? {
+                ...current,
+                sessionsNeedingReview: Math.max(0, (current.sessionsNeedingReview || 0) - 1),
+                recentSessions: (current.recentSessions || []).map((session) => session.sessionId === sessionId
+                    ? { ...session, reviewed: true, mentorNote: updated.mentorNote }
+                    : session)
+            } : current);
+            if (lastSession?.id === sessionId) {
+                setLastSession(updated);
+            }
+            await Promise.all([loadReport(selectedUserId), loadMentorDashboard()]);
+            return updated;
+        } catch (err) {
+            setError(err.message);
+            throw err;
         } finally {
             setSaving(false);
         }
@@ -525,6 +552,7 @@ export function useAppData() {
         handleSubmitSession,
         handleCreatePrompt,
         handleMentorNote,
+        handleMentorSessionNote,
         selectedUser,
         selectedSkills,
         filteredChallenges,

@@ -101,6 +101,23 @@ public class ReportService {
                     .forEach(quest -> recommendations.add("Dnevni cilj: " + quest + "."));
         }
 
+        List<ReportResponse.MentorComment> mentorComments = sessions.stream()
+                .filter(session -> session.getMentorNote() != null && !session.getMentorNote().isBlank())
+                .sorted((left, right) -> {
+                    if (left.getCreatedAt() == null && right.getCreatedAt() == null) return 0;
+                    if (left.getCreatedAt() == null) return 1;
+                    if (right.getCreatedAt() == null) return -1;
+                    return right.getCreatedAt().compareTo(left.getCreatedAt());
+                })
+                .map(session -> new ReportResponse.MentorComment(
+                        session.getId(),
+                        session.getSkillKey(),
+                        session.getScore(),
+                        session.getMentorNote(),
+                        session.getCreatedAt() == null ? "" : session.getCreatedAt().toString()
+                ))
+                .toList();
+
         return new ReportResponse(
                 user.getId(),
                 user.getName(),
@@ -115,7 +132,8 @@ public class ReportService {
                 user.getBadges(),
                 dailyQuests,
                 skillProgress,
-                recommendations
+                recommendations,
+                mentorComments
         );
     }
 

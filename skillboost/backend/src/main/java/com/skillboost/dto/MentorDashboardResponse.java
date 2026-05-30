@@ -31,6 +31,7 @@ public record MentorDashboardResponse(
             String skillKey,
             int score,
             boolean reviewed,
+            String mentorNote,
             String createdAt
     ) {}
 }

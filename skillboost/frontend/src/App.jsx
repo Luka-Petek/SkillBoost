@@ -329,6 +329,8 @@ export default function App() {
                                         roles={roles}
                                         isMentor={effectiveIsMentor}
                                         onRefresh={data.loadMentorDashboard}
+                                        onSaveMentorNote={data.handleMentorSessionNote}
+                                        saving={data.saving}
                                     />
                                 )}
 

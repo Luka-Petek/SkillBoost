@@ -1553,7 +1553,7 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
 }
 
 
-export function MentorDashboardSection({ dashboard, users = [], roles = [], isMentor, onRefresh }) {
+export function MentorDashboardSection({ dashboard, users = [], roles = [], isMentor, onRefresh, onSaveMentorNote, saving }) {
     if (!isMentor) {
         return (
             <div className="content-section empty-state">
@@ -1618,19 +1618,62 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
                     <h3>Zadnje simulacije</h3>
                     <div className="mentor-session-list">
                         {(safeDashboard.recentSessions || []).length ? safeDashboard.recentSessions.map((session) => (
-                            <article key={session.sessionId} className="mentor-session-card">
-                                <div>
-                                    <strong>{session.userName}</strong>
-                                    <small>{session.skillKey}</small>
-                                </div>
-                                <span className={session.reviewed ? 'reviewed' : 'needs-review'}>{session.reviewed ? 'pregledano' : 'čaka komentar'}</span>
-                                <b>{session.score}/100</b>
-                            </article>
+                            <MentorSessionReviewCard
+                                key={session.sessionId}
+                                session={session}
+                                saving={saving}
+                                onSaveMentorNote={onSaveMentorNote}
+                            />
                         )) : <p>Ni še simulacij za prikaz.</p>}
                     </div>
                 </section>
             </div>
         </div>
+    );
+}
+
+function MentorSessionReviewCard({ session, saving, onSaveMentorNote }) {
+    const [note, setNote] = useState(session.mentorNote || '');
+    const [status, setStatus] = useState('');
+
+    useEffect(() => {
+        setNote(session.mentorNote || '');
+        setStatus('');
+    }, [session.sessionId, session.mentorNote]);
+
+    const handleSave = async () => {
+        if (!note.trim() || !onSaveMentorNote) return;
+        setStatus('Shranjujem komentar ...');
+        try {
+            await onSaveMentorNote(session.sessionId, note);
+            setStatus('Komentar je shranjen in prikazan v uporabnikovem poročilu.');
+        } catch {
+            setStatus('Komentarja ni bilo mogoče shraniti.');
+        }
+    };
+
+    return (
+        <article className="mentor-session-card mentor-session-card--review">
+            <div className="mentor-session-top">
+                <div>
+                    <strong>{session.userName}</strong>
+                    <small>{session.skillKey} · {session.createdAt ? new Date(session.createdAt).toLocaleDateString('sl-SI') : 'brez datuma'}</small>
+                </div>
+                <b>{session.score}/100</b>
+            </div>
+            <span className={session.reviewed ? 'reviewed' : 'needs-review'}>{session.reviewed ? 'pregledano' : 'čaka komentar'}</span>
+            <textarea
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="Napiši mentorjev komentar, naslednji korak ali domačo nalogo za uporabnika."
+            />
+            <div className="mentor-actions">
+                <small>{status || 'Komentar se po shranjevanju prikaže na poročilu uporabnika.'}</small>
+                <button type="button" className="primary" disabled={saving || !note.trim()} onClick={handleSave}>
+                    {saving ? 'Shranjujem ...' : 'Shrani komentar'}
+                </button>
+            </div>
+        </article>
     );
 }
 
@@ -1670,6 +1713,28 @@ export function ReportSection({ report, skills = [] }) {
                     </article>
                 ))}
             </div>
+            {(report.mentorComments || []).length > 0 && (
+                <article className="mentor-comments-report">
+                    <div className="section-title compact-title">
+                        <div>
+                            <span>Mentorjevi komentarji</span>
+                            <small>Ročne povratne informacije mentorja za tvoje simulacije</small>
+                        </div>
+                    </div>
+                    <div className="mentor-comment-list">
+                        {(report.mentorComments || []).map((comment) => (
+                            <section key={comment.sessionId} className="mentor-comment-card">
+                                <div>
+                                    <strong>{skillName(comment.skillKey)}</strong>
+                                    <span>{comment.score}/100</span>
+                                </div>
+                                <p>{comment.mentorNote}</p>
+                                {comment.createdAt && <small>{new Date(comment.createdAt).toLocaleString('sl-SI')}</small>}
+                            </section>
+                        ))}
+                    </div>
+                </article>
+            )}
             <article className="recommendations">
                 <h3>Priporočila za nadaljnji razvoj</h3>
                 {(report.recommendations || []).map((item) => <p key={item}><Icon name="arrowRight" size={14} /> {item}</p>)}
