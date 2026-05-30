@@ -16,13 +16,23 @@ public record ReportResponse(
         List<String> badges,
         List<DailyQuest> dailyQuests,
         List<SkillProgress> skillProgress,
-        List<String> recommendations
+        List<String> recommendations,
+        List<MentorComment> mentorComments
 ) {
     public record SkillProgress(
             String skillKey,
             long sessions,
             double averageScore,
             String nextSuggestedChallenge
+    ) {
+    }
+
+    public record MentorComment(
+            String sessionId,
+            String skillKey,
+            int score,
+            String mentorNote,
+            String createdAt
     ) {
     }
 }

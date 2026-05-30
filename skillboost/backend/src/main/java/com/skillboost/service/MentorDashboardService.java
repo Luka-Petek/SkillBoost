@@ -53,6 +53,7 @@ public class MentorDashboardService {
                             session.getSkillKey(),
                             session.getScore(),
                             session.getMentorNote() != null && !session.getMentorNote().isBlank(),
+                            session.getMentorNote(),
                             session.getCreatedAt() == null ? "" : session.getCreatedAt().toString()
                     );
                 })
