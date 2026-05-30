@@ -27,6 +27,7 @@ export function useAppData() {
     const [lastReward, setLastReward] = useState(null);
     const [mentorNote, setMentorNote] = useState('');
     const [report, setReport] = useState(null);
+    const [mentorDashboard, setMentorDashboard] = useState(null);
 
     const [newPrompt, setNewPrompt] = useState(emptyPrompt);
 
@@ -131,6 +132,16 @@ export function useAppData() {
         setSelectedChallengeId(firstChallenge?.id || '');
         setNewPrompt((current) => ({ ...current, skillKey: initialSkill }));
     }, []);
+
+    const loadMentorDashboard = useCallback(async () => {
+        if (demoMode) return;
+        try {
+            const dashboard = await api.getMentorDashboard();
+            setMentorDashboard(dashboard);
+        } catch (err) {
+            console.warn('Mentor dashboard ni dosegljiv:', err.message);
+        }
+    }, [demoMode]);
 
     const loadReport = useCallback(async (userId) => {
         if (demoMode) return;
@@ -289,6 +300,7 @@ export function useAppData() {
                 setCompetitionMode(null);
                 setCompetitionOpponentId('');
                 setReport(buildDemoReport(session, selectedSkillKeys, reward, updatedDemoUser));
+                setMentorDashboard(buildDemoMentorDashboard([updatedDemoUser, ...demoRivals], [session]));
                 setUsers([updatedDemoUser, ...demoRivals]);
                 return;
             }
@@ -529,6 +541,51 @@ export function useAppData() {
         handleCancelCompetition,
         myProfile,
         handleUpdateProfile,
+        mentorDashboard,
+        loadMentorDashboard,
+    };
+}
+
+
+function buildDemoStructuredScores(answer, score) {
+    const normalized = (answer || '').toLowerCase();
+    return {
+        clarity: Math.min(100, score + (normalized.includes('najprej') ? 6 : -4)),
+        empathy: Math.min(100, score + (normalized.includes('razumem') || normalized.includes('slišim') ? 10 : -8)),
+        structure: Math.min(100, score + (normalized.includes('korak') ? 8 : -6)),
+        impact: Math.min(100, score + (normalized.includes('primer') ? 8 : -5)),
+        confidence: Math.min(100, score + (normalized.includes('predlagam') ? 7 : -3))
+    };
+}
+
+function buildDemoMentorDashboard(users = [], sessions = []) {
+    return {
+        totalUsers: users.length,
+        totalSessions: sessions.length,
+        averageScore: sessions.length ? Math.round(sessions.reduce((sum, session) => sum + (session.score || 0), 0) / sessions.length) : 0,
+        sessionsNeedingReview: sessions.filter((session) => !session.mentorNote).length,
+        learners: users.map((user) => ({
+            userId: user.id,
+            name: user.name,
+            email: user.email || '',
+            level: user.level || 1,
+            points: user.points || 0,
+            streakDays: user.streakDays || 0,
+            sessions: user.id === sessions[0]?.userId ? sessions.length : 0,
+            averageScore: user.id === sessions[0]?.userId ? sessions[0]?.score || 0 : 0,
+            weakestSkill: sessions[0]?.skillKey || 'še ni podatkov',
+            mentorStatus: user.id === sessions[0]?.userId ? 'Čaka pregled' : 'Ni še začel'
+        })),
+        recentSessions: sessions.map((session) => ({
+            sessionId: session.id,
+            userId: session.userId,
+            userName: users.find((user) => user.id === session.userId)?.name || 'Demo uporabnik',
+            challengeId: session.challengeId,
+            skillKey: session.skillKey,
+            score: session.score,
+            reviewed: Boolean(session.mentorNote),
+            createdAt: new Date().toISOString()
+        }))
     };
 }
 
@@ -551,6 +608,7 @@ function buildDemoSession({ answer, selectedChallenge, selectedSkillKeys, custom
     return {
         id: `demo-session-${Date.now()}`,
         score,
+        structuredScores: buildDemoStructuredScores(answer, score),
         skillKey: selectedSkillKeys.join(','),
         skillKeys: selectedSkillKeys,
         challengeId: selectedChallenge?.id,

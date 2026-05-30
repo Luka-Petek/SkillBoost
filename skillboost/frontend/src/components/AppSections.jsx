@@ -188,6 +188,8 @@ export function EngagementDashboard({
                     </div>
                 </article>
 
+                <AdvancedSkillMatrix report={report} skills={skills} />
+
                 <article className="engagement-panel engagement-panel--arena">
                     <div className="engagement-panel__title">
                         <div>
@@ -228,6 +230,34 @@ export function EngagementDashboard({
                 </article>
             </section>
         </div>
+    );
+}
+
+
+function AdvancedSkillMatrix({ report, skills = [] }) {
+    const rows = (report?.skillProgress || []).slice(0, 5);
+    const skillName = (skillKey) => skills.find((skill) => skill.key === skillKey)?.name || skillKey;
+    return (
+        <article className="engagement-panel advanced-skill-matrix">
+            <div className="engagement-panel__title">
+                <div>
+                    <p className="eyebrow">Advanced dashboard</p>
+                    <h3>Skill health matrix</h3>
+                </div>
+            </div>
+            {rows.length ? rows.map((row) => (
+                <div key={row.skillKey} className="matrix-row">
+                    <div>
+                        <strong>{skillName(row.skillKey)}</strong>
+                        <small>{row.sessions} vaj</small>
+                    </div>
+                    <div className="matrix-meter"><span style={{ width: `${Math.min(100, row.averageScore || 0)}%` }} /></div>
+                    <b>{row.averageScore}/100</b>
+                </div>
+            )) : (
+                <p>Po prvi simulaciji se tukaj prikaže napredna matrika veščin.</p>
+            )}
+        </article>
     );
 }
 
@@ -637,6 +667,8 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                     </div>
                 </div>
 
+                <VoiceCoachPanel isListening={isListening} voiceStatus={voiceStatus} answerStats={answerStats} />
+
                 <label>Tvoj odgovor
                     <div className="answer-composer">
                            <textarea
@@ -808,6 +840,29 @@ function DailyPersonalizedChallengeCard({ challenge, active, onStart, onCancel, 
     );
 }
 
+
+function VoiceCoachPanel({ isListening, voiceStatus, answerStats }) {
+    const supported = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
+    const speechTip = answerStats.words < 25
+        ? 'Poskusi povedati vsaj 25 besed: kontekst, predlog in zaključek.'
+        : answerStats.percent < 70
+            ? 'Dodaj jasen naslednji korak ali vprašanje za sogovornika.'
+            : 'Odlično. Odgovor je dovolj konkreten za AI oceno.';
+    return (
+        <article className={`voice-coach-panel ${isListening ? 'active' : ''}`}>
+            <span className="voice-pulse" aria-hidden="true"><Icon name="microphone" /></span>
+            <div>
+                <strong>{supported ? 'Voice simulation pripravljena' : 'Voice simulation ni podprta v tem brskalniku'}</strong>
+                <p>{voiceStatus || speechTip}</p>
+            </div>
+            <div className="voice-stats">
+                <span>{answerStats.words} besed</span>
+                <span>{answerStats.percent}% kakovost</span>
+            </div>
+        </article>
+    );
+}
+
 function MicrophoneIcon() {
     return (
         <svg className="composer-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -920,6 +975,7 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
                     <span>AI povratna informacija</span>
                     <small>hitro razdeljeno na pohvalo, izboljšavo, primer in naslednje vprašanje</small>
                 </div>
+                <StructuredScorePanel scores={lastSession.structuredScores} />
                 <FeedbackSections text={lastSession.aiFeedback} score={lastSession.score} />
                 <FeedbackInsightSummary text={lastSession.aiFeedback} score={lastSession.score} dailyDoubleXp={lastSession.dailyDoubleXp} />
                 {reward?.newBadges?.length > 0 && <div className="new-badges">{reward.newBadges.map((badge) => <span key={badge}><Icon name="medal" size={15} /> {badge}</span>)}</div>}
@@ -930,6 +986,38 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
                 </div>
             </div>
         </article>
+    );
+}
+
+
+function StructuredScorePanel({ scores }) {
+    const labels = {
+        clarity: 'Jasnost',
+        empathy: 'Empatija',
+        structure: 'Struktura',
+        impact: 'Učinek',
+        confidence: 'Samozavest'
+    };
+    const entries = Object.entries(scores || {});
+    if (!entries.length) return null;
+    return (
+        <section className="structured-score-panel">
+            <div className="section-title compact-title">
+                <span>Strukturirano AI ocenjevanje</span>
+                <small>5 meril, ki jih lahko mentor in dashboard spremljata skozi čas</small>
+            </div>
+            <div className="structured-score-grid">
+                {entries.map(([key, value]) => (
+                    <div key={key} className="structured-score-item">
+                        <div>
+                            <strong>{labels[key] || key}</strong>
+                            <span>{value}/100</span>
+                        </div>
+                        <div className="progress-bar"><span style={{ width: `${Math.min(100, Math.max(0, value))}%` }} /></div>
+                    </div>
+                ))}
+            </div>
+        </section>
     );
 }
 
@@ -1459,6 +1547,88 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
                     </div>
                     <button className="primary" disabled={saving || !authenticated}>{authenticated ? 'Shrani prompt' : 'Prijavi se za shranjevanje'}</button>
                 </form>
+            </div>
+        </div>
+    );
+}
+
+
+export function MentorDashboardSection({ dashboard, users = [], roles = [], isMentor, onRefresh }) {
+    if (!isMentor) {
+        return (
+            <div className="content-section empty-state">
+                Mentor dashboard je dostopen samo uporabnikom z vlogo MENTOR ali ADMIN.
+                <small>Trenutne vloge: {roles?.join(', ') || 'brez prijave'}</small>
+            </div>
+        );
+    }
+
+    const safeDashboard = dashboard || {
+        totalUsers: users.length,
+        totalSessions: 0,
+        averageScore: 0,
+        sessionsNeedingReview: 0,
+        learners: users.map((user) => ({
+            userId: user.id, name: user.name, email: user.email, level: user.level || 1, points: user.points || 0,
+            streakDays: user.streakDays || 0, sessions: 0, averageScore: 0, weakestSkill: 'še ni podatkov', mentorStatus: 'Naloži dashboard'
+        })),
+        recentSessions: []
+    };
+
+    return (
+        <div className="content-section mentor-dashboard-section">
+            <div className="section-title">
+                <div>
+                    <span>Mentor dashboard</span>
+                    <small>Pregled napredka, šibkih področij in simulacij za ročni komentar</small>
+                </div>
+                <button type="button" className="secondary" onClick={onRefresh}>Osveži</button>
+            </div>
+
+            <div className="report-grid">
+                <MetricCard label="Uporabniki" value={safeDashboard.totalUsers} helper="v sistemu" />
+                <MetricCard label="Simulacije" value={safeDashboard.totalSessions} helper="skupno oddanih" />
+                <MetricCard label="Povprečje" value={`${safeDashboard.averageScore}/100`} helper="vseh uporabnikov" />
+                <MetricCard label="Za pregled" value={safeDashboard.sessionsNeedingReview} helper="brez mentor note" />
+            </div>
+
+            <div className="mentor-layout">
+                <section className="mentor-panel">
+                    <h3>Učenci po prioriteti</h3>
+                    <div className="mentor-learner-list">
+                        {(safeDashboard.learners || []).map((learner) => (
+                            <article key={learner.userId} className="mentor-learner-card">
+                                <div>
+                                    <strong>{learner.name || 'Uporabnik'}</strong>
+                                    <small>{learner.email || 'brez e-maila'}</small>
+                                </div>
+                                <div className="mentor-metrics">
+                                    <span>Level {learner.level}</span>
+                                    <span>{learner.sessions} vaj</span>
+                                    <span>{learner.averageScore}/100</span>
+                                </div>
+                                <p>Najšibkejša veščina: <b>{learner.weakestSkill}</b></p>
+                                <span className="pill">{learner.mentorStatus}</span>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mentor-panel">
+                    <h3>Zadnje simulacije</h3>
+                    <div className="mentor-session-list">
+                        {(safeDashboard.recentSessions || []).length ? safeDashboard.recentSessions.map((session) => (
+                            <article key={session.sessionId} className="mentor-session-card">
+                                <div>
+                                    <strong>{session.userName}</strong>
+                                    <small>{session.skillKey}</small>
+                                </div>
+                                <span className={session.reviewed ? 'reviewed' : 'needs-review'}>{session.reviewed ? 'pregledano' : 'čaka komentar'}</span>
+                                <b>{session.score}/100</b>
+                            </article>
+                        )) : <p>Ni še simulacij za prikaz.</p>}
+                    </div>
+                </section>
             </div>
         </div>
     );

@@ -1,0 +1,355 @@
+/* Mentor dashboard visual polish */
+.mentor-dashboard-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.mentor-dashboard-section .section-title {
+  align-items: center;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--border, #27324a) 70%, transparent);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent, #8b5cf6) 20%, transparent), transparent 34%),
+    color-mix(in srgb, var(--surface, #111827) 94%, transparent);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .18);
+}
+
+.mentor-dashboard-section .section-title span {
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.mentor-dashboard-section .section-title small {
+  display: block;
+  margin-top: .35rem;
+  color: color-mix(in srgb, var(--text-muted, #94a3b8) 92%, transparent);
+}
+
+.mentor-dashboard-section .report-grid {
+  gap: 1rem;
+}
+
+.mentor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .85fr);
+  gap: 1.15rem;
+  align-items: start;
+}
+
+.mentor-panel {
+  border: 1px solid color-mix(in srgb, var(--border, #27324a) 72%, transparent);
+  border-radius: 28px;
+  padding: 1.15rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface, #111827) 96%, transparent), color-mix(in srgb, var(--surface-soft, #0f172a) 92%, transparent));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .18);
+  overflow: hidden;
+}
+
+.mentor-panel h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.mentor-panel h3::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent, #8b5cf6) 55%, transparent), transparent);
+}
+
+.mentor-learner-list,
+.mentor-session-list {
+  display: grid;
+  gap: .9rem;
+}
+
+.mentor-learner-card,
+.mentor-session-card {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--border, #27324a) 68%, transparent);
+  border-radius: 24px;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent, #8b5cf6) 13%, transparent), transparent 34%),
+    color-mix(in srgb, var(--surface-soft, #0f172a) 82%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 16px 38px rgba(0, 0, 0, .14);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.mentor-learner-card:hover,
+.mentor-session-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent, #8b5cf6) 45%, var(--border, #27324a));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 22px 48px rgba(0, 0, 0, .2);
+}
+
+.mentor-learner-card {
+  display: grid;
+  gap: .75rem;
+}
+
+.mentor-learner-card > div:first-child,
+.mentor-session-card > div:first-child {
+  display: grid;
+  gap: .15rem;
+  min-width: 0;
+}
+
+.mentor-learner-card strong,
+.mentor-session-card strong {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1.2;
+  font-weight: 900;
+  color: var(--text, #f8fafc);
+}
+
+.mentor-learner-card small,
+.mentor-session-card small {
+  display: block;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--text-muted, #94a3b8) 92%, transparent);
+  font-size: .82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mentor-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .55rem;
+}
+
+.mentor-metrics span,
+.mentor-session-card span,
+.mentor-learner-card .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border: 1px solid color-mix(in srgb, var(--border, #27324a) 62%, transparent);
+  border-radius: 999px;
+  padding: .42rem .7rem;
+  background: color-mix(in srgb, var(--surface, #111827) 78%, transparent);
+  color: color-mix(in srgb, var(--text, #f8fafc) 88%, transparent);
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mentor-learner-card p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  margin: 0;
+  padding: .75rem .85rem;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface, #111827) 70%, transparent);
+  color: color-mix(in srgb, var(--text-muted, #94a3b8) 95%, transparent);
+}
+
+.mentor-learner-card p b {
+  color: var(--text, #f8fafc);
+  text-align: right;
+}
+
+.mentor-learner-card .pill {
+  width: fit-content;
+  color: color-mix(in srgb, var(--accent, #a78bfa) 85%, white);
+  background: color-mix(in srgb, var(--accent, #8b5cf6) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #8b5cf6) 35%, transparent);
+}
+
+.mentor-session-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: .8rem;
+}
+
+.mentor-session-card b {
+  display: inline-grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--accent, #8b5cf6) 16%, transparent);
+  color: var(--text, #f8fafc);
+  font-size: .95rem;
+  font-weight: 900;
+}
+
+.mentor-session-card .needs-review {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, .14);
+  border-color: rgba(245, 158, 11, .28);
+}
+
+.mentor-session-card .reviewed {
+  color: #86efac;
+  background: rgba(34, 197, 94, .14);
+  border-color: rgba(34, 197, 94, .28);
+}
+
+@media (max-width: 980px) {
+  .mentor-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .mentor-dashboard-section .section-title {
+    padding: 1rem;
+  }
+
+  .mentor-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .mentor-learner-card p,
+  .mentor-session-card {
+    grid-template-columns: 1fr;
+  }
+
+  .mentor-session-card b {
+    width: 100%;
+    height: 42px;
+  }
+}
+.mentor-dashboard-section .mentor-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.mentor-dashboard-section .mentor-panel {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 18px 50px rgba(2, 6, 23, 0.35);
+}
+
+.mentor-dashboard-section .mentor-panel h3 {
+    margin: 0 0 18px;
+    font-size: 1.15rem;
+}
+
+.mentor-dashboard-section .mentor-learner-list,
+.mentor-dashboard-section .mentor-session-list {
+    display: grid;
+    gap: 16px;
+}
+
+.mentor-dashboard-section .mentor-learner-card {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.mentor-dashboard-section .mentor-learner-card > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mentor-dashboard-section .mentor-learner-card strong {
+    font-size: 1.05rem;
+    color: #f8fafc;
+}
+
+.mentor-dashboard-section .mentor-learner-card small {
+    color: #94a3b8;
+    font-size: 0.88rem;
+}
+
+.mentor-dashboard-section .mentor-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mentor-dashboard-section .mentor-metrics span,
+.mentor-dashboard-section .pill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #c4b5fd;
+    background: rgba(124, 58, 237, 0.14);
+    border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.mentor-dashboard-section .mentor-learner-card p {
+    margin: 0;
+    color: #cbd5e1;
+}
+
+.mentor-dashboard-section .mentor-session-card {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(30, 41, 59, 0.82);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.mentor-dashboard-section .mentor-session-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.mentor-dashboard-section .mentor-session-card small {
+    color: #94a3b8;
+}
+
+.mentor-dashboard-section .needs-review,
+.mentor-dashboard-section .reviewed {
+    border-radius: 999px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.mentor-dashboard-section .needs-review {
+    color: #fde68a;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.mentor-dashboard-section .reviewed {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.14);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+@media (max-width: 900px) {
+    .mentor-dashboard-section .mentor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .mentor-dashboard-section .mentor-session-card {
+        grid-template-columns: 1fr;
+    }
+}
