@@ -1,7 +1,7 @@
-/* Moj profil section: clean account hub, goals, preferences and coaching insight */
+/* Profile page: tighter account hub + integrated 3D player block. */
 .profile-page {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   min-height: 0;
 }
 
@@ -9,36 +9,37 @@
 .profile-card,
 .profile-stat-card,
 .profile-success {
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--panel-strong) 72%, transparent);
-  box-shadow: 0 18px 55px rgba(2, 6, 23, 0.14);
+  border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
+  background: color-mix(in srgb, var(--panel-strong) 66%, transparent);
+  box-shadow: 0 16px 46px rgba(2, 6, 23, 0.14);
+  backdrop-filter: blur(14px);
 }
 
 .profile-hero-card {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 18px;
+  gap: 16px;
   align-items: center;
   overflow: hidden;
-  padding: 18px;
-  border-radius: 28px;
+  padding: 16px;
+  border-radius: 26px;
   background:
-    radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 18rem),
-    radial-gradient(circle at 86% 20%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 18rem),
-    color-mix(in srgb, var(--panel-strong) 78%, transparent);
+    radial-gradient(circle at 8% 10%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 20rem),
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 18rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel-strong) 74%, transparent), color-mix(in srgb, var(--panel) 80%, transparent));
 }
 
 .profile-hero-card::after {
   content: '';
   position: absolute;
-  right: -70px;
-  top: -90px;
-  width: 210px;
-  height: 210px;
+  right: -86px;
+  top: -96px;
+  width: 220px;
+  height: 220px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--primary) 16%, transparent);
-  filter: blur(10px);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  filter: blur(12px);
   pointer-events: none;
 }
 
@@ -53,35 +54,39 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
-  border-radius: 26px;
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 24%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 24%),
     linear-gradient(135deg, var(--primary), var(--primary-strong) 48%, var(--accent));
   color: white;
-  font-size: 1.8rem;
+  font-size: 1.55rem;
   font-weight: 950;
   letter-spacing: -0.08em;
-  box-shadow: 0 20px 44px color-mix(in srgb, var(--primary) 28%, transparent);
+  box-shadow: 0 18px 38px color-mix(in srgb, var(--primary) 24%, transparent);
 }
 
 .profile-avatar-ring {
   position: absolute;
-  inset: -7px;
-  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
-  border-radius: 32px;
+  inset: -6px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  border-radius: 28px;
 }
 
 .profile-hero-copy {
   display: grid;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
 
-.profile-hero-copy h2 {
+.profile-hero-copy h2,
+.profile-hero-copy p {
   margin: 0;
-  font-size: clamp(1.65rem, 3vw, 2.6rem);
+}
+
+.profile-hero-copy h2 {
+  font-size: clamp(1.55rem, 2.6vw, 2.25rem);
   line-height: 0.98;
   letter-spacing: -0.07em;
 }
@@ -89,20 +94,20 @@
 .profile-meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 
 .profile-meta-row span {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 34px;
+  min-height: 32px;
   padding: 7px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  background: color-mix(in srgb, var(--panel) 76%, transparent);
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 850;
 }
 
@@ -136,20 +141,23 @@
 .profile-overview-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 9px;
 }
 
 .profile-stat-card {
   display: grid;
-  gap: 5px;
-  min-height: 106px;
-  padding: 14px;
-  border-radius: 20px;
+  gap: 4px;
+  min-height: 88px;
+  padding: 12px;
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 9rem),
+    color-mix(in srgb, var(--panel-strong) 62%, transparent);
 }
 
 .profile-stat-card span {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 950;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -157,28 +165,29 @@
 
 .profile-stat-card strong {
   color: var(--text);
-  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-size: clamp(1.28rem, 2.4vw, 1.8rem);
   line-height: 1;
   letter-spacing: -0.05em;
 }
 
 .profile-stat-card small {
   color: var(--muted);
+  font-size: .78rem;
   font-weight: 800;
 }
 
 .profile-layout-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
   gap: 12px;
   align-items: start;
 }
 
 .profile-card {
   display: grid;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 24px;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 23px;
 }
 
 .profile-card-head {
@@ -186,13 +195,17 @@
   justify-content: space-between;
   gap: 14px;
   align-items: flex-start;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  padding-bottom: 11px;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
 }
 
 .profile-card-head h3,
 .profile-card-head p {
   margin: 0;
+}
+
+.profile-card-head h3 {
+  font-size: 1.05rem;
 }
 
 .profile-card-head > .app-icon {
@@ -201,7 +214,7 @@
 
 .profile-edit-form {
   display: grid;
-  gap: 13px;
+  gap: 12px;
 }
 
 .profile-edit-form label {
@@ -214,7 +227,7 @@
 .profile-edit-form input,
 .profile-edit-form textarea {
   width: 100%;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
   border-radius: 16px;
   background: color-mix(in srgb, var(--panel) 78%, transparent);
   color: var(--text);
@@ -233,7 +246,7 @@
   outline: 0;
   border-color: color-mix(in srgb, var(--primary) 64%, var(--border));
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent);
-  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+  background: color-mix(in srgb, var(--panel-strong) 84%, transparent);
 }
 
 .profile-edit-form small {
@@ -249,7 +262,7 @@
 
 .profile-display-list {
   display: grid;
-  gap: 16px;
+  gap: 15px;
 }
 
 .profile-display-list > div {
@@ -259,7 +272,7 @@
 
 .profile-display-list > div > span {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.73rem;
   font-weight: 950;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -275,13 +288,13 @@
 .profile-tag-list small {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 33px;
   padding: 7px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
   border-radius: 999px;
   background: color-mix(in srgb, var(--primary) 8%, var(--panel));
   color: var(--text);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 850;
 }
 
@@ -293,27 +306,27 @@
 
 .profile-insight-list {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 .profile-insight-list article {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 11px;
   align-items: center;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--panel) 76%, transparent);
+  padding: 11px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
 }
 
 .profile-insight-list article > .app-icon {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   padding: 10px;
-  border-radius: 15px;
+  border-radius: 14px;
   background: color-mix(in srgb, var(--primary) 12%, transparent);
   color: var(--primary);
 }
@@ -322,7 +335,7 @@
   display: block;
   margin-bottom: 4px;
   color: var(--muted);
-  font-size: 0.73rem;
+  font-size: 0.71rem;
   font-weight: 950;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -357,5 +370,59 @@
 
   .profile-overview-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* v9 profile-page polish: keep every profile block visible inside the app shell. */
+.profile-page.content-section,
+.profile-page {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  align-content: start;
+}
+
+.profile-hero-card,
+.profile-overview-grid,
+.profile-layout-grid,
+.profile-card,
+.profile-stat-card {
+  min-width: 0;
+}
+
+.profile-hero-card {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  row-gap: 12px;
+}
+
+.profile-hero-actions {
+  min-width: 0;
+}
+
+.profile-hero-actions button {
+  white-space: nowrap;
+}
+
+.profile-overview-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.profile-layout-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+}
+
+@media (max-width: 880px) {
+  .profile-hero-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .profile-hero-actions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+  }
+
+  .profile-hero-actions button {
+    width: 100%;
+    justify-content: center;
   }
 }
