@@ -11,8 +11,17 @@ function markLoginIntroPending() {
     }
 }
 
+
+function extractRoles() {
+    const realmRoles = keycloak.tokenParsed?.realm_access?.roles || [];
+    const resourceRoles = Object.values(keycloak.tokenParsed?.resource_access || {})
+        .flatMap((resource) => resource?.roles || []);
+    return [...new Set([...realmRoles, ...resourceRoles].map((role) => String(role).toUpperCase().replace(/-/g, '_')))];
+}
+
 export function useAuth(onAuthSuccess, onAuthFail) {
     const [authenticated, setAuthenticated] = useState(false);
+    const [roles, setRoles] = useState([]);
     const isRun = useRef(false);
 
     useEffect(() => {
@@ -26,6 +35,7 @@ export function useAuth(onAuthSuccess, onAuthFail) {
         .then((auth) => {
             if (auth) {
                 setAuthenticated(true);
+                setRoles(extractRoles());
                 localStorage.setItem('token', keycloak.token);
                 onAuthSuccess();
             } else {
@@ -44,6 +54,7 @@ export function useAuth(onAuthSuccess, onAuthFail) {
                 keycloak.updateToken(70).then((refreshed) => {
                     if (refreshed) {
                         localStorage.setItem('token', keycloak.token);
+                        setRoles(extractRoles());
                     }
                 });
             }
@@ -68,6 +79,9 @@ export function useAuth(onAuthSuccess, onAuthFail) {
         handleLogin,
         handleRegister,
         handleLogout,
-        username: keycloak.tokenParsed?.preferred_username
+        username: keycloak.tokenParsed?.preferred_username,
+        roles,
+        isMentor: roles.includes('MENTOR') || roles.includes('ADMIN'),
+        isAdmin: roles.includes('ADMIN')
     };
 }

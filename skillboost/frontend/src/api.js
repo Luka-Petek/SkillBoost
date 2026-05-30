@@ -41,6 +41,7 @@ export const api = {
   submitSession: (payload) => request('/sessions', { method: 'POST', body: JSON.stringify(payload) }),
   updateMentorNote: (sessionId, payload) => request(`/sessions/${sessionId}/mentor-note`, { method: 'PATCH', body: JSON.stringify(payload) }),
   getReport: (userId) => request(`/reports/${userId}`),
+  getMentorDashboard: () => request('/mentor/dashboard'),
   getProfile: () => request('/profile'),
   updateProfile: (payload) => request('/profile', { method: 'PUT', body: JSON.stringify(payload) })
 };

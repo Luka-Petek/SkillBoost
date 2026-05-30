@@ -11,6 +11,7 @@ import {
     DailyQuests,
     EngagementDashboard,
     GrowthFocusPanel,
+    MentorDashboardSection,
     MetricCard,
     PromptsSection,
     ReportSection,
@@ -28,6 +29,7 @@ const navItems = [
     { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
     { key: 'prompts', label: 'Prompti', icon: 'sparkles' },
     { key: 'report', label: 'Poročilo', icon: 'chart' },
+    { key: 'mentor', label: 'Mentor', icon: 'userTie', mentorOnly: true },
     { key: 'profile', label: 'Profil', icon: 'users', protected: true }
 ];
 
@@ -66,6 +68,11 @@ const sectionMeta = {
         eyebrow: 'Račun',
         title: 'Moj profil',
         helper: 'Uredi osebni profil in preference.'
+    },
+    mentor: {
+        eyebrow: 'Mentorski vpogled',
+        title: 'Mentor dashboard',
+        helper: 'Preglej uporabnike, šibke veščine in simulacije, ki čakajo na komentar.'
     }
 };
 
@@ -91,7 +98,7 @@ export default function App() {
     const { theme, toggleTheme } = useTheme();
     const data = useAppData();
 
-    const { authenticated, handleLogin, handleRegister, handleLogout, username } = useAuth(
+    const { authenticated, handleLogin, handleRegister, handleLogout, username, isMentor, roles } = useAuth(
         data.handleSuccessfulAuth,
         data.loadPublicData
     );
@@ -103,6 +110,7 @@ export default function App() {
         }
     }, [authenticated]);
 
+    const effectiveIsMentor = isMentor || ['MENTOR', 'ADMIN'].includes(String(data.myProfile?.role || data.selectedUser?.role || '').toUpperCase());
     const selectedSkillNames = data.selectedSkills.map((skill) => skill.name).join(', ') || 'Izberi veščine';
     const selectedSkills = data.skills.filter((skill) => data.selectedSkillKeys.includes(skill.key));
     const player = data.selectedUser || {};
@@ -112,11 +120,14 @@ export default function App() {
     const currentMeta = sectionMeta[activeSection] || sectionMeta.simulator;
 
     const nav = useMemo(
-        () => navItems.filter((item) => authenticated || !item.protected),
-        [authenticated]
+        () => navItems.filter((item) => (authenticated || !item.protected) && (!item.mentorOnly || effectiveIsMentor)),
+        [authenticated, effectiveIsMentor]
     );
 
     const handleNavigate = (sectionKey) => {
+        if (sectionKey === 'mentor') {
+            data.loadMentorDashboard?.();
+        }
         setActiveSection(sectionKey);
     };
 
@@ -311,6 +322,15 @@ export default function App() {
                                 )}
 
                                 {activeSection === 'report' && <ReportSection report={data.report} skills={data.skills} />}
+                                {activeSection === 'mentor' && (
+                                    <MentorDashboardSection
+                                        dashboard={data.mentorDashboard}
+                                        users={data.users}
+                                        roles={roles}
+                                        isMentor={effectiveIsMentor}
+                                        onRefresh={data.loadMentorDashboard}
+                                    />
+                                )}
 
                                 {activeSection === 'profile' && (
                                     <ProfileSection

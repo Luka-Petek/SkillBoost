@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Document("training_sessions")
 public class TrainingSession {
@@ -24,6 +26,7 @@ public class TrainingSession {
     private String aiFeedback;
     private String mentorNote;
     private int score;
+    private Map<String, Integer> structuredScores = new LinkedHashMap<>();
     private int earnedXp;
     private int earnedStars;
     private boolean dailyDoubleXp;
@@ -103,6 +106,14 @@ public class TrainingSession {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public Map<String, Integer> getStructuredScores() {
+        return structuredScores;
+    }
+
+    public void setStructuredScores(Map<String, Integer> structuredScores) {
+        this.structuredScores = structuredScores == null ? new LinkedHashMap<>() : structuredScores;
     }
 
     public int getEarnedXp() {

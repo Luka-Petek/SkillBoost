@@ -45,8 +45,8 @@ public class TrainingSessionService {
 
     private static SimpleClientHttpRequestFactory createRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(4_000);
-        factory.setReadTimeout(18_000);
+        factory.setConnectTimeout(3_000);
+        factory.setReadTimeout(10_000);
         return factory;
     }
 
@@ -62,10 +62,10 @@ public class TrainingSessionService {
     @Value("${spring.gemini.fallback-enabled:false}")
     private boolean geminiFallbackEnabled;
 
-    @Value("${spring.gemini.max-output-tokens:320}")
+    @Value("${spring.gemini.max-output-tokens:180}")
     private int geminiMaxOutputTokens;
 
-    @Value("${spring.gemini.temperature:0.25}")
+    @Value("${spring.gemini.temperature:0.2}")
     private double geminiTemperature;
 
     @Value("${spring.gemini.thinking-budget:0}")
@@ -106,12 +106,33 @@ public class TrainingSessionService {
         List<String> skillKeys = normalizeSkillKeys(request, challenge);
         String storedSkillKey = String.join(",", skillKeys);
 
-        int score = calculateScore(request.userAnswer(), challenge.getEvaluationCriteria(), skillKeys);
+        Map<String, Integer> structuredScores = calculateStructuredScores(
+                request.userAnswer(),
+                challenge.getEvaluationCriteria(),
+                skillKeys
+        );
+
+        int score = Math.round((float) structuredScores.values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0));
+
         String customSituation = normalizeOptionalText(request.customSituation());
         List<TrainingSession> todaysSessions = findTodaysSessions(user.getId());
+
         boolean dailyDoubleXp = request.dailyDoubleXp()
                 && todaysSessions.stream().noneMatch(TrainingSession::isDailyDoubleXp);
-        String feedback = generateRealAiFeedback(skillKeys, challenge, request.userAnswer(), score, customSituation, dailyDoubleXp);
+
+        String feedback = generateRealAiFeedback(
+                skillKeys,
+                challenge,
+                request.userAnswer(),
+                score,
+                customSituation,
+                dailyDoubleXp,
+                structuredScores
+        );
 
         TrainingSession session = new TrainingSession();
         session.setUserId(user.getId());
@@ -120,6 +141,7 @@ public class TrainingSessionService {
         session.setSkillKeys(skillKeys);
         session.setUserAnswer(request.userAnswer());
         session.setScore(score);
+        session.setStructuredScores(structuredScores);
         session.setAiFeedback(feedback);
         session.setCustomSituation(customSituation);
         session.setDailyDoubleXp(dailyDoubleXp);
@@ -131,6 +153,7 @@ public class TrainingSessionService {
         RewardSummary reward = gamificationService.applyReward(user, session, sessionsIncludingCurrent);
         TrainingSession saved = sessionRepository.save(session);
         UserProfile savedUser = userRepository.save(user);
+
         return new SessionSubmissionResponse(saved, reward, savedUser);
     }
 
@@ -143,21 +166,26 @@ public class TrainingSessionService {
 
     private List<String> normalizeSkillKeys(SubmitSessionRequest request, TrainingChallenge challenge) {
         LinkedHashSet<String> keys = new LinkedHashSet<>();
+
         if (request.skillKeys() != null) {
             request.skillKeys().stream()
                     .filter(value -> value != null && !value.isBlank())
                     .map(String::trim)
                     .forEach(keys::add);
         }
+
         if (request.skillKey() != null && !request.skillKey().isBlank()) {
             keys.add(request.skillKey().trim());
         }
+
         if (challenge.getSkillKey() != null && !challenge.getSkillKey().isBlank()) {
             keys.add(challenge.getSkillKey().trim());
         }
+
         if (keys.isEmpty()) {
             keys.add("general-soft-skills");
         }
+
         return new ArrayList<>(keys);
     }
 
@@ -167,41 +195,79 @@ public class TrainingSessionService {
             String answer,
             int score,
             String customSituation,
-            boolean dailyDoubleXp
+            boolean dailyDoubleXp,
+            Map<String, Integer> structuredScores
     ) {
-        String primarySkillKey = skillKeys.get(0);
         if (apiKey == null || apiKey.isBlank()) {
             return handleAiFailure(
                     skillKeys,
                     challenge,
                     score,
-                    "GEMINI_API_KEY is missing. Create a local .env file or set the environment variable before starting the backend."
+                    "GEMINI_API_KEY is missing."
             );
         }
 
+        String normalizedAnswer = answer == null ? "" : answer.trim();
+        int words = normalizedAnswer.isBlank() ? 0 : normalizedAnswer.split("\\s+").length;
+
+        if (words < 3 || normalizedAnswer.length() < 10) {
+            return """
+                    Ocena: %d/100
+                    Dobro: Odgovor je bil oddan.
+                    Izboljšaj: Odgovor je prekratek za realno oceno.
+                    Boljša verzija: Dodaj konkreten odgovor z uvodom, razlago in zaključkom.
+                    Mini izziv: Napiši vsaj 40 besed.
+                    """.formatted(score).trim();
+        }
+
         try {
-            LearningPrompt promptTemplate = promptRepository.findBySkillKeyIgnoreCase(primarySkillKey)
+            LearningPrompt promptTemplate = promptRepository.findBySkillKeyIgnoreCase(skillKeys.get(0))
                     .stream()
                     .findFirst()
                     .orElse(null);
 
             String systemPrompt = promptTemplate != null
                     ? promptTemplate.getSystemPrompt()
-                    : "You are an interactive soft-skills coach. Evaluate clearly and ask one useful follow-up question.";
-            String userTemplate = promptTemplate != null
-                    ? promptTemplate.getUserPromptTemplate()
-                    : "Evaluate this answer: {{answer}}";
+                    : "Si slovenski AI coach za mehke veščine. Ocenjuj logično glede na vprašanje, kontekst in kakovost odgovora.";
 
             String criteria = challenge.getEvaluationCriteria() == null
                     ? ""
                     : String.join(", ", challenge.getEvaluationCriteria());
+
             String effectiveScenario = customSituation == null || customSituation.isBlank()
                     ? challenge.getScenario()
                     : customSituation;
-            String finalUserPrompt = userTemplate
-                    .replace("{{answer}}", limitText(answer, 1_200))
-                    .replace("{{scenario}}", limitText(effectiveScenario, 700))
-                    .replace("{{criteria}}", criteria);
+
+            String fullAiPrompt = String.format(
+                    """
+                    %s
+
+                    Naloga: %s
+                    Situacija: %s
+                    Veščine: %s
+                    Kriteriji: %s
+                    Odgovor uporabnika: %s
+                    Lokalna ocena: %d/100
+                    Podocene: %s
+
+                    Vrni samo v slovenščini. Največ 80 besed.
+                    Bodi konkreten, pošten in uporaben.
+                    Format:
+                    Ocena:
+                    Dobro:
+                    Izboljšaj:
+                    Boljša verzija:
+                    Mini izziv:
+                    """,
+                    limitText(systemPrompt, 280),
+                    limitText(challenge.getTitle(), 140),
+                    limitText(effectiveScenario, 300),
+                    String.join(", ", skillKeys),
+                    limitText(criteria, 180),
+                    limitText(answer, 800),
+                    score,
+                    buildStructuredScoreText(structuredScores)
+            );
 
             String url = String.format(
                     "%s/v1beta/models/%s:generateContent?key=%s",
@@ -209,23 +275,12 @@ public class TrainingSessionService {
                     geminiModel,
                     apiKey
             );
-            String fullAiPrompt = String.format(
-                    "SYSTEM INSTRUCTION:\n%s\n\nUSER PROMPT:\n%s\n\nContext:\n- Challenge title: %s\n- Situation to evaluate: %s\n- Skills: %s\n- Expected outcome: %s\n- Local score: %d/100\n- Daily double XP active: %s\n\nReturn only Slovenian feedback. Keep it under 130 words. Use exactly these labels, each on a new line: Ocena:, V čem si dober:, Kje še izboljšaj:, Boljša verzija:, Naslednji mini izziv:. Be specific, practical and encouraging. No markdown table.",
-                    limitText(systemPrompt, 650),
-                    finalUserPrompt,
-                    limitText(challenge.getTitle(), 180),
-                    limitText(effectiveScenario, 500),
-                    String.join(", ", skillKeys),
-                    limitText(challenge.getExpectedOutcome(), 240),
-                    score,
-                    dailyDoubleXp ? "yes" : "no"
-            );
 
             Map<String, Object> generationConfig = new LinkedHashMap<>();
             generationConfig.put("temperature", geminiTemperature);
             generationConfig.put("maxOutputTokens", geminiMaxOutputTokens);
             generationConfig.put("candidateCount", 1);
-            generationConfig.put("topP", 0.8);
+            generationConfig.put("topP", 0.7);
 
             if (geminiModel.toLowerCase(Locale.ROOT).startsWith("gemini-3")) {
                 generationConfig.put("thinkingConfig", Map.of("thinkingLevel", geminiThinkingLevel));
@@ -251,6 +306,7 @@ public class TrainingSessionService {
                     .body(Map.class);
 
             String text = extractGeminiText(response);
+
             if (text != null && !text.isBlank()) {
                 return text.trim();
             }
@@ -262,6 +318,212 @@ public class TrainingSessionService {
         }
     }
 
+    private Map<String, Integer> calculateStructuredScores(String answer, List<String> criteria, List<String> skillKeys) {
+        String normalized = answer == null ? "" : answer.trim().toLowerCase(Locale.ROOT);
+        int words = normalized.isBlank() ? 0 : normalized.split("\\s+").length;
+
+        Map<String, Integer> scores = new LinkedHashMap<>();
+
+        if (isGarbageAnswer(answer)) {
+            scores.put("clarity", 1);
+            scores.put("empathy", 0);
+            scores.put("structure", 0);
+            scores.put("impact", 0);
+            scores.put("confidence", 1);
+            return scores;
+        }
+
+        if (words < 3 || normalized.length() < 10) {
+            scores.put("clarity", 5);
+            scores.put("empathy", 2);
+            scores.put("structure", 2);
+            scores.put("impact", 2);
+            scores.put("confidence", 5);
+            return scores;
+        }
+
+        if (words < 8) {
+            scores.put("clarity", 24);
+            scores.put("empathy", containsAny(normalized, "razumem", "oprosti", "hvala") ? 30 : 16);
+            scores.put("structure", 18);
+            scores.put("impact", 16);
+            scores.put("confidence", 22);
+            return scores;
+        }
+
+        int clarity = 18;
+        int empathy = 14;
+        int structure = 16;
+        int impact = 16;
+        int confidence = 18;
+
+        clarity += Math.min(22, words / 4);
+        empathy += Math.min(14, words / 8);
+        structure += Math.min(24, words / 5);
+        impact += Math.min(24, words / 5);
+        confidence += Math.min(20, words / 6);
+
+        boolean hasProblem = containsAny(normalized,
+                "izziv", "problem", "težava", "tezava", "konflikt", "upad", "napaka", "rok", "pritisk");
+
+        boolean hasAction = containsAny(normalized,
+                "naredil", "uvedel", "izvedel", "predlagal", "rešil", "resil", "optimiziral",
+                "refaktoriziral", "analiziral", "uporabil", "zgradil", "prevzel");
+
+        boolean hasResult = containsAny(normalized,
+                "rezultat", "izboljš", "izboljs", "zmanjš", "zmanjs", "poveč", "povec",
+                "%", "odstot", "uspešno", "uspesno", "zaključil", "zakljucil", "dosegel");
+
+        boolean hasStructure = containsAny(normalized,
+                "najprej", "nato", "potem", "na koncu", "zaključ", "zakljuc", "cilj", "moja naloga");
+
+        boolean hasExample = containsAny(normalized,
+                "primer", "na primer", "situacija", "izkušnja", "izkusnja", "projekt", "aplikacija");
+
+        boolean hasEmpathy = containsAny(normalized,
+                "razumem", "slišim", "slisim", "spoštujem", "spostujem", "cenim", "empat",
+                "ekipa", "sodelav", "uporabnik", "stranka");
+
+        boolean hasPublicSpeaking = containsAny(normalized,
+                "predstavitev", "nastop", "publika", "govor", "slajd", "poslušalci", "poslusalci",
+                "jasno povedal", "razložil", "razlozil");
+
+        boolean hasInterview = containsAny(normalized,
+                "intervju", "razgovor", "poklic", "kariera", "delodajalec", "zaposlitev",
+                "v svojem poklicnem", "moja naloga", "projekt");
+
+        boolean hasTechnical = containsAny(normalized,
+                "frontend", "backend", "api", "json", "komponent", "arhitektur", "optimiz",
+                "latenca", "zmogljivost", "debug", "refaktor", "asinhron", "error bound",
+                "brskalnik", "podatkov", "sistem", "implement");
+
+        boolean hasNegotiation = containsAny(normalized,
+                "pogaj", "dogovor", "kompromis", "interes", "stranka", "ponudba", "predlog");
+
+        boolean hasConflictResolution = containsAny(normalized,
+                "konflikt", "nestrinjanje", "napetost", "mediacija", "umiril", "poslušal", "poslusal");
+
+        if (hasProblem) {
+            clarity += 8;
+            structure += 8;
+        }
+
+        if (hasAction) {
+            structure += 16;
+            confidence += 14;
+            impact += 10;
+        }
+
+        if (hasResult) {
+            impact += 24;
+            confidence += 10;
+        }
+
+        if (hasStructure) {
+            structure += 18;
+            clarity += 10;
+        }
+
+        if (hasExample) {
+            clarity += 10;
+            impact += 8;
+        }
+
+        if (hasEmpathy) {
+            empathy += 20;
+        }
+
+        if (hasPublicSpeaking) {
+            clarity += 12;
+            confidence += 12;
+            structure += 8;
+        }
+
+        if (hasInterview) {
+            confidence += 12;
+            impact += 10;
+            structure += 8;
+        }
+
+        if (hasTechnical) {
+            clarity += 14;
+            structure += 16;
+            impact += 20;
+            confidence += 12;
+        }
+
+        if (hasNegotiation) {
+            empathy += 12;
+            impact += 14;
+            confidence += 8;
+        }
+
+        if (hasConflictResolution) {
+            empathy += 18;
+            structure += 10;
+            impact += 10;
+        }
+
+        if (containsAny(normalized, "do kdaj", "naslednji korak", "korak", "akcija", "odgovoren", "dogovor")) {
+            impact += 14;
+            structure += 10;
+        }
+
+        if (containsAny(normalized, "kaj meniš", "kaj menis", "kako vidiš", "kako vidis", "vprašanje", "vprasanje")) {
+            empathy += 12;
+            impact += 6;
+        }
+
+        if (criteria != null) {
+            int criteriaBonus = 0;
+
+            for (String criterion : criteria) {
+                if (criterion == null || criterion.isBlank()) {
+                    continue;
+                }
+
+                for (String token : criterion.toLowerCase(Locale.ROOT).split("\\s+")) {
+                    if (token.length() > 4 && normalized.contains(token)) {
+                        criteriaBonus += 4;
+                        break;
+                    }
+                }
+            }
+
+            clarity += criteriaBonus;
+            impact += criteriaBonus;
+        }
+
+        if (words >= 80) {
+            clarity += 8;
+            structure += 8;
+            impact += 8;
+        }
+
+        if (words >= 150) {
+            structure += 8;
+            impact += 10;
+            confidence += 6;
+        }
+
+        if (words > 260 && !hasStructure) {
+            clarity -= 8;
+            structure -= 10;
+        }
+
+        if (!normalized.contains(".") && !normalized.contains("?") && !normalized.contains("!")) {
+            clarity -= 8;
+            structure -= 6;
+        }
+
+        scores.put("clarity", clampScore(clarity));
+        scores.put("empathy", clampScore(empathy));
+        scores.put("structure", clampScore(structure));
+        scores.put("impact", clampScore(impact));
+        scores.put("confidence", clampScore(confidence));
+
+        return scores;
+    }
 
     private String normalizeOptionalText(String value) {
         return value == null || value.isBlank() ? null : value.trim();
@@ -271,10 +533,13 @@ public class TrainingSessionService {
         if (value == null || value.isBlank()) {
             return "";
         }
+
         String normalized = value.trim();
+
         if (normalized.length() <= maxChars) {
             return normalized;
         }
+
         return normalized.substring(0, Math.max(0, maxChars - 1)).trim() + "…";
     }
 
@@ -282,19 +547,29 @@ public class TrainingSessionService {
         if (response == null || !response.containsKey("candidates")) {
             return null;
         }
+
         List<?> candidates = (List<?>) response.get("candidates");
+
         if (candidates.isEmpty() || !(candidates.get(0) instanceof Map<?, ?> firstCandidate)) {
             return null;
         }
+
         Object contentValue = firstCandidate.get("content");
+
         if (!(contentValue instanceof Map<?, ?> content)) {
             return null;
         }
+
         Object partsValue = content.get("parts");
-        if (!(partsValue instanceof List<?> parts) || parts.isEmpty() || !(parts.get(0) instanceof Map<?, ?> firstPart)) {
+
+        if (!(partsValue instanceof List<?> parts)
+                || parts.isEmpty()
+                || !(parts.get(0) instanceof Map<?, ?> firstPart)) {
             return null;
         }
+
         Object textValue = firstPart.get("text");
+
         return textValue instanceof String text ? text : null;
     }
 
@@ -305,66 +580,50 @@ public class TrainingSessionService {
             String message
     ) {
         if (geminiFallbackEnabled) {
-            return "[Gemini ni dosegljiv - prikazujem lokalno oceno, ker je fallback izrecno vklopljen]\n\n"
+            return "[Gemini ni dosegljiv - prikazujem lokalno oceno]\n\n"
                     + buildMockAiFeedback(skillKeys, challenge, score);
         }
+
         throw new IllegalStateException(message);
     }
 
     public TrainingSession updateMentorNote(String sessionId, MentorNoteRequest request) {
         TrainingSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Training session not found."));
+
         session.setMentorNote(request.mentorNote());
+
         return sessionRepository.save(session);
     }
 
+    private int clampScore(int value) {
+        return Math.max(0, Math.min(100, value));
+    }
+
+    private String buildStructuredScoreText(Map<String, Integer> scores) {
+        return scores.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue() + "/100")
+                .reduce((left, right) -> left + ", " + right)
+                .orElse("n/a");
+    }
+
     private int calculateScore(String answer, List<String> criteria, List<String> skillKeys) {
-        String normalized = answer == null ? "" : answer.toLowerCase(Locale.ROOT);
-        int words = normalized.isBlank() ? 0 : normalized.trim().split("\\s+").length;
-        int score = 20;
+        Map<String, Integer> scores = calculateStructuredScores(answer, criteria, skillKeys);
 
-        score += Math.min(24, words);
-        if (words >= 35) score += 8;
-        if (words >= 70) score += 6;
-
-        if (criteria == null) {
-            criteria = List.of();
-        }
-
-        for (String criterion : criteria) {
-            if (criterion == null || criterion.isBlank()) continue;
-            String[] tokens = criterion.toLowerCase(Locale.ROOT).split("\\s+");
-            for (String token : tokens) {
-                if (token.length() > 4 && normalized.contains(token)) {
-                    score += 7;
-                    break;
-                }
-            }
-        }
-
-        score += containsAny(normalized, "razumem", "slišim", "slisim", "empat", "spošt", "spost") ? 10 : 0;
-        score += containsAny(normalized, "primer", "na primer", "situacij", "izkušnja", "izkusnja") ? 9 : 0;
-        score += containsAny(normalized, "predlagam", "naslednji", "korak", "dogovor", "akcij") ? 11 : 0;
-        score += containsAny(normalized, "vpraš", "vpras", "kako", "kaj meniš", "kaj menis") ? 7 : 0;
-        score += containsAny(normalized, "najprej", "potem", "zaključ", "zakljuc", "strukt") ? 6 : 0;
-
-        if (skillKeys.size() > 1) {
-            score += Math.min(8, skillKeys.size() * 2);
-        }
-        if (words < 12) {
-            score -= 18;
-        }
-        if (!normalized.contains(".") && !normalized.contains("?") && !normalized.contains("!")) {
-            score -= 5;
-        }
-
-        return Math.max(0, Math.min(100, score));
+        return Math.round((float) scores.values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0));
     }
 
     private boolean containsAny(String text, String... needles) {
         for (String needle : needles) {
-            if (text.contains(needle)) return true;
+            if (text.contains(needle)) {
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -372,6 +631,7 @@ public class TrainingSessionService {
         if (value == null || value.isBlank()) {
             return "AI coach je pripravil lokalno oceno.";
         }
+
         return value.replaceFirst("(?i)^\\s*Mock AI:\\s*", "");
     }
 
@@ -384,18 +644,23 @@ public class TrainingSessionService {
         String base = prompt == null
                 ? "AI coach je odgovor ocenil glede na jasnost, strukturo, empatijo, relevantnost za scenarij in izvedljiv naslednji korak."
                 : prompt.getSimulatedAiResponse();
+
         base = stripMockPrefix(base);
 
         List<String> tips = new ArrayList<>();
-        if (score < 55) {
-            tips.add("Dodaj strukturo: kontekst → tvoje razumevanje → konkreten predlog → naslednji korak.");
-            tips.add("Odgovor naj vsebuje vsaj en konkreten primer ali frazo, ki bi jo zares uporabil v pogovoru.");
+
+        if (score < 20) {
+            tips.add("Odgovor je prekratek. Dodaj vsaj tri konkretne stavke.");
+            tips.add("Uporabi strukturo: situacija → dejanje → rezultat.");
+        } else if (score < 55) {
+            tips.add("Dodaj več konteksta, jasnejše dejanje in konkreten rezultat.");
+            tips.add("Pokaži, kaj si naredil ti in kakšen je bil učinek.");
         } else if (score < 78) {
-            tips.add("Odgovor je uporaben. Izboljšaš ga z bolj jasnim dogovorom, kdo naredi kaj in do kdaj.");
-            tips.add("Dodaj eno vprašanje, da preveriš razumevanje sogovornika.");
+            tips.add("Odgovor je dober. Izboljšaš ga z bolj merljivim rezultatom ali jasnejšim zaključkom.");
+            tips.add("Dodaj konkreten primer vpliva na ekipo, uporabnika ali projekt.");
         } else {
-            tips.add("Odlično: odgovor je jasen, empatičen in usmerjen v rešitev.");
-            tips.add("Naslednji nivo: poskusi krajšo, bolj samozavestno verzijo z močnim zaključkom.");
+            tips.add("Odgovor je močan, strukturiran in prepričljiv.");
+            tips.add("Naslednji nivo: krajša, bolj samozavestna verzija z močnim zaključkom.");
         }
 
         return "Ocena: " + score + "/100\n"
@@ -404,6 +669,72 @@ public class TrainingSessionService {
                 + "Izziv: " + challenge.getTitle() + "\n"
                 + "Pričakovan izid: " + challenge.getExpectedOutcome() + "\n\n"
                 + "Kaj izboljšati:\n- " + String.join("\n- ", tips) + "\n\n"
-                + "Vprašanje za nadaljevanje:\n- Kateri del svojega odgovora bi lahko povedal bolj konkretno ali bolj empatično?";
+                + "Vprašanje za nadaljevanje:\n- Kako bi svoj odgovor povedal v krajši, bolj samozavestni verziji?";
     }
+
+private boolean isGarbageAnswer(String answer) {
+    if (answer == null || answer.isBlank()) {
+        return true;
+    }
+
+    String normalized = answer.trim().toLowerCase(Locale.ROOT);
+    String lettersOnly = normalized.replaceAll("[^a-zčšžćđ]", "");
+
+    if (lettersOnly.length() < 3) {
+        return true;
+    }
+
+    String[] words = normalized.split("\\s+");
+
+    long nonsenseWords = 0;
+
+    for (String word : words) {
+        String clean = word.replaceAll("[^a-zčšžćđ]", "");
+
+        if (clean.isBlank()) {
+            continue;
+        }
+
+        boolean hasVeryLongRepeatedChars = clean.matches(".*(.)\\1{4,}.*");
+        boolean hasNoVowels = clean.length() >= 8 && !hasAnyVowel(clean);
+        boolean isTooLongAndSuspicious = clean.length() >= 14 && !looksLikeRealWord(clean);
+
+        if (hasVeryLongRepeatedChars || hasNoVowels || isTooLongAndSuspicious) {
+            nonsenseWords++;
+        }
+    }
+
+    double suspiciousRatio = words.length == 0
+            ? 1.0
+            : (double) nonsenseWords / words.length;
+
+    boolean repeatedCharacters = normalized.matches(".*(.)\\1{7,}.*");
+
+    boolean almostNoVowels = lettersOnly.length() > 20
+            && countVowels(lettersOnly) < lettersOnly.length() * 0.18;
+
+    return repeatedCharacters || almostNoVowels || suspiciousRatio >= 0.45;
+}
+
+private boolean hasAnyVowel(String value) {
+    return value.matches(".*[aeiouáéíóúàèìòùäëïöü].*");
+}
+
+private int countVowels(String value) {
+    int count = 0;
+
+    for (char c : value.toCharArray()) {
+        if ("aeiouáéíóúàèìòùäëïöü".indexOf(c) >= 0) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+private boolean looksLikeRealWord(String word) {
+    return hasAnyVowel(word)
+            && !word.matches(".*(.)\\1{4,}.*")
+            && word.length() <= 28;
+}
 }
