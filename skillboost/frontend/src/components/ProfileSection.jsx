@@ -138,6 +138,9 @@ export function ProfileSection({ profile, selectedUser, report, skills = [], sel
                 onChange={setAvatarDraft}
                 onSave={handleAvatarSave}
                 saving={saving}
+                profile={fallbackProfile}
+                selectedUser={selectedUser}
+                report={report}
             />
 
             <div className="profile-layout-grid">
