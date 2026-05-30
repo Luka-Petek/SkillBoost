@@ -1629,3 +1629,215 @@
     min-height: 310px;
   }
 }
+
+/* v13 color picker: larger player color palette with visual swatches. */
+.avatar-studio__customizer-group--colors > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
+  gap: 8px;
+  max-height: none;
+}
+
+.avatar-studio__customizer-group--colors button {
+  justify-content: flex-start;
+  gap: 9px;
+  min-height: 42px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  text-transform: none;
+}
+
+.avatar-studio__customizer-group--colors button i {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .55);
+  box-shadow:
+    inset 0 0 0 1px rgba(2, 6, 23, .18),
+    0 0 18px color-mix(in srgb, var(--shard-cyan, #29dfff) 18%, transparent);
+}
+
+.avatar-studio__customizer-group--colors button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-studio__customizer-group--colors button.is-active {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--shard-cyan, #29dfff) 36%, transparent),
+    0 14px 28px color-mix(in srgb, var(--shard-blue, #256dff) 12%, transparent);
+}
+
+.avatar-studio__quick-controls {
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .avatar-studio__customizer-group--colors > div {
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  }
+}
+
+/* v14 unified avatar thumbnails: use the selected GLB player everywhere instead of letter/icon placeholders. */
+.avatar.avatar--model {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 62%),
+    linear-gradient(145deg, rgba(14, 25, 54, .92), rgba(21, 18, 55, .96));
+  border: 1px solid color-mix(in srgb, var(--primary) 32%, var(--border));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    0 12px 26px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.avatar--leaderboard.avatar--model {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+}
+
+.avatar--large.avatar--model {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+}
+
+.avatar--model .player-model--mini,
+.avatar--model .player-model--mini model-viewer {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.avatar--model .player-model--mini model-viewer {
+  transform: translateY(4%) scale(1.18);
+  transform-origin: 50% 54%;
+  filter: drop-shadow(0 8px 12px color-mix(in srgb, var(--shard-blue, #256dff) 26%, rgba(2, 6, 23, .28))) saturate(1.08);
+}
+
+.avatar--large.avatar--model .player-model--mini model-viewer {
+  transform: translateY(2%) scale(1.1);
+}
+
+.avatar--model .player-model__aura {
+  inset: 10% 12% 9%;
+  opacity: .82;
+  filter: blur(7px);
+}
+
+.avatar--model .player-model__ring,
+.avatar--model .player-model__trail,
+.avatar--model .player-model__overlay,
+.avatar--model .player-model__shadow,
+.avatar--model .player-model__level-badge,
+.avatar--model .player-model__color-wash {
+  display: none !important;
+}
+
+.right-card__head {
+  grid-template-columns: 54px minmax(0, 1fr);
+}
+
+.competition-leaderboard-row {
+  grid-template-columns: 54px 42px minmax(0, 1fr) auto;
+}
+
+.battle-preview-card {
+  grid-template-columns: 46px minmax(0, 1fr);
+}
+
+.battle-preview-card .avatar--model,
+.battle-preview-card .player-model--mini,
+.battle-preview-card .player-model--mini model-viewer {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+}
+
+.player-model--mini .player-model__fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border-radius: inherit;
+  padding: 0;
+}
+
+.player-model--mini .player-model__fallback strong,
+.player-model--mini .player-model__fallback small {
+  display: none;
+}
+
+.player-model--mini .player-model__fallback-crystal {
+  width: 24px;
+  height: 30px;
+}
+
+/* v15: color palette is a dropdown so the 3D studio stays compact even with many palettes. */
+.avatar-studio__customizer-group--dropdown > div {
+  display: block;
+}
+
+.avatar-color-dropdown {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--shard-main, var(--primary)) 30%, var(--border));
+  border-radius: 15px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--panel-strong) 92%, transparent), color-mix(in srgb, var(--panel) 82%, transparent)),
+    radial-gradient(circle at 10% 20%, color-mix(in srgb, var(--shard-cyan, #29dfff) 13%, transparent), transparent 42%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 7%, transparent),
+    0 10px 22px color-mix(in srgb, var(--shard-blue, #256dff) 10%, transparent);
+}
+
+.avatar-color-dropdown i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .58);
+  box-shadow:
+    inset 0 0 0 1px rgba(2, 6, 23, .24),
+    0 0 18px color-mix(in srgb, var(--shard-cyan, #29dfff) 24%, transparent);
+}
+
+.avatar-color-dropdown select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.avatar-color-dropdown select option {
+  color: #111827;
+  background: #ffffff;
+}
+
+.avatar-color-dropdown__hint {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.avatar-studio__customizer-group--colors.avatar-studio__customizer-group--dropdown button,
+.avatar-studio__customizer-group--colors.avatar-studio__customizer-group--dropdown > div {
+  max-height: unset;
+}

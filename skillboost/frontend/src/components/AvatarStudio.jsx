@@ -122,10 +122,10 @@ const energies = [
     { key: 'radiant', label: 'Radiant' }
 ];
 
-const accentPalettes = {
+export const accentPalettes = {
     // SkillBoost logo palette: deep indigo base, electric blue body, cyan highlights, violet energy.
     violet: {
-        label: 'Violet',
+        label: 'Logo Violet',
         main: '#635bff',
         blue: '#256dff',
         cyan: '#20d7ff',
@@ -137,7 +137,7 @@ const accentPalettes = {
         materialDark: '#07153f'
     },
     blue: {
-        label: 'Blue',
+        label: 'Electric Blue',
         main: '#2f8dff',
         blue: '#175cff',
         cyan: '#39e7ff',
@@ -149,7 +149,7 @@ const accentPalettes = {
         materialDark: '#061b49'
     },
     cyan: {
-        label: 'Cyan',
+        label: 'Cyber Cyan',
         main: '#13c8ff',
         blue: '#0f6dff',
         cyan: '#67f8ff',
@@ -159,10 +159,190 @@ const accentPalettes = {
         materialMid: '#55f4ff',
         materialAccent: '#7c3aed',
         materialDark: '#05213e'
+    },
+    royal: {
+        label: 'Royal Boost',
+        main: '#4f46e5',
+        blue: '#1d4ed8',
+        cyan: '#22d3ee',
+        purple: '#a855f7',
+        pale: '#eef2ff',
+        materialBase: '#1d4ed8',
+        materialMid: '#38bdf8',
+        materialAccent: '#a855f7',
+        materialDark: '#080f3d'
+    },
+    neon: {
+        label: 'Neon Pulse',
+        main: '#00e5ff',
+        blue: '#0084ff',
+        cyan: '#74f7ff',
+        purple: '#b026ff',
+        pale: '#e6fdff',
+        materialBase: '#0077ff',
+        materialMid: '#5ff5ff',
+        materialAccent: '#b026ff',
+        materialDark: '#031a36'
+    },
+    plasma: {
+        label: 'Plasma Purple',
+        main: '#9333ea',
+        blue: '#3b82f6',
+        cyan: '#06b6d4',
+        purple: '#d946ef',
+        pale: '#f3e8ff',
+        materialBase: '#4f46e5',
+        materialMid: '#22d3ee',
+        materialAccent: '#d946ef',
+        materialDark: '#21104f'
+    },
+    aqua: {
+        label: 'Aqua Core',
+        main: '#06b6d4',
+        blue: '#0284c7',
+        cyan: '#67e8f9',
+        purple: '#6366f1',
+        pale: '#ecfeff',
+        materialBase: '#0284c7',
+        materialMid: '#67e8f9',
+        materialAccent: '#6366f1',
+        materialDark: '#042f3f'
+    },
+    emerald: {
+        label: 'Emerald XP',
+        main: '#10b981',
+        blue: '#0ea5e9',
+        cyan: '#5eead4',
+        purple: '#6366f1',
+        pale: '#ecfdf5',
+        materialBase: '#059669',
+        materialMid: '#5eead4',
+        materialAccent: '#6366f1',
+        materialDark: '#052e2b'
+    },
+    magenta: {
+        label: 'Magenta Drift',
+        main: '#ec4899',
+        blue: '#3b82f6',
+        cyan: '#22d3ee',
+        purple: '#a855f7',
+        pale: '#fdf2f8',
+        materialBase: '#7c3aed',
+        materialMid: '#22d3ee',
+        materialAccent: '#ec4899',
+        materialDark: '#3b0a35'
+    },
+    amber: {
+        label: 'Gold Mentor',
+        main: '#f59e0b',
+        blue: '#2563eb',
+        cyan: '#38bdf8',
+        purple: '#8b5cf6',
+        pale: '#fff7ed',
+        materialBase: '#2563eb',
+        materialMid: '#38bdf8',
+        materialAccent: '#f59e0b',
+        materialDark: '#2a1902'
+    },
+    frost: {
+        label: 'Frost Light',
+        main: '#94a3b8',
+        blue: '#60a5fa',
+        cyan: '#a5f3fc',
+        purple: '#c4b5fd',
+        pale: '#f8fafc',
+        materialBase: '#60a5fa',
+        materialMid: '#a5f3fc',
+        materialAccent: '#c4b5fd',
+        materialDark: '#0f172a'
+    },
+    obsidian: {
+        label: 'Obsidian',
+        main: '#111827',
+        blue: '#1d4ed8',
+        cyan: '#22d3ee',
+        purple: '#7c3aed',
+        pale: '#e5e7eb',
+        materialBase: '#0f172a',
+        materialMid: '#2563eb',
+        materialAccent: '#8b5cf6',
+        materialDark: '#020617'
+    },
+    demon: {
+        label: 'Demon Core',
+        main: '#ef233c',
+        blue: '#111827',
+        cyan: '#ff6b35',
+        purple: '#7f1d1d',
+        pale: '#fee2e2',
+        materialBase: '#7f1d1d',
+        materialMid: '#ef233c',
+        materialAccent: '#ff6b35',
+        materialDark: '#07030a'
+    },
+    inferno: {
+        label: 'Inferno Black',
+        main: '#fb3b1e',
+        blue: '#0b1024',
+        cyan: '#f97316',
+        purple: '#991b1b',
+        pale: '#fff1e6',
+        materialBase: '#0b1024',
+        materialMid: '#dc2626',
+        materialAccent: '#f97316',
+        materialDark: '#020617'
+    },
+    void: {
+        label: 'Void Demon',
+        main: '#a855f7',
+        blue: '#020617',
+        cyan: '#ef4444',
+        purple: '#6d28d9',
+        pale: '#f3e8ff',
+        materialBase: '#020617',
+        materialMid: '#6d28d9',
+        materialAccent: '#ef4444',
+        materialDark: '#000000'
+    },
+    whiteCrystal: {
+        label: 'White Crystal',
+        main: '#e5f4ff',
+        blue: '#93c5fd',
+        cyan: '#cffafe',
+        purple: '#ddd6fe',
+        pale: '#ffffff',
+        materialBase: '#f8fafc',
+        materialMid: '#bfdbfe',
+        materialAccent: '#ddd6fe',
+        materialDark: '#64748b'
+    },
+    blackIce: {
+        label: 'Black Ice',
+        main: '#0f172a',
+        blue: '#1e3a8a',
+        cyan: '#67e8f9',
+        purple: '#4338ca',
+        pale: '#e0f2fe',
+        materialBase: '#020617',
+        materialMid: '#1e40af',
+        materialAccent: '#67e8f9',
+        materialDark: '#000000'
+    },
+    monochrome: {
+        label: 'Black / White',
+        main: '#f8fafc',
+        blue: '#111827',
+        cyan: '#ffffff',
+        purple: '#64748b',
+        pale: '#ffffff',
+        materialBase: '#111827',
+        materialMid: '#ffffff',
+        materialAccent: '#94a3b8',
+        materialDark: '#020617'
     }
 };
 
-function normalizeAvatar(config) {
+export function normalizeAvatar(config) {
     const merged = { ...defaultAvatarConfig, ...(config || {}) };
     const candidate = merged.playerModel || merged.levelModel || merged.model;
     const modelKey = modelMap[candidate] ? candidate : defaultAvatarConfig.playerModel;
@@ -191,7 +371,11 @@ function hexToRgbFactor(hex) {
     return [((int >> 16) & 255) / 255, ((int >> 8) & 255) / 255, (int & 255) / 255, 1];
 }
 
-function applySkillBoostMaterialTint(viewer, palette, energy) {
+function clamp01(value) {
+    return Math.max(0, Math.min(1, value));
+}
+
+export function applySkillBoostMaterialTint(viewer, palette, energy = 'balanced') {
     const model = viewer?.model;
     const materials = model?.materials || [];
     if (!materials.length) return;
@@ -208,7 +392,7 @@ function applySkillBoostMaterialTint(viewer, palette, energy) {
         const color = hexToRgbFactor(colors[index % colors.length]);
         const alpha = index % 4 === 1 ? 0.92 : 1;
         try {
-            material.pbrMetallicRoughness?.setBaseColorFactor?.([color[0] * energyBoost, color[1] * energyBoost, color[2] * energyBoost, alpha]);
+            material.pbrMetallicRoughness?.setBaseColorFactor?.([clamp01(color[0] * energyBoost), clamp01(color[1] * energyBoost), clamp01(color[2] * energyBoost), alpha]);
         } catch {
             // model-viewer scene graph support can vary between exported GLB files
         }
@@ -346,7 +530,7 @@ export function AvatarPreview({ config, size = 'stage' }) {
 }
 
 export function AvatarMini({ config }) {
-    return <MiniShardAvatar config={config} />;
+    return <LevelModelViewer config={config} size="mini" />;
 }
 
 function ProgressCard({ report, selectedUser, selectedModel }) {
@@ -457,20 +641,24 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
                                 ))}
                             </div>
                         </div>
-                        <div className="avatar-studio__customizer-group avatar-studio__customizer-group--energy">
-                            <span>Accent</span>
-                            <div>
-                                {Object.keys(accentPalettes).map((accent) => (
-                                    <button
-                                        key={accent}
-                                        type="button"
-                                        className={avatar.accent === accent ? 'is-active' : ''}
-                                        onClick={() => updateAvatar({ accent })}
-                                    >
-                                        {accent}
-                                    </button>
-                                ))}
-                            </div>
+                        <div className="avatar-studio__customizer-group avatar-studio__customizer-group--colors avatar-studio__customizer-group--dropdown">
+                            <span>Color palette</span>
+                            <label className="avatar-color-dropdown">
+                                <i
+                                    aria-hidden="true"
+                                    style={{ background: `linear-gradient(135deg, ${palette.cyan}, ${palette.blue} 44%, ${palette.purple})` }}
+                                />
+                                <select
+                                    value={avatar.accent}
+                                    onChange={(event) => updateAvatar({ accent: event.target.value })}
+                                    aria-label="Izberi barvno paleto playerja"
+                                >
+                                    {Object.entries(accentPalettes).map(([accent, item]) => (
+                                        <option key={accent} value={accent}>{item.label}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <small className="avatar-color-dropdown__hint">Izbrano: {palette.label}. Barva se uporabi na glavnem modelu, mini avatarjih in level karticah.</small>
                         </div>
                     </div>
                 </div>

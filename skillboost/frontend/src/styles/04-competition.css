@@ -348,3 +348,629 @@
 .competition-stat-strip span {
   justify-content: flex-start;
 }
+
+.competition-grid--lobby {
+  align-items: start;
+}
+
+.challenge-lobby-card {
+  gap: 16px;
+}
+
+.battle-preview-card--duel {
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+}
+
+.battle-preview-card__meta {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.battle-preview-card__meta span {
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.competition-duel-arena {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at top center, color-mix(in srgb, var(--primary) 12%, transparent), transparent 18rem),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+  box-shadow: var(--soft-shadow);
+}
+
+.competition-duel-arena__head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.competition-duel-arena__head h3,
+.competition-duel-arena__head small,
+.competition-duel-arena__head p {
+  margin: 0;
+}
+
+.duel-stage-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.duel-fighter,
+.duel-versus-card,
+.duel-round-card {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+}
+
+.duel-fighter {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.duel-fighter.winner {
+  outline: 2px solid color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+.duel-fighter__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.duel-fighter__meta strong,
+.duel-fighter__meta span {
+  margin: 0;
+}
+
+.duel-fighter__meta span {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.duel-versus-card {
+  min-width: 170px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.duel-versus-card strong {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1;
+}
+
+.duel-versus-card small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.duel-model {
+  position: relative;
+  min-height: 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 16%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 38%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 78%, transparent), color-mix(in srgb, var(--panel) 82%, transparent));
+}
+
+.duel-model.compact {
+  min-height: 160px;
+}
+
+.duel-model__glow {
+  position: absolute;
+  inset: auto 10% 8% 10%;
+  height: 40px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent), transparent 70%);
+  filter: blur(14px);
+}
+
+.duel-model model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  background: transparent;
+}
+
+.duel-model--player model-viewer {
+  transform: translateY(2%) scale(1.03);
+}
+
+.duel-model--opponent model-viewer {
+  transform: translateY(2%) scale(1.03) scaleX(-1);
+}
+
+.duel-model__name {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  text-align: center;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.duel-model__fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.duel-round-card {
+  padding: 18px;
+}
+
+.duel-state {
+  display: grid;
+  gap: 14px;
+}
+
+.duel-state h4,
+.duel-state p,
+.duel-state small {
+  margin: 0;
+}
+
+.duel-round-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.duel-round-copy span:first-child {
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.duel-answer-field {
+  display: grid;
+  gap: 8px;
+}
+
+.duel-answer-field span {
+  font-weight: 900;
+}
+
+.duel-answer-field textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  background: color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  color: var(--text);
+  min-height: 160px;
+}
+
+.duel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.duel-result-pill {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.duel-result-pill.win {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-strong);
+}
+
+.duel-result-pill.loss {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary-strong);
+}
+
+.duel-score-split {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 16px;
+  align-items: center;
+  justify-content: start;
+}
+
+.duel-score-split div {
+  display: grid;
+  gap: 4px;
+}
+
+.duel-score-split small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.duel-score-split strong {
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  line-height: 1;
+}
+
+.duel-round-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.duel-history-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel) 74%, transparent);
+}
+
+.duel-history-chip.win {
+  outline: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+.duel-history-chip.loss {
+  outline: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+@media (max-width: 1100px) {
+  .duel-stage-board {
+    grid-template-columns: 1fr;
+  }
+
+  .duel-versus-card {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .competition-duel-arena__head,
+  .duel-fighter__meta,
+  .battle-preview-card--duel {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .duel-score-split {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+
+/* Best-of-3 duel refinements */
+.competition-hero-card--duel {
+  background:
+    radial-gradient(circle at 82% 8%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 18rem),
+    radial-gradient(circle at 8% 100%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 22rem),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+}
+
+.duel-round-tracker {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 68%, transparent);
+}
+
+.duel-round-tracker span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 30px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 950;
+}
+
+.duel-round-tracker span.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+.duel-round-tracker span.win {
+  color: color-mix(in srgb, var(--accent) 72%, white 28%);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.duel-round-tracker span.loss {
+  color: color-mix(in srgb, var(--primary) 76%, white 24%);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.duel-stage-board {
+  position: relative;
+}
+
+.duel-stage-board::before {
+  content: 'VS';
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border));
+  background: color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .18em;
+}
+
+.duel-versus-card {
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%),
+    color-mix(in srgb, var(--panel) 74%, transparent);
+}
+
+.duel-timer {
+  --timer: 100%;
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--panel-strong) 92%, transparent) 0 54%, transparent 55%),
+    conic-gradient(var(--accent) var(--timer), color-mix(in srgb, var(--text) 10%, transparent) 0);
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.duel-timer span {
+  font-size: 1.25rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.duel-timer small {
+  margin-top: -12px;
+  color: var(--muted);
+  font-size: .63rem;
+  font-weight: 850;
+}
+
+.duel-judging-progress {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+}
+
+.duel-judging-progress > div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.duel-judging-progress > div > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--accent-2));
+  transition: width .22s ease;
+}
+
+.duel-state--intro {
+  min-height: 180px;
+  place-items: center;
+  text-align: center;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%),
+    color-mix(in srgb, var(--panel) 64%, transparent);
+}
+
+.round-intro-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 92px;
+  min-height: 42px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-weight: 950;
+  box-shadow: 0 18px 34px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.duel-autosubmit-hint {
+  align-self: center;
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 800;
+}
+
+.duel-score-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.duel-score-breakdown span {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 850;
+}
+
+.duel-model::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 0 38%, color-mix(in srgb, var(--accent) 8%, transparent) 45%, transparent 56%),
+    radial-gradient(circle at 50% 85%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 46%);
+  opacity: .8;
+  pointer-events: none;
+}
+
+.duel-fighter.winner .duel-model {
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.duel-fighter.winner .duel-model__glow {
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 48%, transparent), transparent 70%);
+}
+
+@media (max-width: 1100px) {
+  .duel-stage-board::before {
+    display: none;
+  }
+
+  .competition-duel-arena__head {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .duel-round-tracker {
+    width: fit-content;
+  }
+}
+
+/* v18 duel GLB fit: Meshy animation exports are centered around the feet,
+   so the camera must target the torso and sit farther back. Keep the whole
+   animated body visible inside each fighter square. */
+.duel-model {
+  height: clamp(220px, 28vw, 282px);
+  min-height: 220px;
+  display: grid;
+  place-items: stretch;
+  contain: layout paint;
+}
+
+.duel-model.compact {
+  height: 164px;
+  min-height: 164px;
+}
+
+.duel-model model-viewer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  object-fit: contain;
+  --poster-color: transparent;
+  background: transparent;
+}
+
+.duel-model--player model-viewer {
+  transform: none;
+  transform-origin: 50% 50%;
+}
+
+.duel-model--opponent model-viewer {
+  transform: scaleX(-1);
+  transform-origin: 50% 50%;
+}
+
+.duel-model__fallback {
+  position: absolute;
+  inset: 0;
+}
+
+.duel-model__name {
+  z-index: 3;
+}
+
+@media (max-width: 760px) {
+  .duel-model {
+    height: 210px;
+    min-height: 210px;
+  }
+}
+
+/* v19 duel polish: keep animated GLB canvas visually centered and inherit the
+   selected player's saved avatar palette in the battle cards. */
+.duel-model {
+  border: 1px solid color-mix(in srgb, var(--shard-main, var(--accent)) 24%, transparent);
+  background:
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--shard-cyan, var(--accent)) 20%, transparent), transparent 38%),
+    radial-gradient(circle at 50% 76%, color-mix(in srgb, var(--shard-purple, var(--primary)) 18%, transparent), transparent 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 78%, transparent), color-mix(in srgb, var(--panel) 82%, transparent));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shard-cyan, var(--accent)) 12%, transparent);
+}
+
+.duel-model__glow {
+  background: radial-gradient(circle, color-mix(in srgb, var(--shard-cyan, var(--accent)) 42%, transparent), transparent 70%);
+}
+
+.duel-model::after {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--shard-main, var(--accent)) 28%, transparent), transparent);
+}
+
+.duel-model model-viewer {
+  transform-origin: 50% 52%;
+}
+
+.duel-model--player model-viewer {
+  transform: scale(0.92);
+}
+
+.duel-model--opponent model-viewer {
+  transform: scaleX(-1) scale(0.92);
+}
+
+.duel-model--attack model-viewer,
+.duel-model--dodge model-viewer,
+.duel-model--hit model-viewer,
+.duel-model--celebrate model-viewer {
+  transform-origin: 50% 52%;
+}
+
+.duel-model--player.duel-model--attack model-viewer,
+.duel-model--player.duel-model--dodge model-viewer,
+.duel-model--player.duel-model--hit model-viewer,
+.duel-model--player.duel-model--celebrate model-viewer {
+  transform: scale(0.86);
+}
+
+.duel-model--opponent.duel-model--attack model-viewer,
+.duel-model--opponent.duel-model--dodge model-viewer,
+.duel-model--opponent.duel-model--hit model-viewer,
+.duel-model--opponent.duel-model--celebrate model-viewer {
+  transform: scaleX(-1) scale(0.86);
+}
+
+.duel-fighter.winner .duel-model {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--shard-cyan, var(--accent)) 28%, transparent),
+    0 22px 70px color-mix(in srgb, var(--shard-main, var(--accent)) 18%, transparent);
+}
+
+.duel-fighter.winner .duel-model__glow {
+  background: radial-gradient(circle, color-mix(in srgb, var(--shard-main, var(--accent)) 56%, transparent), transparent 70%);
+}
