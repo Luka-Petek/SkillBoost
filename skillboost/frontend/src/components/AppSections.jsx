@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Icon } from './Icon';
-import { AvatarMini } from './AvatarStudio';
+import { AvatarMini, defaultAvatarConfig, accentPalettes, normalizeAvatar, applySkillBoostMaterialTint } from './AvatarStudio';
 
 const scoreLabels = [
     { min: 85, label: 'Odlično', tone: 'great' },
@@ -804,14 +804,17 @@ function CompetitionResultCard({ result }) {
 function CompetitionLeaderboard({ entries = [], highlightName }) {
     return (
         <div className="competition-leaderboard-list">
-            {entries.map((entry) => (
-                <div key={`${entry.userId}-${entry.rank}`} className={`competition-leaderboard-row ${entry.name === highlightName || entry.userId === 'demo-user' ? 'me' : ''}`}>
-                    <span className="rank">#{entry.rank}</span>
-                    <span className={`avatar ${entry.avatarConfig ? 'avatar--model avatar--leaderboard' : ''}`}>{entry.avatarConfig ? <AvatarMini config={entry.avatarConfig} /> : (entry.avatar || initialsOfName(entry.name))}</span>
-                    <strong>{entry.name}</strong>
-                    <span>{entry.score}/100</span>
-                </div>
-            ))}
+            {entries.map((entry) => {
+                const avatarConfig = entry.avatarConfig || fallbackAvatarConfig(entry.rank || 0);
+                return (
+                    <div key={`${entry.userId}-${entry.rank}`} className={`competition-leaderboard-row ${entry.name === highlightName || entry.userId === 'demo-user' ? 'me' : ''}`}>
+                        <span className="rank">#{entry.rank}</span>
+                        <span className="avatar avatar--model avatar--leaderboard"><AvatarMini config={avatarConfig} /></span>
+                        <strong>{entry.name}</strong>
+                        <span>{entry.score}/100</span>
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -1348,15 +1351,475 @@ function skillIcon(key = '', category = '') {
 }
 
 
-export function CompetitionSection({ users = [], selectedUser, skills = [], challenges = [], selectedSkillKeys = [], dailyDuelChallenge, lastCompetitionResult, onStartDailyDuel, onStartSkillBattle }) {
-    const rivals = useMemo(() => buildCompetitionRivals(users, selectedUser), [users, selectedUser]);
-    const [opponentId, setOpponentId] = useState(rivals[0]?.id || '');
-    const [battleChallengeId, setBattleChallengeId] = useState(dailyDuelChallenge?.id || challenges[0]?.id || '');
-    const [battleSkillFilter, setBattleSkillFilter] = useState(selectedSkillKeys[0] || 'all');
+const DUEL_MODEL_VIEWER_SRC = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
+const DUEL_ANIMATION_MODELS = {
+    waiting: '/duel-models/walking.glb',
+    loading: '/duel-models/running.glb',
+    attack: '/duel-models/attack.glb',
+    block: '/duel-models/block.glb',
+    dodge: '/duel-models/dodge.glb',
+    celebrate: '/duel-models/funnydance.glb',
+    idle: '/duel-models/boxing.glb',
+    hit: '/duel-models/hit.glb'
+};
+
+const DUEL_MODEL_CAMERA = {
+    target: '0m 0.88m 0m',
+    orbit: '8deg 76deg 4.55m',
+    compactOrbit: '8deg 76deg 4.05m',
+    fov: '39deg',
+    compactFov: '42deg'
+};
+
+function useDuelModelViewerReady() {
+    const [ready, setReady] = useState(() => typeof window !== 'undefined' && Boolean(window.customElements?.get('model-viewer')));
 
     useEffect(() => {
-        if (!opponentId && rivals[0]?.id) setOpponentId(rivals[0].id);
-    }, [rivals, opponentId]);
+        if (typeof window === 'undefined') return undefined;
+        if (window.customElements?.get('model-viewer')) {
+            setReady(true);
+            return undefined;
+        }
+
+        let cancelled = false;
+        const existing = document.querySelector('script[data-skillboost-model-viewer="true"]');
+        const markReady = () => {
+            if (!cancelled) setReady(true);
+        };
+
+        if (existing) {
+            existing.addEventListener('load', markReady, { once: true });
+            window.customElements?.whenDefined?.('model-viewer')?.then(markReady).catch(() => {});
+            return () => {
+                cancelled = true;
+                existing.removeEventListener('load', markReady);
+            };
+        }
+
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = DUEL_MODEL_VIEWER_SRC;
+        script.async = true;
+        script.dataset.skillboostModelViewer = 'true';
+        script.addEventListener('load', markReady, { once: true });
+        script.addEventListener('error', () => {
+            if (!cancelled) setReady(false);
+        }, { once: true });
+        document.head.appendChild(script);
+        window.customElements?.whenDefined?.('model-viewer')?.then(markReady).catch(() => {});
+
+        return () => {
+            cancelled = true;
+            script.removeEventListener('load', markReady);
+        };
+    }, []);
+
+    return ready;
+}
+
+function DuelAnimatedModel({ action = 'idle', name, side = 'player', compact = false, avatarConfig }) {
+    const viewerReady = useDuelModelViewerReady();
+    const src = DUEL_ANIMATION_MODELS[action] || DUEL_ANIMATION_MODELS.idle;
+    const viewerRef = useRef(null);
+    const avatar = useMemo(() => normalizeAvatar(avatarConfig), [avatarConfig]);
+    const palette = accentPalettes[avatar.accent] || accentPalettes.violet;
+    const energy = avatar.energy || 'balanced';
+
+    useEffect(() => {
+        const viewer = viewerRef.current;
+        if (!viewer || !viewerReady) return undefined;
+
+        let raf = 0;
+        const timeouts = [];
+        const applyTint = () => {
+            raf = window.requestAnimationFrame?.(() => applySkillBoostMaterialTint(viewer, palette, energy)) || 0;
+        };
+
+        applyTint();
+        [80, 220, 520].forEach((delay) => {
+            timeouts.push(window.setTimeout(applyTint, delay));
+        });
+
+        viewer.addEventListener?.('load', applyTint);
+        viewer.addEventListener?.('model-visibility', applyTint);
+
+        return () => {
+            viewer.removeEventListener?.('load', applyTint);
+            viewer.removeEventListener?.('model-visibility', applyTint);
+            timeouts.forEach((timeout) => window.clearTimeout(timeout));
+            if (raf) window.cancelAnimationFrame?.(raf);
+        };
+    }, [viewerReady, src, palette.materialBase, palette.materialMid, palette.materialAccent, palette.materialDark, palette.cyan, palette.purple, energy]);
+
+    return (
+        <div
+            className={`duel-model duel-model--${side} duel-model--${action} ${compact ? 'compact' : ''}`}
+            style={{
+                '--shard-main': palette.main,
+                '--shard-blue': palette.blue,
+                '--shard-cyan': palette.cyan,
+                '--shard-purple': palette.purple,
+                '--shard-pale': palette.pale
+            }}
+        >
+            <div className="duel-model__glow" />
+            {viewerReady ? (
+                <model-viewer
+                    ref={viewerRef}
+                    key={`${side}-${action}-${src}-${avatar.accent}-${energy}`}
+                    src={src}
+                    alt={`${name || 'Player'} animation`}
+                    camera-orbit={compact ? DUEL_MODEL_CAMERA.compactOrbit : DUEL_MODEL_CAMERA.orbit}
+                    camera-target={DUEL_MODEL_CAMERA.target}
+                    field-of-view={compact ? DUEL_MODEL_CAMERA.compactFov : DUEL_MODEL_CAMERA.fov}
+                    min-camera-orbit="auto auto 3.4m"
+                    max-camera-orbit="auto auto 6.8m"
+                    exposure="1.04"
+                    shadow-intensity="0.82"
+                    shadow-softness="0.95"
+                    environment-image="legacy"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                    autoplay
+                    disable-pan
+                />
+            ) : (
+                <div className="duel-model__fallback">
+                    <Icon name="swords" size={18} />
+                    <span>{action}</span>
+                </div>
+            )}
+            <span className="duel-model__name">{name}</span>
+        </div>
+    );
+}
+
+function buildDuelRounds(challenge) {
+    const scenario = challenge?.scenario || 'Odgovori profesionalno, strukturirano in z empatijo.';
+    return [
+        {
+            id: 'opening',
+            label: 'Round 1',
+            title: 'Opening move',
+            focus: 'Clarity & tone',
+            prompt: `${scenario}
+
+Napiši uvodni odgovor, ki hitro postavi miren in profesionalen ton.`
+        },
+        {
+            id: 'pressure',
+            label: 'Round 2',
+            title: 'Pressure round',
+            focus: 'Empathy & composure',
+            prompt: `${scenario}
+
+Druga oseba se brani. Odgovori tako, da pokažeš empatijo, a vseeno ohraniš smer pogovora.`
+        },
+        {
+            id: 'closing',
+            label: 'Round 3',
+            title: 'Finish strong',
+            focus: 'Actionability',
+            prompt: `${scenario}
+
+Zaključi z jasnim naslednjim korakom in kratkim povzetkom dogovora.`
+        }
+    ];
+}
+
+const DUEL_ROUND_SECONDS = 90;
+const DUEL_WAITING_MS = 900;
+const DUEL_INTRO_MS = 1200;
+const DUEL_JUDGING_MS = 1900;
+
+function evaluateDuelRound({ answer, round, challenge, opponent, timeRemaining = 0, forcedTimeout = false }) {
+    const clean = String(answer || '').trim();
+    const words = clean ? clean.split(/\s+/).filter(Boolean).length : 0;
+    const sentenceCount = (clean.match(/[.!?]/g) || []).length;
+    const criteria = challenge?.evaluationCriteria || [];
+    const empathyHit = /(razumem|hvala|cenim|skupaj|lahko|predlagam|help|support|appreciate|strinjam)/i.test(clean);
+    const actionHit = /(predlagam|naslednji korak|rok|let's|next step|dogovorimo|lahko naredimo|plan|korak)/i.test(clean);
+    const structureHit = /\n|1\.|2\.|3\.|:|- /.test(clean);
+    const tonePenalty = /(kriv|napaka je tvoja|vedno|nikoli|nimaš prav|stupid|bad)/i.test(clean) ? 8 : 0;
+
+    const clarityScore = Math.min(25, Math.round(8 + Math.min(17, words * 0.28) + Math.min(4, sentenceCount)));
+    const empathyScore = Math.min(25, Math.round(9 + (empathyHit ? 11 : 2) + (round === 2 ? 3 : 0)));
+    const structureScore = Math.min(20, Math.round(7 + (structureHit ? 8 : 3) + Math.min(5, sentenceCount)));
+    const toneScore = Math.max(0, Math.min(20, Math.round(13 + (empathyHit ? 4 : 0) - tonePenalty)));
+    const actionabilityScore = Math.min(10, Math.round(2 + (actionHit ? 6 : 0) + (round === 3 ? 2 : 0)));
+    const speedBonus = forcedTimeout ? 0 : Math.min(5, Math.round((timeRemaining / DUEL_ROUND_SECONDS) * 5));
+    const criteriaBonus = Math.min(4, criteria.length ? 2 : 0);
+    const shortPenalty = words < 18 ? 9 : words < 35 ? 4 : 0;
+    const offTopicPenalty = clean.length < 20 ? 18 : 0;
+
+    const base = clarityScore + empathyScore + structureScore + toneScore + actionabilityScore;
+    const playerScore = Math.max(35, Math.min(100, Math.round(base + speedBonus + criteriaBonus - shortPenalty - offTopicPenalty)));
+    const rivalBase = buildPreviewScore(opponent, challenge, 'skill-battle');
+    const opponentScore = Math.max(52, Math.min(97, rivalBase - 8 + (round * 4) + ((String(opponent?.name || 'rival').length + round) % 9)));
+    const winner = playerScore >= opponentScore ? 'player' : 'opponent';
+    const loserMove = round % 2 === 0 ? 'block' : 'dodge';
+    const reason = winner === 'player'
+        ? 'Tvoj odgovor je bil bolj jasen, miren in uporaben za naslednji korak.'
+        : 'Rival je to rundo dobil zaradi bolj konkretne strukture in hitrejšega zaključka.';
+    const coachTip = actionHit
+        ? 'Dober zaključek. V naslednji rundi samo še bolj skrajšaj uvod.'
+        : 'Dodaj jasen naslednji korak, ker to najbolj dvigne duel score.';
+
+    return {
+        playerScore,
+        opponentScore,
+        winner,
+        loserMove,
+        reason,
+        coachTip,
+        scoreBreakdown: {
+            clarity: clarityScore,
+            empathy: empathyScore,
+            structure: structureScore,
+            tone: toneScore,
+            actionability: actionabilityScore,
+            speedBonus,
+            penalties: shortPenalty + offTopicPenalty + tonePenalty
+        }
+    };
+}
+
+function resolveDuelActions(duelState) {
+    if (!duelState) return { player: 'idle', opponent: 'idle' };
+    if (duelState.phase === 'waiting') return { player: 'waiting', opponent: 'waiting' };
+    if (duelState.phase === 'intro') return { player: 'idle', opponent: 'idle' };
+    if (duelState.phase === 'judging') return { player: 'loading', opponent: 'loading' };
+    if (duelState.phase === 'result') {
+        return duelState.lastRoundWinner === 'player'
+            ? { player: 'attack', opponent: duelState.lastLoserMove || 'dodge' }
+            : { player: duelState.lastLoserMove || 'block', opponent: 'attack' };
+    }
+    if (duelState.phase === 'finished') {
+        return duelState.matchWinner === 'player'
+            ? { player: 'celebrate', opponent: 'hit' }
+            : { player: 'hit', opponent: 'celebrate' };
+    }
+    return { player: 'idle', opponent: 'idle' };
+}
+
+function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChallenge, duelRounds, duelAnswer, setDuelAnswer, onSubmitRound, onNextRound, onReset }) {
+    const roundData = duelRounds[duelState.round - 1] || duelRounds[0];
+    const actions = resolveDuelActions(duelState);
+    const playerName = selectedUser?.name || 'Ti';
+    const opponentName = battleOpponent?.name || 'Rival';
+    const isFinished = duelState.phase === 'finished';
+    const timerPercent = Math.max(0, Math.min(100, Math.round((duelState.timeLeft / DUEL_ROUND_SECONDS) * 100)));
+    const judgingProgress = Math.max(0, Math.min(100, duelState.judgingProgress || 0));
+    const roundHistory = Array.from({ length: 3 }, (_, index) => duelState.history[index]);
+
+    return (
+        <article className="competition-duel-arena">
+            <div className="competition-duel-arena__head">
+                <div>
+                    <span className="eyebrow">Best of 3 duel</span>
+                    <h3>{selectedBattleChallenge?.title || 'Skill Duel'}</h3>
+                    <small>{selectedBattleChallenge?.scenario || 'Isti prompt, isti pogoji. Boljši odgovor vzame rundo.'}</small>
+                </div>
+                <div className="duel-round-tracker" aria-label="Round tracker">
+                    {roundHistory.map((item, index) => (
+                        <span key={index} className={item ? (item.winner === 'player' ? 'win' : 'loss') : (duelState.round === index + 1 ? 'active' : '')}>
+                            R{index + 1}
+                        </span>
+                    ))}
+                </div>
+                <button type="button" className="secondary" onClick={onReset}>Nazaj v lobby</button>
+            </div>
+
+            <div className="duel-stage-board">
+                <div className={`duel-fighter ${duelState.lastRoundWinner === 'player' || duelState.matchWinner === 'player' ? 'winner' : ''}`}>
+                    <DuelAnimatedModel action={actions.player} name={playerName} side="player" avatarConfig={selectedUser?.avatarConfig || fallbackAvatarConfig(selectedUser?.level || 0)} />
+                    <div className="duel-fighter__meta">
+                        <strong>{playerName}</strong>
+                        <span>{duelState.playerWins} round wins</span>
+                    </div>
+                </div>
+
+                <div className="duel-versus-card">
+                    <span className="pill">Round {duelState.round}</span>
+                    <strong>{duelState.playerWins} : {duelState.opponentWins}</strong>
+                    <small>
+                        {duelState.phase === 'waiting' && 'Waiting room'}
+                        {duelState.phase === 'intro' && 'Round intro'}
+                        {duelState.phase === 'prompt' && `${roundData?.title || 'Round'} · ${roundData?.focus || 'Skill focus'}`}
+                        {duelState.phase === 'judging' && 'AI judging'}
+                        {duelState.phase === 'result' && 'Round result'}
+                        {duelState.phase === 'finished' && 'Match finished'}
+                    </small>
+                    {duelState.phase === 'prompt' && (
+                        <div className="duel-timer" style={{ '--timer': `${timerPercent}%` }}>
+                            <span>{duelState.timeLeft}s</span>
+                            <small>time left</small>
+                        </div>
+                    )}
+                    {duelState.phase === 'judging' && (
+                        <div className="duel-judging-progress">
+                            <div><span style={{ width: `${judgingProgress}%` }} /></div>
+                            <small>{judgingProgress}%</small>
+                        </div>
+                    )}
+                </div>
+
+                <div className={`duel-fighter ${duelState.lastRoundWinner === 'opponent' || duelState.matchWinner === 'opponent' ? 'winner' : ''}`}>
+                    <DuelAnimatedModel action={actions.opponent} name={opponentName} side="opponent" avatarConfig={battleOpponent?.avatarConfig || fallbackAvatarConfig(battleOpponent?.level || 2)} />
+                    <div className="duel-fighter__meta">
+                        <strong>{opponentName}</strong>
+                        <span>{duelState.opponentWins} round wins</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="duel-round-card">
+                {duelState.phase === 'waiting' && (
+                    <div className="duel-state duel-state--waiting">
+                        <h4>Waiting room</h4>
+                        <p>Oba playerja hodita v lobbyju, medtem ko sistem pripravi match.</p>
+                    </div>
+                )}
+
+                {duelState.phase === 'intro' && (
+                    <div className="duel-state duel-state--intro">
+                        <div className="round-intro-badge">{roundData?.label}</div>
+                        <h4>{roundData?.title}</h4>
+                        <p>{roundData?.focus} · pripravi najboljši odgovor.</p>
+                    </div>
+                )}
+
+                {duelState.phase === 'prompt' && (
+                    <div className="duel-state duel-state--prompt">
+                        <div className="duel-round-copy">
+                            <span>{roundData?.label}</span>
+                            <h4>{roundData?.title}</h4>
+                            <p>{roundData?.prompt}</p>
+                            <div className="mini-list">
+                                <span>{roundData?.focus}</span>
+                                <span>same prompt for both</span>
+                                <span>speed bonus max +5</span>
+                            </div>
+                        </div>
+                        <label className="duel-answer-field">
+                            <span>Tvoj odgovor</span>
+                            <textarea
+                                rows="7"
+                                value={duelAnswer}
+                                onChange={(e) => setDuelAnswer(e.target.value)}
+                                placeholder="Napiši svoj odgovor za to rundo..."
+                            />
+                        </label>
+                        <div className="duel-actions">
+                            <button type="button" className="primary" onClick={() => onSubmitRound(false)} disabled={!duelAnswer.trim()}>
+                                Oddaj odgovor za rundo
+                            </button>
+                            <span className="duel-autosubmit-hint">Ko timer pride na 0, se odda trenutni odgovor.</span>
+                        </div>
+                    </div>
+                )}
+
+                {duelState.phase === 'judging' && (
+                    <div className="duel-state duel-state--judging">
+                        <h4>AI Coach scoring...</h4>
+                        <p>GLB player teče, medtem ko AI primerja jasnost, empatijo, strukturo, ton in naslednji korak.</p>
+                    </div>
+                )}
+
+                {duelState.phase === 'result' && (
+                    <div className="duel-state duel-state--result">
+                        <div className={`duel-result-pill ${duelState.lastRoundWinner === 'player' ? 'win' : 'loss'}`}>
+                            {duelState.lastRoundWinner === 'player' ? 'Tvoja runda' : 'Runda za rivala'}
+                        </div>
+                        <div className="duel-score-split">
+                            <div>
+                                <small>{playerName}</small>
+                                <strong>{duelState.lastPlayerScore}</strong>
+                            </div>
+                            <span>VS</span>
+                            <div>
+                                <small>{opponentName}</small>
+                                <strong>{duelState.lastOpponentScore}</strong>
+                            </div>
+                        </div>
+                        {duelState.lastBreakdown && (
+                            <div className="duel-score-breakdown">
+                                <span>Clarity {duelState.lastBreakdown.clarity}</span>
+                                <span>Empathy {duelState.lastBreakdown.empathy}</span>
+                                <span>Structure {duelState.lastBreakdown.structure}</span>
+                                <span>Tone {duelState.lastBreakdown.tone}</span>
+                                <span>Action {duelState.lastBreakdown.actionability}</span>
+                                <span>Speed +{duelState.lastBreakdown.speedBonus}</span>
+                            </div>
+                        )}
+                        <p>{duelState.lastReason}</p>
+                        <small>{duelState.lastCoachTip}</small>
+                        <button type="button" className="primary" onClick={onNextRound}>
+                            {duelState.playerWins === 2 || duelState.opponentWins === 2 || duelState.round >= 3 ? 'Pokaži rezultat matcha' : 'Naslednja runda'}
+                        </button>
+                    </div>
+                )}
+
+                {isFinished && (
+                    <div className="duel-state duel-state--finished">
+                        <div className={`duel-result-pill ${duelState.matchWinner === 'player' ? 'win' : 'loss'}`}>
+                            {duelState.matchWinner === 'player' ? 'Match won' : 'Rematch?'}
+                        </div>
+                        <h4>{duelState.matchWinner === 'player' ? `${playerName} wins the best of 3` : `${opponentName} takes the duel`}</h4>
+                        <p>
+                            {duelState.matchWinner === 'player'
+                                ? 'Končna zmaga sproži funny dance animacijo in XP reward.'
+                                : 'Rival je bil tokrat boljši. Naslednji korak je rematch ali novi challenge.'}
+                        </p>
+                        <div className="duel-round-history">
+                            {duelState.history.map((item) => (
+                                <div key={item.round} className={`duel-history-chip ${item.winner === 'player' ? 'win' : 'loss'}`}>
+                                    <strong>R{item.round}</strong>
+                                    <span>{item.playerScore}:{item.opponentScore}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="duel-actions">
+                            <button type="button" className="primary" onClick={onReset}>Nazaj v lobby</button>
+                            <button type="button" className="secondary" onClick={onNextRound}>Rematch</button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </article>
+    );
+}
+
+function initialDuelState(overrides = {}) {
+    return {
+        active: false,
+        round: 1,
+        phase: 'idle',
+        timeLeft: DUEL_ROUND_SECONDS,
+        judgingProgress: 0,
+        playerWins: 0,
+        opponentWins: 0,
+        history: [],
+        lastRoundWinner: null,
+        lastPlayerScore: null,
+        lastOpponentScore: null,
+        lastReason: '',
+        lastCoachTip: '',
+        lastLoserMove: 'dodge',
+        lastBreakdown: null,
+        matchWinner: null,
+        ...overrides
+    };
+}
+
+export function CompetitionSection({ users = [], selectedUser, skills = [], challenges = [], selectedSkillKeys = [], dailyDuelChallenge, lastCompetitionResult, onStartDailyDuel, onStartSkillBattle }) {
+    const rivals = useMemo(() => buildCompetitionRivals(users, selectedUser), [users, selectedUser]);
+    const [battleChallengeId, setBattleChallengeId] = useState(dailyDuelChallenge?.id || challenges[0]?.id || '');
+    const [battleSkillFilter, setBattleSkillFilter] = useState(selectedSkillKeys[0] || 'all');
+    const [opponentId, setOpponentId] = useState(() => (rivals[0]?.id || ''));
+    const [duelAnswer, setDuelAnswer] = useState('');
+    const [duelState, setDuelState] = useState(() => initialDuelState());
 
     useEffect(() => {
         if (!battleChallengeId && (dailyDuelChallenge?.id || challenges[0]?.id)) {
@@ -1375,6 +1838,7 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
     const dailyLeaderboard = buildCompetitionPreviewLeaderboard(rivals, selectedUser, dailyDuelChallenge, 'daily-duel');
     const battleOpponent = rivals.find((user) => user.id === opponentId) || rivals[0];
     const battlePreviewScore = buildPreviewScore(battleOpponent, selectedBattleChallenge, 'skill-battle');
+    const duelRounds = useMemo(() => buildDuelRounds(selectedBattleChallenge), [selectedBattleChallenge]);
 
     const handleSkillFilterChange = (value) => {
         setBattleSkillFilter(value);
@@ -1384,38 +1848,179 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
         if (nextChallenge) setBattleChallengeId(nextChallenge.id);
     };
 
+    const resetToLobby = useCallback(() => {
+        setDuelAnswer('');
+        setDuelState(initialDuelState());
+    }, []);
+
+    const startDuel = useCallback((challengeOverride) => {
+        const challenge = challengeOverride || selectedBattleChallenge;
+        if (challenge?.id) setBattleChallengeId(challenge.id);
+        onStartSkillBattle?.({ opponentId: battleOpponent?.id, challengeId: challenge?.id });
+        setDuelAnswer('');
+        setDuelState(initialDuelState({ active: true, phase: 'waiting' }));
+    }, [battleOpponent, selectedBattleChallenge, onStartSkillBattle]);
+
+    useEffect(() => {
+        if (!duelState.active || duelState.phase !== 'waiting') return undefined;
+        const timer = window.setTimeout(() => {
+            setDuelState((current) => current.active && current.phase === 'waiting'
+                ? { ...current, phase: 'intro', timeLeft: DUEL_ROUND_SECONDS, judgingProgress: 0 }
+                : current);
+        }, DUEL_WAITING_MS);
+        return () => window.clearTimeout(timer);
+    }, [duelState.active, duelState.phase, duelState.round]);
+
+    useEffect(() => {
+        if (!duelState.active || duelState.phase !== 'intro') return undefined;
+        const timer = window.setTimeout(() => {
+            setDuelState((current) => current.active && current.phase === 'intro'
+                ? { ...current, phase: 'prompt', timeLeft: DUEL_ROUND_SECONDS }
+                : current);
+        }, DUEL_INTRO_MS);
+        return () => window.clearTimeout(timer);
+    }, [duelState.active, duelState.phase, duelState.round]);
+
+    const submitRound = useCallback((forcedTimeout = false) => {
+        let answerToScore = '';
+        let roundToScore = 1;
+        let timeRemaining = 0;
+        setDuelState((current) => {
+            if (!current.active || current.phase !== 'prompt') return current;
+            answerToScore = duelAnswer.trim() || (forcedTimeout ? 'Time expired before a complete answer was submitted.' : '');
+            if (!answerToScore) return current;
+            roundToScore = current.round;
+            timeRemaining = current.timeLeft;
+            return { ...current, phase: 'judging', judgingProgress: 8 };
+        });
+
+        window.setTimeout(() => {
+            if (!answerToScore) return;
+            setDuelState((current) => {
+                if (!current.active || current.phase !== 'judging') return current;
+                const result = evaluateDuelRound({
+                    answer: answerToScore,
+                    round: roundToScore,
+                    challenge: selectedBattleChallenge,
+                    opponent: battleOpponent,
+                    timeRemaining,
+                    forcedTimeout
+                });
+                const nextPlayerWins = current.playerWins + (result.winner === 'player' ? 1 : 0);
+                const nextOpponentWins = current.opponentWins + (result.winner === 'opponent' ? 1 : 0);
+                return {
+                    ...current,
+                    phase: 'result',
+                    judgingProgress: 100,
+                    playerWins: nextPlayerWins,
+                    opponentWins: nextOpponentWins,
+                    lastRoundWinner: result.winner,
+                    lastPlayerScore: result.playerScore,
+                    lastOpponentScore: result.opponentScore,
+                    lastReason: result.reason,
+                    lastCoachTip: result.coachTip,
+                    lastLoserMove: result.loserMove,
+                    lastBreakdown: result.scoreBreakdown,
+                    history: [
+                        ...current.history,
+                        {
+                            round: current.round,
+                            winner: result.winner,
+                            playerScore: result.playerScore,
+                            opponentScore: result.opponentScore
+                        }
+                    ]
+                };
+            });
+            setDuelAnswer('');
+        }, DUEL_JUDGING_MS);
+    }, [battleOpponent, duelAnswer, selectedBattleChallenge]);
+
+    useEffect(() => {
+        if (!duelState.active || duelState.phase !== 'prompt') return undefined;
+        if (duelState.timeLeft <= 0) {
+            submitRound(true);
+            return undefined;
+        }
+        const timer = window.setTimeout(() => {
+            setDuelState((current) => current.active && current.phase === 'prompt'
+                ? { ...current, timeLeft: Math.max(0, current.timeLeft - 1) }
+                : current);
+        }, 1000);
+        return () => window.clearTimeout(timer);
+    }, [duelState.active, duelState.phase, duelState.timeLeft, submitRound]);
+
+    useEffect(() => {
+        if (!duelState.active || duelState.phase !== 'judging') return undefined;
+        const timer = window.setInterval(() => {
+            setDuelState((current) => current.active && current.phase === 'judging'
+                ? { ...current, judgingProgress: Math.min(96, (current.judgingProgress || 0) + 13) }
+                : current);
+        }, 240);
+        return () => window.clearInterval(timer);
+    }, [duelState.active, duelState.phase]);
+
+    const handleNextRound = () => {
+        setDuelAnswer('');
+        setDuelState((current) => {
+            const matchWinner = current.playerWins === current.opponentWins
+                ? (current.playerWins >= current.opponentWins ? 'player' : 'opponent')
+                : (current.playerWins > current.opponentWins ? 'player' : 'opponent');
+            if (current.phase === 'finished') {
+                return initialDuelState({ active: true, phase: 'waiting' });
+            }
+            if (current.playerWins === 2 || current.opponentWins === 2 || current.round >= 3) {
+                return { ...current, phase: 'finished', matchWinner, timeLeft: 0, judgingProgress: 100 };
+            }
+            return {
+                ...current,
+                round: current.round + 1,
+                phase: 'waiting',
+                timeLeft: DUEL_ROUND_SECONDS,
+                judgingProgress: 0,
+                lastRoundWinner: null,
+                lastPlayerScore: null,
+                lastOpponentScore: null,
+                lastReason: '',
+                lastCoachTip: '',
+                lastLoserMove: 'dodge',
+                lastBreakdown: null
+            };
+        });
+    };
+
     return (
         <div className="content-section competition-section">
             <div className="section-title">
                 <div>
                     <span>Tekmovalni hub</span>
-                    <small>Daily Duel + Skill Battle za bolj interaktivno učenje</small>
+                    <small>Najprej izbereš rivala, potem ostaneš v istem tabu in igraš celoten best-of-3 duel</small>
                 </div>
                 <span className="pill">live challenge</span>
             </div>
 
-            <div className="competition-hero-card">
+            <div className="competition-hero-card competition-hero-card--duel">
                 <div>
                     <p className="eyebrow">Tvoj naslednji cilj</p>
-                    <h2>Tekmuj na score, ampak zmaguj z izboljšavo.</h2>
+                    <h2>Skill Duel: isti prompt, tri rounde, en zmagovalec.</h2>
                     <p>
-                        Daily Duel da vsem isti dnevni izziv. Skill Battle pa ti omogoči, da izbereš rivala,
-                        izbereš veščino in takoj dobiš primerjavo po oddaji odgovora.
+                        To ni več preusmeritev v navaden simulator. Competition tab zdaj sam vodi celoten flow: lobby → round intro → answer → AI judging → round result → final winner. Daily Duel in Challenge Lobby uporabljata isti duel screen.
                     </p>
                 </div>
                 <div className="competition-stat-strip">
-                    <span><Icon name="bolt" size={16} /> instant start</span>
-                    <span><Icon name="trophy" size={16} /> rank po oddaji</span>
-                    <span><Icon name="swords" size={16} /> 1v1 battle</span>
+                    <span><Icon name="bolt" size={16} /> 90s timer</span>
+                    <span><Icon name="trophy" size={16} /> best of 3</span>
+                    <span><Icon name="swords" size={16} /> animated duel</span>
                 </div>
             </div>
 
-            <div className="competition-grid">
+            {!duelState.active && (
+                <div className="competition-grid competition-grid--lobby">
                 <article className="competition-card daily-duel-card">
                     <div className="competition-card-head">
                         <span className="competition-icon"><Icon name="trophy" /></span>
                         <div>
-                            <p className="eyebrow">Točka 3</p>
+                            <p className="eyebrow">Točka 1</p>
                             <h3>Daily Duel</h3>
                         </div>
                     </div>
@@ -1427,20 +2032,20 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                         <span>bonus motivacija</span>
                     </div>
                     <CompetitionLeaderboard entries={dailyLeaderboard} highlightName={selectedUser?.name || 'Demo uporabnik'} />
-                    <button type="button" className="primary full-width" disabled={!dailyDuelChallenge} onClick={onStartDailyDuel}>
-                        Začni Daily Duel
+                    <button type="button" className="primary full-width" disabled={!dailyDuelChallenge} onClick={() => startDuel(dailyDuelChallenge)}>
+                        Začni Daily Duel kot 1v1
                     </button>
                 </article>
 
-                <article className="competition-card skill-battle-card">
+                <article className="competition-card skill-battle-card challenge-lobby-card">
                     <div className="competition-card-head">
                         <span className="competition-icon"><Icon name="swords" /></span>
                         <div>
                             <p className="eyebrow">Točka 2</p>
-                            <h3>Skill Battle</h3>
+                            <h3>Challenge Lobby</h3>
                         </div>
                     </div>
-                    <p>Izberi rivala in challenge. Po oddaji odgovora dobiš 1v1 rezultat in razlog za rematch.</p>
+                    <p>Nastavi rivala, fokus in challenge. Ko klikneš start, se odpre duel screen z best-of-3 rundami.</p>
                     <div className="battle-form-grid">
                         <label>Rival
                             <select value={opponentId} onChange={(e) => setOpponentId(e.target.value)}>
@@ -1461,25 +2066,51 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                             </select>
                         </label>
                     </div>
-                    <div className="battle-preview-card">
-                        <span className={`avatar ${battleOpponent?.avatarConfig ? 'avatar--model avatar--leaderboard' : ''}`}>{battleOpponent?.avatarConfig ? <AvatarMini config={battleOpponent.avatarConfig} /> : initialsOfName(battleOpponent?.name)}</span>
+                    <div className="battle-preview-card battle-preview-card--duel">
+                        <span className="avatar avatar--model avatar--leaderboard"><AvatarMini config={battleOpponent?.avatarConfig || fallbackAvatarConfig(2)} /></span>
                         <div>
                             <strong>{battleOpponent?.name || 'SkillBot Rival'}</strong>
                             <p>Predviden rival score danes: {battlePreviewScore}/100</p>
                         </div>
+                        <div className="battle-preview-card__meta">
+                            <span>format</span>
+                            <strong>Best of 3</strong>
+                        </div>
+                    </div>
+                    <div className="challenge-lobby-features mini-list">
+                        <span>walking while waiting</span>
+                        <span>running while loading</span>
+                        <span>boxing outcome per round</span>
+                        <span>victory dance on win</span>
                     </div>
                     <button
                         type="button"
                         className="primary full-width"
                         disabled={!selectedBattleChallenge}
-                        onClick={() => onStartSkillBattle({ opponentId: battleOpponent?.id, challengeId: selectedBattleChallenge?.id })}
+                        onClick={() => startDuel()}
                     >
-                        Začni Skill Battle
+                        Odpri duel screen
                     </button>
                 </article>
-            </div>
+                </div>
+            )}
 
-            {lastCompetitionResult && <CompetitionResultCard result={lastCompetitionResult} />}
+            {duelState.active && (
+                <DuelArena
+                    duelState={duelState}
+                    selectedUser={selectedUser}
+                    battleOpponent={battleOpponent}
+                    selectedBattleChallenge={selectedBattleChallenge}
+                    duelRounds={duelRounds}
+                    duelAnswer={duelAnswer}
+                    setDuelAnswer={setDuelAnswer}
+                    onSubmitRound={submitRound}
+                    onNextRound={handleNextRound}
+                    onReset={resetToLobby}
+                />
+            )}
+
+            {!duelState.active && lastCompetitionResult && <CompetitionResultCard result={lastCompetitionResult} />}
         </div>
     );
 }
@@ -1730,7 +2361,7 @@ function buildCompetitionPreviewLeaderboard(rivals, selectedUser, challenge, mod
             name: user.name || 'Uporabnik',
             score: user.id === me.id ? '??' : buildPreviewScore(user, challenge, mode),
             avatar: initialsOfName(user.name),
-            avatarConfig: user.avatarConfig
+            avatarConfig: user.avatarConfig || fallbackAvatarConfig(index + 1)
         }))
         .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
         .map((entry, index) => ({ ...entry, rank: index + 1 }));
@@ -1753,6 +2384,21 @@ function buildPreviewScore(user, challenge, mode) {
     const levelBonus = Math.min(8, Math.max(0, user?.level || 1));
     const streakBonus = Math.min(5, Math.max(0, user?.streakDays || 0));
     return Math.max(45, Math.min(96, base + levelBonus + streakBonus - 4));
+}
+
+function fallbackAvatarConfig(seed = 0) {
+    const colors = ['violet', 'blue', 'cyan', 'royal', 'neon', 'plasma', 'aqua', 'emerald', 'magenta', 'amber'];
+    const numericSeed = Number.isFinite(Number(seed)) ? Number(seed) : String(seed || '').length;
+    const level = Math.abs(numericSeed) % 10;
+    const model = `level-${String(level).padStart(2, '0')}`;
+    return {
+        ...defaultAvatarConfig,
+        playerModel: model,
+        levelModel: model,
+        model,
+        accent: colors[level % colors.length],
+        energy: level > 6 ? 'radiant' : 'balanced'
+    };
 }
 
 function initialsOfName(name = '') {

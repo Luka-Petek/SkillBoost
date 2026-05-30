@@ -303,7 +303,6 @@ export default function App() {
                                         }}
                                         onStartSkillBattle={(payload) => {
                                             data.handleStartSkillBattle(payload);
-                                            handleNavigate('simulator');
                                         }}
                                     />
                                 )}
