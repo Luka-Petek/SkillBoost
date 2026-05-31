@@ -667,8 +667,6 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                     </div>
                 </div>
 
-                <VoiceCoachPanel isListening={isListening} voiceStatus={voiceStatus} answerStats={answerStats} />
-
                 <label>Tvoj odgovor
                     <div className="answer-composer">
                            <textarea
@@ -685,7 +683,7 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                                 aria-pressed={isListening}
                                 title="Odgovori z mikrofonom"
                             >
-                                <MicrophoneIcon />
+                                <Icon name="microphone" size={18} />
                                 {isListening ? 'Ustavi' : 'Mikrofon'}
                             </button>
                             <button
@@ -843,39 +841,6 @@ function DailyPersonalizedChallengeCard({ challenge, active, onStart, onCancel, 
     );
 }
 
-
-function VoiceCoachPanel({ isListening, voiceStatus, answerStats }) {
-    const supported = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
-    const speechTip = answerStats.words < 25
-        ? 'Poskusi povedati vsaj 25 besed: kontekst, predlog in zaključek.'
-        : answerStats.percent < 70
-            ? 'Dodaj jasen naslednji korak ali vprašanje za sogovornika.'
-            : 'Odlično. Odgovor je dovolj konkreten za AI oceno.';
-    return (
-        <article className={`voice-coach-panel ${isListening ? 'active' : ''}`}>
-            <span className="voice-pulse" aria-hidden="true"><Icon name="microphone" /></span>
-            <div>
-                <strong>{supported ? 'Voice simulation pripravljena' : 'Voice simulation ni podprta v tem brskalniku'}</strong>
-                <p>{voiceStatus || speechTip}</p>
-            </div>
-            <div className="voice-stats">
-                <span>{answerStats.words} besed</span>
-                <span>{answerStats.percent}% kakovost</span>
-            </div>
-        </article>
-    );
-}
-
-function MicrophoneIcon() {
-    return (
-        <svg className="composer-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
-            <path d="M19 11a7 7 0 0 1-14 0" />
-            <path d="M12 18v4" />
-            <path d="M8 22h8" />
-        </svg>
-    );
-}
 
 function FileIcon() {
     return (
@@ -2330,6 +2295,30 @@ export function ReportSection({ report, skills = [] }) {
             </div>
 
             <GrowthInsightBoard insights={insights} skillName={skillName} />
+
+            {(report.metricProgress || []).length > 0 && (
+                <article className="metric-progress-report">
+                    <div className="section-title compact-title">
+                        <div>
+                            <span>Analiza po kriterijih</span>
+                            <small>Skupni rezultat iz vseh rešenih nalog: empatija, jasnost, struktura, reševanje in samozavest</small>
+                        </div>
+                    </div>
+                    <div className="metric-progress-grid">
+                        {(report.metricProgress || []).map((metric) => (
+                            <section key={metric.metricKey} className="metric-progress-card">
+                                <div>
+                                    <strong>{metric.label}</strong>
+                                    <span>{metric.averageScore}/100</span>
+                                </div>
+                                <div className="progress-bar"><span style={{ width: `${Math.min(100, metric.averageScore)}%` }} /></div>
+                                <small>{metric.status}</small>
+                                <p>{metric.recommendation}</p>
+                            </section>
+                        ))}
+                    </div>
+                </article>
+            )}
 
             <div className="cards-grid single">
                 {(report.skillProgress || []).map((skill) => (

@@ -16,6 +16,7 @@ public record ReportResponse(
         List<String> badges,
         List<DailyQuest> dailyQuests,
         List<SkillProgress> skillProgress,
+        List<MetricProgress> metricProgress,
         List<String> recommendations,
         List<MentorComment> mentorComments
 ) {
@@ -24,6 +25,16 @@ public record ReportResponse(
             long sessions,
             double averageScore,
             String nextSuggestedChallenge
+    ) {
+    }
+
+    public record MetricProgress(
+            String metricKey,
+            String label,
+            long sessions,
+            double averageScore,
+            String status,
+            String recommendation
     ) {
     }
 
