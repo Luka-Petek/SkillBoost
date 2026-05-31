@@ -497,7 +497,7 @@ function LevelModelViewer({ config, modelKey, size = 'large', interactive = fals
                     shadow-softness="0.94"
                     environment-image="legacy"
                     interaction-prompt="none"
-                    loading={size === 'large' ? 'eager' : 'lazy'}
+                    loading={size === 'large' || size === 'hero' || size === 'mini' ? 'eager' : 'lazy'}
                     reveal="auto"
                     auto-rotate={size === 'large'}
                     rotation-per-second={interactive ? '9deg' : '4deg'}

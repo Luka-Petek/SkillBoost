@@ -3162,3 +3162,4155 @@
     display: none;
   }
 }
+
+/* SkillCity roadmap v5 — final UX polish + safer 3D performance mode. */
+.skillcity-shell {
+  --skillcity-fast: 140ms;
+  --skillcity-soft: 220ms;
+}
+
+.skillcity-command,
+.skillcity-roadmap-toolbar,
+.skillcity-journey-strip,
+.skillcity-mission-panel,
+.skillcity-guide-strip {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 160px;
+}
+
+.skillcity-command {
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 285px);
+  padding: clamp(0.72rem, 1vw, 0.95rem);
+}
+
+.skillcity-command h2 {
+  font-size: clamp(1.52rem, 2vw, 2.45rem);
+}
+
+.skillcity-command__main > p:not(.eyebrow) {
+  max-width: 760px;
+  font-size: 0.88rem;
+}
+
+.skillcity-next-mission {
+  min-height: 62px;
+  padding: 0.5rem;
+}
+
+.skillcity-next-mission__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+}
+
+.skillcity-command__guide {
+  grid-template-rows: minmax(118px, 146px) auto;
+  gap: 0.48rem;
+}
+
+.skillcity-guide-model {
+  min-height: 146px;
+}
+
+.skillcity-guide-model .player-model--hero,
+.skillcity-guide-model .player-model--hero model-viewer {
+  height: 170px;
+  min-height: 170px;
+}
+
+.skillcity-guide-model .player-model--hero model-viewer {
+  transform: translateY(2%) scale(1.24);
+}
+
+.skillcity-guide-tip {
+  padding: 0.52rem 0.64rem;
+}
+
+.skillcity-guide-tip strong {
+  font-size: 0.78rem;
+}
+
+.skillcity-roadmap-toolbar {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.skillcity-view-switch,
+.skillcity-map-tools {
+  align-self: stretch;
+}
+
+.skillcity-map-tools {
+  display: grid;
+  padding: 0.32rem;
+  border: 1px solid color-mix(in srgb, var(--city-main, var(--primary)) 18%, var(--border));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--panel) 74%, transparent);
+}
+
+.skillcity-map-tools button {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--skillcity-fast) ease, border-color var(--skillcity-fast) ease, transform var(--skillcity-fast) ease;
+}
+
+.skillcity-map-tools button:hover,
+.skillcity-map-tools button.active {
+  border-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 38%, var(--border));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--city-main, var(--primary)) 14%, transparent), color-mix(in srgb, var(--city-cyan, var(--accent)) 9%, transparent));
+}
+
+.skillcity-map-tools button.active::after {
+  content: 'ON';
+  margin-left: 0.34rem;
+  color: color-mix(in srgb, var(--city-cyan, var(--accent)) 82%, var(--text));
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+
+.skillcity-journey-strip {
+  padding: 0.5rem;
+}
+
+.skillcity-journey-step {
+  min-height: 60px;
+  padding: 0.46rem;
+}
+
+.skillcity-real-stage {
+  contain: layout paint style;
+}
+
+.skillcity-real-map {
+  contain: layout paint style;
+  transform: translateZ(0);
+  min-height: 620px;
+  height: clamp(520px, calc(100vh - 330px), 700px);
+}
+
+.skillcity-map-focus-card {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.8rem;
+  z-index: 24;
+  width: min(245px, calc(100% - 1.6rem));
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.58rem 0.66rem;
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--city-main, var(--primary))) 30%, var(--border));
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--node-color, var(--city-main, var(--primary))) 18%, transparent), transparent 42%),
+    color-mix(in srgb, var(--panel-strong) 88%, transparent);
+  box-shadow: 0 14px 28px color-mix(in srgb, black 14%, transparent);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.skillcity-map-focus-card span {
+  color: color-mix(in srgb, var(--city-cyan, var(--accent)) 78%, var(--muted));
+  font-size: 0.62rem;
+  font-weight: 1000;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.skillcity-map-focus-card strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.skillcity-map-focus-card small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.skillcity-real-map__fog {
+  opacity: 0.62;
+}
+
+.skillcity-real-map__lights {
+  opacity: 0.72;
+}
+
+.skillcity-real-road--active {
+  animation-duration: 2200ms;
+}
+
+.skillcity-real-node,
+.skillcity-landmark-model,
+.skillcity-real-avatar {
+  will-change: transform;
+}
+
+.skillcity-real-node:hover,
+.skillcity-real-node.active,
+.skillcity-landmark-model:hover,
+.skillcity-landmark-model.active {
+  transition-duration: var(--skillcity-fast);
+}
+
+.skillcity-landmark-model {
+  max-width: 132px;
+}
+
+.skillcity-landmark-model__copy {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--skillcity-fast) ease, transform var(--skillcity-fast) ease;
+}
+
+.skillcity-landmark-model:hover .skillcity-landmark-model__copy,
+.skillcity-landmark-model.active .skillcity-landmark-model__copy,
+.skillcity-landmark-model.unlocked .skillcity-landmark-model__copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.skillcity-landmark-model.locked:not(:hover):not(.active) .skillcity-landmark-model__copy {
+  opacity: 0;
+}
+
+.skillcity-landmark-model.unlocked .skillcity-landmark-model__lock {
+  display: none;
+}
+
+.skillcity-real-avatar {
+  min-width: 88px;
+  padding: 0.18rem 0.4rem 0.18rem 0.18rem;
+}
+
+.skillcity-real-avatar__mini.avatar--roadmap {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  border-radius: 21px;
+}
+
+.skillcity-real-avatar__mini.avatar--roadmap .player-model--mini model-viewer {
+  transform: translateY(0) scale(1.12);
+}
+
+.skillcity-real-avatar__mini.avatar--roadmap::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 18px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--city-cyan, var(--accent)) 16%, transparent), transparent 64%);
+  pointer-events: none;
+}
+
+.skillcity-map-callout {
+  max-width: 188px;
+}
+
+.skillcity-mission-panel {
+  gap: 0.52rem;
+}
+
+.skillcity-panel-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  padding-top: 0.44rem;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--panel-strong) 92%, transparent) 35%);
+  backdrop-filter: blur(10px);
+}
+
+.skillcity-panel-actions button.primary {
+  box-shadow: 0 14px 24px color-mix(in srgb, var(--city-main, var(--primary)) 18%, transparent);
+}
+
+.skillcity-reward-row .skillcity-shard-reward,
+.skillcity-map-callout .skillcity-shard-reward {
+  border-color: color-mix(in srgb, var(--city-cyan, var(--accent)) 22%, var(--border));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--city-blue, #256dff) 12%, var(--panel-strong)), color-mix(in srgb, var(--city-purple, #8b35ff) 9%, var(--panel-strong)));
+}
+
+.skillcity-real-stage.eco-mode .skillcity-real-map__fog,
+.skillcity-real-stage.eco-mode .skillcity-real-map__lights,
+.skillcity-real-stage.eco-mode .skillcity-real-map__skyline {
+  opacity: 0.38;
+}
+
+.skillcity-real-stage.eco-mode .skillcity-real-road--active,
+.skillcity-real-stage.eco-mode .skillcity-real-node.ready-to-claim .skillcity-real-node__tower,
+.skillcity-real-stage.eco-mode .skillcity-real-node.ready-to-claim .skillcity-real-node__badge,
+.skillcity-real-stage.eco-mode .skillcity-real-node.current::after,
+.skillcity-real-stage.eco-mode .skillcity-real-avatar.moving .skillcity-real-avatar__trail {
+  animation: none !important;
+}
+
+.skillcity-real-stage.eco-mode .skillcity-landmark-model model-viewer,
+.skillcity-real-stage.eco-mode .skillcity-real-avatar__mini.avatar--roadmap model-viewer {
+  filter: saturate(1.02) contrast(1.02) brightness(1.02);
+}
+
+.skillcity-real-stage.eco-mode .skillcity-real-node,
+.skillcity-real-stage.eco-mode .skillcity-landmark-model,
+.skillcity-real-stage.eco-mode .skillcity-real-avatar,
+.skillcity-real-stage.eco-mode .skillcity-real-district {
+  transition-duration: 80ms !important;
+}
+
+@media (max-width: 1280px) {
+  .skillcity-roadmap-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-map-tools button {
+    width: 100%;
+  }
+
+  .skillcity-command__guide {
+    grid-template-columns: minmax(170px, 220px) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+  }
+
+  .skillcity-guide-model {
+    grid-row: span 2;
+    min-height: 138px;
+  }
+}
+
+@media (max-width: 820px) {
+  .skillcity-command {
+    padding: 0.68rem;
+  }
+
+  .skillcity-next-mission {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .skillcity-next-mission__meter {
+    grid-column: 1 / -1;
+  }
+
+  .skillcity-command__guide,
+  .skillcity-guide-model {
+    display: none;
+  }
+
+  .skillcity-real-map {
+    min-height: 700px;
+  }
+
+  .skillcity-map-focus-card {
+    left: 0.55rem;
+    right: 0.55rem;
+    top: 0.55rem;
+    width: auto;
+  }
+
+  .skillcity-real-avatar {
+    min-width: auto;
+  }
+
+  .skillcity-real-avatar__mini.avatar--roadmap {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+  }
+}
+
+/* SkillCity roadmap v6 — cleaner visual hierarchy + smoother 3D without changing the flow. */
+.skillcity-shell {
+  --skillcity-map-border: color-mix(in srgb, var(--city-cyan, var(--primary)) 18%, var(--border));
+  --skillcity-panel-glass: color-mix(in srgb, var(--panel-strong) 88%, transparent);
+}
+
+.skillcity-command,
+.skillcity-roadmap-toolbar,
+.skillcity-journey-strip,
+.skillcity-mission-panel,
+.skillcity-guide-strip {
+  box-shadow: 0 16px 38px color-mix(in srgb, black 10%, transparent);
+}
+
+.skillcity-command::before,
+.skillcity-command::after {
+  opacity: 0.72;
+}
+
+.skillcity-command__guide {
+  min-width: 0;
+}
+
+.skillcity-roadmap-toolbar {
+  padding: 0.44rem;
+  gap: 0.48rem;
+}
+
+.skillcity-district-chips {
+  gap: 0.34rem;
+}
+
+.skillcity-district-chip {
+  min-height: 46px;
+  padding: 0.38rem 0.46rem;
+  border-radius: 15px;
+}
+
+.skillcity-district-chip:not(.active):not(:hover) {
+  opacity: 0.86;
+}
+
+.skillcity-journey-strip {
+  overflow: hidden;
+}
+
+.skillcity-journey-strip__head {
+  padding-inline: 0.1rem;
+}
+
+.skillcity-journey-track {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 26%, var(--border)) transparent;
+}
+
+.skillcity-journey-step {
+  min-height: 54px;
+  border-radius: 16px;
+}
+
+.skillcity-journey-step:not(.active):not(.current):not(:hover) {
+  opacity: 0.82;
+}
+
+.skillcity-real-stage {
+  overflow: hidden;
+  border-color: var(--skillcity-map-border);
+}
+
+.skillcity-real-stage__head {
+  padding: 0.72rem 0.86rem 0.32rem;
+}
+
+.skillcity-real-stage__head h3 {
+  font-size: clamp(1.1rem, 1.45vw, 1.62rem);
+}
+
+.skillcity-real-stage__head p:not(.eyebrow) {
+  max-width: 760px;
+  font-size: 0.82rem;
+}
+
+.skillcity-real-map {
+  min-height: 590px;
+  height: clamp(500px, calc(100vh - 340px), 670px);
+  max-height: 710px;
+  margin: 0.12rem 0.62rem 0.62rem;
+  border-color: var(--skillcity-map-border);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--city-cyan, var(--primary)) 5%, transparent),
+    0 20px 42px color-mix(in srgb, black 12%, transparent);
+}
+
+.skillcity-real-map__surface {
+  background-size: 70px 70px, 70px 70px, 100% 100%;
+  opacity: 0.38;
+}
+
+.skillcity-real-map__lights {
+  opacity: 0.5;
+}
+
+.skillcity-real-map__fog,
+.skillcity-real-map__skyline {
+  opacity: 0.34;
+}
+
+.skillcity-real-map__water,
+.skillcity-real-map__park,
+.skillcity-real-map__artery {
+  opacity: 0.42;
+}
+
+.skillcity-map-focus-card {
+  top: 0.68rem;
+  right: 0.68rem;
+  width: min(222px, calc(100% - 1.36rem));
+  padding: 0.5rem 0.58rem;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--node-color, var(--city-main, var(--primary))) 14%, transparent), transparent 44%),
+    color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  box-shadow: 0 12px 24px color-mix(in srgb, black 12%, transparent);
+}
+
+.skillcity-map-focus-card strong {
+  font-size: 0.84rem;
+}
+
+.skillcity-map-focus-card small {
+  font-size: 0.67rem;
+}
+
+.skillcity-real-roads {
+  filter: none;
+}
+
+.skillcity-real-road--shadow {
+  opacity: 0.5;
+  stroke-width: 10;
+}
+
+.skillcity-real-road--asphalt {
+  opacity: 0.74;
+  stroke-width: 7.2;
+}
+
+.skillcity-real-road--lane {
+  opacity: 0.48;
+  stroke-width: 0.9;
+  stroke-dasharray: 2 7;
+}
+
+.skillcity-real-road--active {
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--city-cyan, var(--primary)) 42%, transparent));
+}
+
+.skillcity-real-district {
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 20% 17%, color-mix(in srgb, var(--node-color, var(--primary)) 10%, transparent), transparent 42%),
+    linear-gradient(135deg, color-mix(in srgb, var(--node-color, var(--primary)) 4%, transparent), color-mix(in srgb, var(--panel-strong) 12%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+}
+
+.skillcity-real-district:not(.active):not(:hover) {
+  opacity: 0.82;
+}
+
+.skillcity-real-district.locked:not(.active):not(:hover) {
+  opacity: 0.58;
+}
+
+.skillcity-real-district__grid {
+  opacity: 0.22;
+}
+
+.skillcity-real-district__label {
+  max-width: min(168px, calc(100% - 0.86rem));
+  padding: 0.25rem 0.36rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
+  backdrop-filter: none;
+}
+
+.skillcity-real-district__label strong {
+  font-size: 0.64rem;
+}
+
+.skillcity-real-district__label small {
+  font-size: 0.53rem;
+}
+
+.skillcity-real-district__landmark {
+  opacity: 0.56;
+}
+
+.skillcity-real-district:hover,
+.skillcity-real-district.active {
+  transform: translateY(-1px) scale(1.003);
+}
+
+.skillcity-real-node {
+  width: clamp(66px, 4.5vw, 88px);
+  min-height: 104px;
+  transform: translate(-50%, -60%) scale(0.84);
+  filter: none;
+  will-change: auto;
+}
+
+.skillcity-real-node:hover,
+.skillcity-real-node.active {
+  transform: translate(-50%, -60%) translateY(-4px) scale(0.96);
+}
+
+.skillcity-real-node.muted {
+  opacity: 0.2;
+}
+
+.skillcity-real-node__plot {
+  width: 62px;
+}
+
+.skillcity-real-node__tower {
+  width: 36px;
+  border-radius: 11px 11px 6px 6px;
+  box-shadow:
+    inset -8px 0 16px color-mix(in srgb, black 12%, transparent),
+    0 10px 20px color-mix(in srgb, black 10%, transparent);
+}
+
+.skillcity-real-node.boss .skillcity-real-node__tower {
+  width: 46px;
+}
+
+.skillcity-real-node__badge {
+  width: 27px;
+  height: 27px;
+  border-radius: 10px;
+}
+
+.skillcity-real-node__label {
+  min-width: 106px;
+  max-width: 140px;
+  padding: 0.24rem 0.36rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-strong) 91%, transparent);
+  box-shadow: 0 10px 18px color-mix(in srgb, black 10%, transparent);
+}
+
+.skillcity-real-node:not(.active):not(.current):not(:hover) .skillcity-real-node__label {
+  opacity: 0.66;
+}
+
+.skillcity-real-node.locked:not(.active):not(:hover) .skillcity-real-node__label {
+  opacity: 0.42;
+}
+
+.skillcity-real-node__label strong {
+  font-size: 0.65rem;
+}
+
+.skillcity-real-node__label small {
+  font-size: 0.55rem;
+}
+
+.skillcity-map-callout {
+  max-width: 172px;
+  padding: 0.42rem;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--panel-strong) 94%, transparent);
+  backdrop-filter: none;
+}
+
+.skillcity-map-callout small,
+.skillcity-map-callout .skillcity-shard-reward__copy small {
+  display: none;
+}
+
+.skillcity-landmark-model {
+  max-width: 124px;
+  transform: translate(-50%, -71%) scale(0.74);
+  will-change: auto;
+}
+
+.skillcity-landmark-model:hover,
+.skillcity-landmark-model.active {
+  transform: translate(-50%, -73%) scale(0.88);
+}
+
+.skillcity-landmark-model__stage {
+  height: clamp(72px, calc(var(--landmark-size, 128px) * 0.64), 96px);
+  border-radius: 42% 42% 36% 36%;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 10%, transparent),
+    0 12px 22px color-mix(in srgb, black 10%, transparent);
+}
+
+.skillcity-landmark-model__stage::after {
+  height: 10px;
+  filter: blur(6px);
+  opacity: 0.42;
+}
+
+.skillcity-landmark-model model-viewer {
+  width: 128%;
+  height: 128%;
+  min-height: 98px;
+  transform: translateY(3%) scale(1.02);
+  filter: saturate(1.08) contrast(1.03) brightness(1.03);
+}
+
+.skillcity-landmark-model.locked model-viewer {
+  opacity: 0.56;
+  filter: saturate(0.74) contrast(0.95) brightness(0.84) grayscale(0.16);
+}
+
+.skillcity-landmark-model__copy {
+  width: min(132px, 112%);
+  padding: 0.22rem 0.34rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-strong) 93%, transparent);
+  box-shadow: 0 10px 18px color-mix(in srgb, black 8%, transparent);
+}
+
+.skillcity-landmark-model__copy strong {
+  font-size: 0.6rem;
+}
+
+.skillcity-landmark-model__copy small {
+  font-size: 0.5rem;
+  line-height: 1.08;
+}
+
+.skillcity-landmark-model.locked:not(:hover):not(.active) .skillcity-landmark-model__copy {
+  opacity: 0;
+}
+
+.skillcity-landmark-model.unlocked:not(:hover):not(.active) .skillcity-landmark-model__copy {
+  opacity: 0.78;
+}
+
+.skillcity-landmark-model__lock {
+  top: 0.3rem;
+  padding: 0.14rem 0.36rem;
+  font-size: 0.46rem;
+}
+
+.skillcity-real-avatar {
+  min-width: 74px;
+  padding: 0.14rem 0.32rem 0.14rem 0.14rem;
+  border-radius: 18px;
+  backdrop-filter: none;
+  will-change: left, top, transform;
+}
+
+.skillcity-real-avatar__mini.avatar--roadmap {
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
+  border-radius: 17px;
+}
+
+.skillcity-real-avatar__mini.avatar--roadmap .player-model--mini model-viewer {
+  transform: translateY(3%) scale(1.12);
+  filter: saturate(1.12) contrast(1.04) brightness(1.06);
+}
+
+.skillcity-real-avatar__label {
+  padding: 0.18rem 0.36rem;
+  font-size: 0.52rem;
+}
+
+.skillcity-real-legend {
+  opacity: 0.62;
+  backdrop-filter: none;
+}
+
+.skillcity-real-legend:hover {
+  opacity: 0.95;
+}
+
+.skillcity-mission-panel {
+  gap: 0.46rem;
+  padding: 0.62rem;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--city-main, var(--primary)) 8%, transparent), transparent 34%),
+    var(--skillcity-card);
+}
+
+.skillcity-mission-title h3 {
+  font-size: clamp(1.05rem, 1.25vw, 1.28rem);
+}
+
+.skillcity-briefing-card,
+.skillcity-score-card,
+.skillcity-mission-goal,
+.skillcity-route-note,
+.skillcity-reward-row,
+.skillcity-checklist,
+.skillcity-lock-note {
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--panel-strong) 78%, transparent);
+}
+
+.skillcity-checklist span,
+.skillcity-reward-row span {
+  border-radius: 12px;
+}
+
+.skillcity-panel-actions {
+  border-top: 1px solid color-mix(in srgb, var(--city-cyan, var(--primary)) 12%, transparent);
+}
+
+.skillcity-real-stage.eco-mode .skillcity-real-map__lights,
+.skillcity-real-stage.eco-mode .skillcity-real-map__fog,
+.skillcity-real-stage.eco-mode .skillcity-real-map__skyline,
+.skillcity-real-stage.eco-mode .skillcity-real-map__surface {
+  opacity: 0.22;
+}
+
+.skillcity-real-stage.eco-mode .skillcity-real-node:not(.active):not(.current):not(:hover) .skillcity-real-node__windows,
+.skillcity-real-stage.eco-mode .skillcity-node-shard,
+.skillcity-real-stage.eco-mode .skillcity-shard-reward__cluster .skillcity-shard {
+  box-shadow: none;
+  filter: none;
+}
+
+.skillcity-real-stage.eco-mode .skillcity-landmark-model model-viewer,
+.skillcity-real-stage.eco-mode .skillcity-real-avatar__mini.avatar--roadmap model-viewer {
+  filter: saturate(0.98) contrast(1.01) brightness(1.02);
+}
+
+@media (min-width: 1200px) {
+  .skillcity-roadmap-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(315px, 370px);
+  }
+
+  .skillcity-mission-panel {
+    top: 0.62rem;
+    max-height: calc(100vh - 6.4rem);
+  }
+}
+
+@media (min-width: 1540px) {
+  .skillcity-real-map {
+    height: clamp(540px, calc(100vh - 350px), 720px);
+  }
+
+  .skillcity-landmark-model {
+    transform: translate(-50%, -71%) scale(0.82);
+  }
+
+  .skillcity-landmark-model:hover,
+  .skillcity-landmark-model.active {
+    transform: translate(-50%, -73%) scale(0.94);
+  }
+}
+
+@media (max-width: 1199px) {
+  .skillcity-real-map {
+    min-height: 640px;
+  }
+}
+
+@media (max-width: 820px) {
+  .skillcity-real-stage__head {
+    display: grid;
+  }
+
+  .skillcity-real-map {
+    min-height: 690px;
+    margin-inline: 0.42rem;
+  }
+
+  .skillcity-real-node {
+    transform: translate(-50%, -58%) scale(0.72);
+  }
+
+  .skillcity-real-node:hover,
+  .skillcity-real-node.active {
+    transform: translate(-50%, -58%) translateY(-3px) scale(0.82);
+  }
+
+  .skillcity-landmark-model {
+    max-width: 88px;
+    transform: translate(-50%, -68%) scale(0.68);
+  }
+
+  .skillcity-landmark-model:hover,
+  .skillcity-landmark-model.active {
+    transform: translate(-50%, -70%) scale(0.78);
+  }
+
+  .skillcity-real-avatar__mini.avatar--roadmap {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skillcity-real-road--active,
+  .skillcity-real-avatar__trail,
+  .skillcity-node-shard,
+  .skillcity-shard-reward__cluster .skillcity-shard {
+    animation: none !important;
+  }
+}
+
+/* SkillCity roadmap v7 — cleaner control layer, district rail, landmark dock and smoother desktop flow. */
+.skillcity-control-deck,
+.skillcity-landmark-dock {
+  border: 1px solid color-mix(in srgb, var(--city-cyan, var(--primary)) 18%, var(--border));
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--city-main, var(--primary)) 8%, transparent), transparent 34%),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+  box-shadow: 0 14px 34px color-mix(in srgb, black 9%, transparent);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 96px;
+}
+
+.skillcity-control-deck {
+  display: grid;
+  grid-template-columns: minmax(230px, 1.25fr) repeat(5, minmax(150px, 1fr));
+  gap: 0.46rem;
+  padding: 0.5rem;
+}
+
+.skillcity-control-card {
+  min-width: 0;
+  min-height: 94px;
+  display: grid;
+  align-content: center;
+  gap: 0.24rem;
+  padding: 0.62rem;
+  border: 1px solid color-mix(in srgb, var(--city-main, var(--primary)) 14%, var(--border));
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--panel-strong) 84%, transparent), color-mix(in srgb, var(--panel) 66%, transparent));
+  color: var(--text);
+  text-align: left;
+}
+
+.skillcity-control-card--button {
+  cursor: pointer;
+  transition: transform 130ms ease, border-color 130ms ease, background 130ms ease, opacity 130ms ease;
+}
+
+.skillcity-control-card--button:hover,
+.skillcity-control-card--button.active {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 38%, var(--border));
+  background:
+    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--city-cyan, var(--accent)) 13%, transparent), transparent 44%),
+    color-mix(in srgb, var(--panel-strong) 90%, transparent);
+}
+
+.skillcity-control-card--button:disabled {
+  cursor: default;
+  opacity: 0.68;
+}
+
+.skillcity-control-card--primary {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.62rem;
+  border-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 32%, var(--border));
+  background:
+    radial-gradient(circle at 10% 12%, color-mix(in srgb, var(--city-cyan, var(--accent)) 16%, transparent), transparent 42%),
+    linear-gradient(145deg, color-mix(in srgb, var(--city-main, var(--primary)) 12%, var(--panel-strong)), color-mix(in srgb, var(--panel-strong) 88%, transparent));
+}
+
+.skillcity-control-card--primary span,
+.skillcity-control-card--primary strong,
+.skillcity-control-card--primary small {
+  grid-column: 1;
+}
+
+.skillcity-control-card--primary button {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.skillcity-control-card span,
+.skillcity-landmark-dock__head span,
+.skillcity-landmark-tile__copy small {
+  color: color-mix(in srgb, var(--city-cyan, var(--accent)) 76%, var(--muted));
+  font-size: 0.61rem;
+  font-weight: 1000;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.skillcity-control-card strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+  line-height: 1.08;
+}
+
+.skillcity-control-card small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skillcity-control-card i,
+.skillcity-landmark-tile > i {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 72%, transparent);
+}
+
+.skillcity-control-card i em,
+.skillcity-landmark-tile > i em {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--city-blue, var(--primary)), var(--city-cyan, var(--accent)), var(--city-purple, var(--primary-strong)));
+}
+
+.skillcity-control-card--metrics strong {
+  color: color-mix(in srgb, var(--city-cyan, var(--accent)) 82%, var(--text));
+  font-size: 1.08rem;
+}
+
+.skillcity-control-card--toggle.active {
+  border-color: color-mix(in srgb, #30c48d 34%, var(--border));
+}
+
+.skillcity-landmark-dock {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.46rem;
+}
+
+.skillcity-landmark-dock__head {
+  min-width: 138px;
+  display: grid;
+  gap: 0.06rem;
+  padding: 0.48rem 0.58rem;
+}
+
+.skillcity-landmark-dock__head strong {
+  font-size: 0.96rem;
+}
+
+.skillcity-landmark-dock__grid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.skillcity-landmark-tile {
+  min-width: 0;
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.46rem;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--city-main, var(--primary)) 16%, var(--border));
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--panel-strong) 72%, transparent);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 130ms ease, opacity 130ms ease, border-color 130ms ease, background 130ms ease;
+}
+
+.skillcity-landmark-tile:hover,
+.skillcity-landmark-tile.active {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--city-cyan, var(--accent)) 38%, var(--border));
+  background:
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--city-cyan, var(--accent)) 12%, transparent), transparent 42%),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+}
+
+.skillcity-landmark-tile.locked:not(:hover):not(.active) {
+  opacity: 0.7;
+}
+
+.skillcity-landmark-tile__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--city-blue, var(--primary)) 18%, var(--panel-strong)), color-mix(in srgb, var(--city-purple, var(--accent)) 12%, var(--panel-strong)));
+  box-shadow: 0 10px 18px color-mix(in srgb, black 10%, transparent);
+  font-weight: 1000;
+}
+
+.skillcity-landmark-tile__copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.04rem;
+}
+
+.skillcity-landmark-tile__copy strong,
+.skillcity-landmark-tile__copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skillcity-landmark-tile__copy strong {
+  font-size: 0.82rem;
+}
+
+.skillcity-landmark-tile__copy em {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.skillcity-landmark-tile > i {
+  grid-column: 1 / -1;
+  height: 4px;
+}
+
+.skillcity-district-rail {
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+  padding: 0.52rem;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--city-main, var(--primary)) 8%, transparent), transparent 34%),
+    var(--skillcity-card);
+}
+
+.skillcity-rail-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.46rem;
+  align-items: center;
+  padding: 0.45rem 0.5rem;
+}
+
+.skillcity-rail-title > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--city-cyan, var(--primary)) 13%, var(--panel-strong));
+}
+
+.skillcity-rail-title strong,
+.skillcity-rail-title small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skillcity-rail-title small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.skillcity-district-card {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.48rem;
+  align-items: center;
+  padding: 0.5rem 0.52rem 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--primary)) 16%, var(--border));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel-strong) 70%, transparent);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 130ms ease, border-color 130ms ease, background 130ms ease, opacity 130ms ease;
+}
+
+.skillcity-district-card:hover,
+.skillcity-district-card.active {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--city-cyan, var(--node-color, var(--primary))) 34%, var(--border));
+  background: color-mix(in srgb, var(--node-color, var(--primary)) 10%, var(--panel-strong));
+}
+
+.skillcity-district-card.locked:not(:hover):not(.active) {
+  opacity: 0.58;
+}
+
+.skillcity-district-card__emoji {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--node-color, var(--primary)) 13%, var(--panel-strong));
+}
+
+.skillcity-district-card__copy {
+  min-width: 0;
+  gap: 0.04rem;
+}
+
+.skillcity-district-card__copy strong,
+.skillcity-district-card__copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skillcity-district-card__copy strong {
+  font-size: 0.78rem;
+}
+
+.skillcity-district-card__copy small {
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+
+.skillcity-district-card__meter {
+  position: absolute;
+  left: 0.52rem;
+  right: 0.52rem;
+  bottom: 0.42rem;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 72%, transparent);
+}
+
+.skillcity-district-card__meter em {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--node-color, var(--primary)), var(--city-cyan, var(--accent)));
+}
+
+.skillcity-roadmap-layout {
+  gap: 0.62rem;
+}
+
+.skillcity-real-stage,
+.skillcity-mission-panel,
+.skillcity-district-rail {
+  align-self: start;
+}
+
+.skillcity-real-stage {
+  min-width: 0;
+}
+
+.skillcity-real-stage__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.skillcity-real-map {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.skillcity-real-node__tower,
+.skillcity-landmark-model__stage,
+.skillcity-real-avatar__mini.avatar--roadmap {
+  transform: translateZ(0);
+}
+
+.skillcity-real-node:not(.active):not(.current):not(:hover),
+.skillcity-landmark-model:not(.active):not(:hover),
+.skillcity-real-district:not(.active):not(:hover) {
+  transition-duration: 100ms;
+}
+
+.skillcity-map-focus-card {
+  pointer-events: auto;
+}
+
+@media (min-width: 1200px) {
+  .skillcity-roadmap-layout {
+    grid-template-columns: minmax(176px, 214px) minmax(0, 1fr) minmax(315px, 360px);
+  }
+
+  .skillcity-district-rail {
+    position: sticky;
+    top: 0.62rem;
+    max-height: calc(100vh - 6.4rem);
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 28%, var(--border)) transparent;
+  }
+
+  .skillcity-control-deck {
+    grid-template-columns: minmax(260px, 1.25fr) repeat(5, minmax(132px, 1fr));
+  }
+}
+
+@media (max-width: 1380px) {
+  .skillcity-control-deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .skillcity-control-card--primary {
+    grid-column: span 2;
+  }
+
+  .skillcity-landmark-dock {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-landmark-dock__head {
+    padding-bottom: 0.08rem;
+  }
+}
+
+@media (max-width: 1199px) {
+  .skillcity-district-rail {
+    display: none;
+  }
+
+  .skillcity-control-deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skillcity-control-card--primary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 820px) {
+  .skillcity-control-deck {
+    grid-template-columns: 1fr;
+    padding: 0.42rem;
+  }
+
+  .skillcity-control-card,
+  .skillcity-control-card--primary {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .skillcity-control-card--primary button {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+  }
+
+  .skillcity-landmark-dock__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-landmark-tile {
+    min-height: 58px;
+  }
+
+  .skillcity-map-focus-card {
+    pointer-events: none;
+  }
+}
+
+/* v8: avatar follows the exact roadmap polyline instead of cutting across the city. */
+.skillcity-real-route-start {
+  position: absolute;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 28px;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+  box-shadow: 0 10px 20px color-mix(in srgb, black 12%, transparent), 0 0 0 5px color-mix(in srgb, var(--primary) 7%, transparent);
+  color: color-mix(in srgb, var(--primary) 82%, var(--text));
+  font-size: 0.56rem;
+  font-weight: 1000;
+  letter-spacing: 0.1em;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.skillcity-real-avatar {
+  will-change: left, top;
+}
+
+.skillcity-real-avatar__trail {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 0%, transparent), color-mix(in srgb, var(--primary) 24%, transparent), transparent 78%);
+}
+
+.skillcity-real-map .skillcity-real-road--active {
+  stroke-dasharray: 8 5;
+}
+
+.skillcity-roadmap-stage.eco-mode .skillcity-real-route-start,
+.skillcity-roadmap-stage.eco-mode .skillcity-real-avatar {
+  box-shadow: 0 8px 18px color-mix(in srgb, black 10%, transparent);
+}
+
+@media (max-width: 820px) {
+  .skillcity-real-route-start {
+    width: 46px;
+    height: 24px;
+    font-size: 0.48rem;
+  }
+}
+
+/* v9: clean layout + UX polish pass. Roadmap logic stays intact; presentation is calmer, wider and more readable. */
+.skillcity-shell--layout-v9 {
+  max-width: min(1780px, 100%);
+  gap: clamp(0.55rem, 0.85vw, 0.85rem);
+}
+
+.skillcity-shell--layout-v9 .skillcity-command {
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 280px);
+  gap: 0.72rem;
+  padding: clamp(0.62rem, 0.85vw, 0.85rem);
+  border-radius: 24px;
+  box-shadow: 0 14px 34px color-mix(in srgb, black 8%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-command::before,
+.skillcity-shell--layout-v9 .skillcity-command::after {
+  opacity: 0.42;
+  filter: blur(8px);
+}
+
+.skillcity-shell--layout-v9 .skillcity-command h2 {
+  font-size: clamp(1.42rem, 1.95vw, 2.35rem);
+  line-height: 1;
+}
+
+.skillcity-shell--layout-v9 .skillcity-command__main {
+  gap: 0.48rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-command__main > p:not(.eyebrow) {
+  max-width: 780px;
+  font-size: 0.86rem;
+  font-weight: 740;
+}
+
+.skillcity-shell--layout-v9 .skillcity-next-mission {
+  width: min(780px, 100%);
+  min-height: 58px;
+  grid-template-columns: auto minmax(0, 1fr) minmax(104px, 160px);
+  gap: 0.52rem;
+  padding: 0.46rem;
+  border-radius: 18px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-next-mission__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  font-size: 1.12rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-next-mission__copy strong {
+  font-size: 0.96rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-command__actions button {
+  min-height: 38px;
+  padding-inline: 0.82rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-command__guide {
+  min-width: 0;
+  grid-template-rows: minmax(84px, 108px) auto;
+  gap: 0.36rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-model {
+  min-height: 106px;
+  border-radius: 18px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-model .player-model--hero,
+.skillcity-shell--layout-v9 .skillcity-guide-model .player-model--hero model-viewer {
+  height: 132px;
+  min-height: 132px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-model .player-model--hero model-viewer {
+  transform: translateY(1%) scale(1.1);
+}
+
+.skillcity-shell--layout-v9 .skillcity-command__hud {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-tip {
+  padding: 0.46rem 0.58rem;
+  border-radius: 16px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-tip strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  font-size: 0.74rem;
+  line-height: 1.24;
+}
+
+.skillcity-shell--layout-v9 .skillcity-roadmap-toolbar {
+  position: sticky;
+  top: 0.4rem;
+  z-index: 42;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.42rem;
+  padding: 0.38rem;
+  border-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 16%, var(--border));
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 91%, transparent), color-mix(in srgb, var(--panel) 82%, transparent));
+  box-shadow: 0 10px 26px color-mix(in srgb, black 8%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.skillcity-shell--layout-v9 .skillcity-view-switch,
+.skillcity-shell--layout-v9 .skillcity-map-tools {
+  padding: 0.24rem;
+  border-radius: 15px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-view-switch button,
+.skillcity-shell--layout-v9 .skillcity-map-tools button {
+  min-height: 34px;
+  padding: 0.34rem 0.58rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-chips {
+  display: flex;
+  gap: 0.32rem;
+  overflow-x: auto;
+  padding-bottom: 0.04rem;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-chip {
+  flex: 0 0 auto;
+  width: clamp(118px, 12vw, 164px);
+  min-height: 42px;
+  padding: 0.36rem 0.44rem;
+  border-radius: 14px;
+  scroll-snap-align: start;
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-chip strong {
+  font-size: 0.72rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-chip small {
+  font-size: 0.58rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-roadmap-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 370px);
+  gap: 0.72rem;
+  align-items: start;
+}
+
+.skillcity-shell--layout-v9 .skillcity-map-column,
+.skillcity-shell--layout-v9 .skillcity-side-column {
+  min-width: 0;
+  display: grid;
+  gap: 0.62rem;
+  align-content: start;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column {
+  position: sticky;
+  top: 4.25rem;
+  max-height: calc(100vh - 4.75rem);
+  overflow: auto;
+  padding-right: 0.1rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 28%, var(--border)) transparent;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column::-webkit-scrollbar {
+  width: 7px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--city-cyan, var(--primary)) 28%, var(--border));
+}
+
+.skillcity-shell--layout-v9 .skillcity-district-rail {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-deck {
+  grid-template-columns: 1fr;
+  gap: 0.38rem;
+  padding: 0.42rem;
+  border-radius: 20px;
+  contain-intrinsic-size: auto 260px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card {
+  min-height: auto;
+  gap: 0.16rem;
+  padding: 0.54rem;
+  border-radius: 15px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary {
+  grid-template-columns: 1fr;
+  border-color: color-mix(in srgb, var(--city-cyan, var(--primary)) 36%, var(--border));
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary span,
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary strong,
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary small,
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary button {
+  grid-column: 1;
+  grid-row: auto;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--primary button {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 0.16rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--metrics,
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card--toggle {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card strong {
+  font-size: 0.84rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-side-column .skillcity-control-card small {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-stage {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-stage__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.62rem;
+  align-items: center;
+  padding-bottom: 0.2rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-stage__head h3 {
+  font-size: clamp(1.12rem, 1.45vw, 1.42rem);
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-stage__head p {
+  max-width: 720px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-hud {
+  padding: 0.46rem 0.62rem;
+  border-radius: 16px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-map {
+  height: clamp(540px, calc(100vh - 260px), 735px);
+  border-radius: 23px;
+  background:
+    radial-gradient(circle at 20% 16%, color-mix(in srgb, var(--city-main, var(--primary)) 10%, transparent), transparent 28%),
+    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--city-cyan, var(--accent)) 8%, transparent), transparent 28%),
+    linear-gradient(145deg, color-mix(in srgb, #08111f 82%, var(--panel-strong)), color-mix(in srgb, #0d1224 88%, var(--panel)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 4%, transparent), 0 18px 40px color-mix(in srgb, black 12%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-map__fog,
+.skillcity-shell--layout-v9 .skillcity-real-map__lights,
+.skillcity-shell--layout-v9 .skillcity-real-map__skyline {
+  opacity: 0.32;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-map__artery,
+.skillcity-shell--layout-v9 .skillcity-real-map__park,
+.skillcity-shell--layout-v9 .skillcity-real-map__water {
+  opacity: 0.52;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-district {
+  border-radius: 18px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-district:not(.active):not(:hover) {
+  opacity: 0.58;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-district__label {
+  max-width: 132px;
+  padding: 0.38rem 0.45rem;
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-district__label strong {
+  font-size: 0.68rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-district__label small,
+.skillcity-shell--layout-v9 .skillcity-real-district__landmark {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-node {
+  filter: drop-shadow(0 12px 22px color-mix(in srgb, black 18%, transparent));
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-node:not(.active):not(.current):not(:hover) {
+  opacity: 0.82;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-node__label {
+  opacity: 0;
+  transform: translate(-50%, 5px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 130ms ease, transform 130ms ease;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--layout-v9 .skillcity-real-node.current .skillcity-real-node__label,
+.skillcity-shell--layout-v9 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--layout-v9 .skillcity-real-node:focus-visible .skillcity-real-node__label {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-node__badge {
+  box-shadow: 0 8px 16px color-mix(in srgb, black 18%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-map-focus-card {
+  left: 0.72rem;
+  top: 0.72rem;
+  max-width: min(280px, 42%);
+  padding: 0.52rem 0.62rem;
+  border-radius: 16px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-map-callout {
+  max-width: 188px;
+  padding: 0.5rem 0.56rem;
+  border-radius: 16px;
+  box-shadow: 0 18px 32px color-mix(in srgb, black 18%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-map-callout strong {
+  font-size: 0.82rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-legend {
+  opacity: 0.72;
+  transform: scale(0.92);
+  transform-origin: right bottom;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-model {
+  --landmark-size: min(var(--landmark-size), 124px);
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-model__copy {
+  max-width: 122px;
+  padding: 0.36rem 0.44rem;
+  border-radius: 13px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-model__copy small {
+  display: none;
+}
+
+.skillcity-shell--layout-v9 .skillcity-real-avatar__label,
+.skillcity-shell--layout-v9 .skillcity-real-route-start {
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.skillcity-shell--layout-v9 .skillcity-mission-panel {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "status"
+    "title"
+    "progress"
+    "briefing"
+    "goal"
+    "route"
+    "rewards"
+    "checklist"
+    "actions"
+    "lock";
+  gap: 0.46rem;
+  padding: 0.58rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--city-cyan, var(--primary)) 8%, transparent), transparent 32%),
+    color-mix(in srgb, var(--panel-strong) 84%, transparent);
+  box-shadow: 0 14px 30px color-mix(in srgb, black 8%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-mission-title__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  font-size: 1.08rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-mission-title h3 {
+  font-size: 1.08rem;
+  line-height: 1.08;
+}
+
+.skillcity-shell--layout-v9 .skillcity-mission-title p,
+.skillcity-shell--layout-v9 .skillcity-briefing-card p,
+.skillcity-shell--layout-v9 .skillcity-mission-goal p,
+.skillcity-shell--layout-v9 .skillcity-route-note span {
+  font-size: 0.74rem;
+  line-height: 1.34;
+}
+
+.skillcity-shell--layout-v9 .skillcity-briefing-card,
+.skillcity-shell--layout-v9 .skillcity-score-card,
+.skillcity-shell--layout-v9 .skillcity-mission-goal,
+.skillcity-shell--layout-v9 .skillcity-route-note,
+.skillcity-shell--layout-v9 .skillcity-lock-note {
+  padding: 0.58rem;
+  border-radius: 14px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-reward-row,
+.skillcity-shell--layout-v9 .skillcity-checklist {
+  padding: 0.48rem;
+  gap: 0.3rem;
+  border-radius: 14px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-reward-row span,
+.skillcity-shell--layout-v9 .skillcity-checklist span {
+  min-height: 28px;
+  padding: 0.28rem 0.42rem;
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-reward-row .skillcity-shard-reward {
+  grid-column: 1 / -1;
+}
+
+.skillcity-shell--layout-v9 .skillcity-panel-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.38rem;
+  padding: 0.5rem 0 0;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--panel-strong) 92%, transparent) 26%);
+}
+
+.skillcity-shell--layout-v9 .skillcity-panel-actions button {
+  width: 100%;
+  min-height: 40px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-strip,
+.skillcity-shell--layout-v9 .skillcity-landmark-dock {
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 86%, transparent), color-mix(in srgb, var(--panel) 72%, transparent));
+  box-shadow: 0 12px 28px color-mix(in srgb, black 7%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-strip {
+  padding: 0.5rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-strip__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.42rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-strip__head h3 {
+  font-size: 0.98rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-step {
+  min-height: 58px;
+  padding: 0.44rem;
+  border-radius: 14px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-step strong {
+  font-size: 0.72rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-journey-step small {
+  font-size: 0.58rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-dock {
+  grid-template-columns: 120px minmax(0, 1fr);
+  padding: 0.42rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-dock__grid {
+  gap: 0.34rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-tile {
+  min-height: 58px;
+  padding: 0.42rem;
+  border-radius: 14px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-tile__icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-landmark-tile__copy strong {
+  font-size: 0.74rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-strip--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 0.48rem;
+  padding: 0.52rem;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--panel-strong) 76%, transparent);
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-strip--compact > div {
+  min-height: 56px;
+  padding: 0.46rem;
+  border-radius: 14px;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-strip--compact strong {
+  font-size: 0.78rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-guide-strip--compact small {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 0.66rem;
+}
+
+.skillcity-shell--layout-v9 .skillcity-reset-button {
+  align-self: stretch;
+  min-height: 48px;
+  white-space: nowrap;
+}
+
+@media (min-width: 1500px) {
+  .skillcity-shell--layout-v9 .skillcity-roadmap-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 392px);
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-real-map {
+    height: clamp(585px, calc(100vh - 245px), 780px);
+  }
+}
+
+@media (max-width: 1280px) {
+  .skillcity-shell--layout-v9 .skillcity-command {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-command__guide {
+    display: none;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-roadmap-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-side-column {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    grid-template-columns: minmax(0, 0.72fr) minmax(320px, 1fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 960px) {
+  .skillcity-shell--layout-v9 .skillcity-side-column {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-roadmap-toolbar {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-view-switch,
+  .skillcity-shell--layout-v9 .skillcity-map-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-map-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-district-chip {
+    width: 140px;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-real-map {
+    height: clamp(520px, 74vh, 680px);
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-journey-track,
+  .skillcity-shell--layout-v9 .skillcity-landmark-dock__grid {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-journey-track::-webkit-scrollbar,
+  .skillcity-shell--layout-v9 .skillcity-landmark-dock__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-journey-step,
+  .skillcity-shell--layout-v9 .skillcity-landmark-tile {
+    flex: 0 0 172px;
+    scroll-snap-align: start;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-landmark-dock {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .skillcity-shell--layout-v9 .skillcity-next-mission {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-next-mission__meter {
+    grid-column: 1 / -1;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-command__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-real-stage__head {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-real-hud {
+    justify-self: start;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-real-map {
+    height: 560px;
+    border-radius: 18px;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-map-focus-card {
+    max-width: 72%;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-map-callout {
+    display: none;
+  }
+
+  .skillcity-shell--layout-v9 .skillcity-guide-strip--compact {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* v10: final product map polish — more interactive buildings, clearer hover path, cleaner city surface. */
+.skillcity-shell--product-v10 {
+  --skillcity-map-line: color-mix(in srgb, var(--city-cyan, var(--primary)) 72%, var(--text));
+  --skillcity-map-hover: color-mix(in srgb, var(--city-main, var(--primary)) 82%, #ffffff);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-map {
+  contain: layout paint style;
+  background:
+    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--city-cyan, var(--primary)) 10%, transparent), transparent 26%),
+    radial-gradient(circle at 88% 16%, color-mix(in srgb, var(--city-purple, var(--accent)) 8%, transparent), transparent 28%),
+    radial-gradient(circle at 48% 92%, color-mix(in srgb, var(--city-main, var(--primary)) 8%, transparent), transparent 26%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 98%, #0b1220), color-mix(in srgb, var(--panel) 99%, #09111d));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-map__surface {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in srgb, var(--border) 16%, transparent) 1px, transparent 1px),
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--city-main, var(--primary)) 6%, transparent), transparent 66%);
+  background-size: 64px 64px, 64px 64px, 100% 100%;
+  opacity: 0.48;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-map__fog,
+.skillcity-shell--product-v10 .skillcity-real-map__lights {
+  opacity: 0.42;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-map__artery {
+  opacity: 0.3;
+  filter: saturate(0.78);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-district {
+  outline: 0;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-district::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed color-mix(in srgb, var(--node-color, var(--primary)) 16%, transparent);
+  border-radius: 22px;
+  opacity: 0;
+  transition: opacity 140ms ease, transform 140ms ease;
+  pointer-events: none;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-district:hover::after,
+.skillcity-shell--product-v10 .skillcity-real-district.active::after,
+.skillcity-shell--product-v10 .skillcity-real-district:focus-visible::after {
+  opacity: 1;
+  transform: scale(0.992);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-road--shadow {
+  stroke-width: 15;
+  opacity: 0.2;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-road--asphalt {
+  stroke-width: 9;
+  opacity: 0.84;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-road--lane {
+  stroke: color-mix(in srgb, white 29%, var(--city-cyan, var(--primary)) 12%);
+  opacity: 0.58;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-road--preview {
+  stroke: var(--skillcity-map-hover);
+  stroke-width: 5.2;
+  stroke-dasharray: 2 7;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--city-main, var(--primary)) 26%, transparent));
+  animation: skillcity-preview-flow 900ms linear infinite;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-road--active {
+  stroke: var(--skillcity-map-line);
+  stroke-width: 4;
+  stroke-dasharray: 8 5;
+}
+
+@keyframes skillcity-preview-flow {
+  to { stroke-dashoffset: -18; }
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node {
+  width: clamp(82px, 6.1vw, 108px);
+  min-height: 124px;
+  contain: layout paint style;
+  outline: 0;
+  transform: translate(-50%, -62%) scale(0.94);
+  will-change: transform;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node:hover,
+.skillcity-shell--product-v10 .skillcity-real-node:focus-visible,
+.skillcity-shell--product-v10 .skillcity-real-node.previewed,
+.skillcity-shell--product-v10 .skillcity-real-node.active {
+  z-index: 30;
+  transform: translate(-50%, -62%) translateY(-8px) scale(1.06);
+  filter: drop-shadow(0 16px 26px color-mix(in srgb, var(--node-color, var(--primary)) 19%, transparent));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.current:not(.active) {
+  transform: translate(-50%, -62%) translateY(-4px) scale(1.01);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.locked {
+  opacity: 0.62;
+  filter: grayscale(0.36) saturate(0.86);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.locked:hover,
+.skillcity-shell--product-v10 .skillcity-real-node.locked:focus-visible {
+  opacity: 0.84;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__plot {
+  width: 80px;
+  perspective: 520px;
+  transform: skewY(-4deg) translateZ(0);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__halo {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  z-index: 0;
+  width: 76px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--primary)) 24%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent), transparent 68%);
+  transform: translateX(-50%) rotateX(58deg);
+  opacity: 0.3;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node:hover .skillcity-real-node__halo,
+.skillcity-shell--product-v10 .skillcity-real-node.previewed .skillcity-real-node__halo,
+.skillcity-shell--product-v10 .skillcity-real-node.active .skillcity-real-node__halo,
+.skillcity-shell--product-v10 .skillcity-real-node.current .skillcity-real-node__halo {
+  opacity: 0.72;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__tower {
+  width: 48px;
+  border-radius: 15px 15px 8px 8px;
+  overflow: visible;
+  transform: rotateX(0deg) rotateY(-8deg);
+  transform-origin: bottom center;
+  background:
+    linear-gradient(118deg, color-mix(in srgb, white 21%, transparent), transparent 30%),
+    linear-gradient(165deg, color-mix(in srgb, var(--node-color, var(--primary)) 28%, var(--panel-strong)), color-mix(in srgb, #0f172a 30%, var(--panel-strong)));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__tower::before,
+.skillcity-shell--product-v10 .skillcity-real-node__tower::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__tower::before {
+  right: calc(-1 * var(--building-depth, 12px));
+  width: var(--building-depth, 12px);
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--primary)) 20%, var(--border));
+  border-left: 0;
+  border-radius: 0 12px 7px 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--node-color, var(--primary)) 18%, #0f172a), color-mix(in srgb, #020617 50%, var(--panel-strong)));
+  transform: skewY(18deg);
+  transform-origin: left bottom;
+  opacity: 0.85;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__tower::after {
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent 0 55%, color-mix(in srgb, white 8%, transparent));
+  opacity: 0.5;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.boss .skillcity-real-node__tower {
+  width: 60px;
+  border-radius: 20px 20px 9px 9px;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.boss .skillcity-real-node__tower::before {
+  width: calc(var(--building-depth, 18px) + 4px);
+  right: calc(-1 * (var(--building-depth, 18px) + 4px));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__roof {
+  z-index: 2;
+  top: -15px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--node-color, var(--primary)) 44%, var(--panel-strong)), color-mix(in srgb, var(--city-cyan, var(--accent)) 16%, var(--panel-strong)));
+  box-shadow: 0 8px 16px color-mix(in srgb, black 12%, transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__antenna {
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  width: 3px;
+  height: 17px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--node-color, var(--primary)) 65%, white);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--node-color, var(--primary)) 34%, transparent);
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.boss .skillcity-real-node__antenna,
+.skillcity-shell--product-v10 .skillcity-real-node.current .skillcity-real-node__antenna,
+.skillcity-shell--product-v10 .skillcity-real-node.ready-to-claim .skillcity-real-node__antenna {
+  opacity: 1;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__windows {
+  inset: 17px 10px 16px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(0deg, color-mix(in srgb, white 50%, var(--node-color, var(--primary)) 18%) 0 4px, transparent 4px 11px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, white 26%, transparent) 0 4px, transparent 4px 12px);
+  opacity: 0.36;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.completed .skillcity-real-node__windows,
+.skillcity-shell--product-v10 .skillcity-real-node.current .skillcity-real-node__windows,
+.skillcity-shell--product-v10 .skillcity-real-node.active .skillcity-real-node__windows,
+.skillcity-shell--product-v10 .skillcity-real-node.previewed .skillcity-real-node__windows {
+  opacity: 0.64;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__core {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  z-index: 2;
+  width: 11px;
+  height: 15px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--city-cyan, var(--accent)) 70%, #ffffff), color-mix(in srgb, var(--node-color, var(--primary)) 70%, #ffffff));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--node-color, var(--primary)) 28%, transparent);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.completed .skillcity-real-node__core,
+.skillcity-shell--product-v10 .skillcity-real-node.current .skillcity-real-node__core,
+.skillcity-shell--product-v10 .skillcity-real-node.active .skillcity-real-node__core,
+.skillcity-shell--product-v10 .skillcity-real-node.ready-to-claim .skillcity-real-node__core {
+  opacity: 0.95;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__door {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 3;
+  width: 15px;
+  height: 17px;
+  border-radius: 7px 7px 0 0;
+  background: color-mix(in srgb, var(--node-color, var(--primary)) 40%, #020617);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 18%, transparent);
+  transform: translateX(-50%);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__base {
+  height: 23px;
+  background:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--node-color, var(--primary)) 22%, transparent), color-mix(in srgb, black 13%, transparent)),
+    linear-gradient(90deg, color-mix(in srgb, var(--node-color, var(--primary)) 10%, transparent), transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  z-index: -1;
+  width: 82px;
+  height: 18px;
+  border-radius: 50%;
+  background: color-mix(in srgb, black 24%, transparent);
+  filter: blur(8px);
+  transform: translateX(-50%);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__badge {
+  top: -0.02rem;
+  right: 0.42rem;
+  width: 31px;
+  height: 31px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, white 18%, transparent), transparent 36%),
+    color-mix(in srgb, var(--panel-strong) 90%, transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__interaction {
+  position: absolute;
+  left: 50%;
+  top: 37px;
+  z-index: 8;
+  padding: 0.16rem 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--primary)) 28%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-strong) 88%, transparent);
+  color: color-mix(in srgb, var(--node-color, var(--primary)) 82%, var(--text));
+  font-size: 0.52rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node:hover .skillcity-real-node__interaction,
+.skillcity-shell--product-v10 .skillcity-real-node:focus-visible .skillcity-real-node__interaction,
+.skillcity-shell--product-v10 .skillcity-real-node.previewed .skillcity-real-node__interaction {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.locked .skillcity-real-node__interaction {
+  color: var(--muted);
+  content: 'Locked';
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__progress {
+  width: 70px;
+  height: 5px;
+  background: color-mix(in srgb, var(--border) 58%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, black 5%, transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__progress em {
+  background: linear-gradient(90deg, var(--node-color, var(--primary)), var(--city-cyan, var(--accent)) 56%, color-mix(in srgb, white 22%, var(--node-color, var(--primary))));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node__label {
+  min-width: 132px;
+  transform: translate(-50%, 6px) scale(0.96);
+  background: color-mix(in srgb, var(--panel-strong) 94%, transparent);
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 26%, var(--border));
+}
+
+.skillcity-shell--product-v10 .skillcity-real-node.current::after {
+  border-radius: 50%;
+  opacity: 0.62;
+}
+
+.skillcity-shell--product-v10 .skillcity-map-preview-card {
+  position: absolute;
+  z-index: 34;
+  max-width: 190px;
+  display: grid;
+  gap: 0.06rem;
+  padding: 0.46rem 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--primary)) 30%, var(--border));
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--panel-strong) 91%, transparent);
+  box-shadow: 0 16px 30px color-mix(in srgb, black 16%, transparent);
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+}
+
+.skillcity-shell--product-v10 .skillcity-map-preview-card span,
+.skillcity-shell--product-v10 .skillcity-map-preview-card small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 950;
+}
+
+.skillcity-shell--product-v10 .skillcity-map-preview-card span {
+  color: color-mix(in srgb, var(--node-color, var(--primary)) 80%, var(--text));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skillcity-shell--product-v10 .skillcity-map-preview-card strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.skillcity-shell--product-v10 .skillcity-map-callout {
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 34%, var(--border));
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--node-color, var(--primary)) 12%, transparent), transparent 42%),
+    color-mix(in srgb, var(--panel-strong) 92%, transparent);
+}
+
+.skillcity-shell--product-v10 .skillcity-map-callout button {
+  min-height: 31px;
+  border-radius: 999px;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-legend {
+  right: 0.72rem;
+  left: auto;
+  bottom: 0.72rem;
+  opacity: 0.8;
+}
+
+.skillcity-shell--product-v10 .skillcity-real-legend .landmark {
+  background: linear-gradient(135deg, var(--city-cyan, var(--primary)), var(--city-purple, var(--accent)));
+}
+
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-real-road--preview,
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-real-node__interaction,
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-map-preview-card {
+  animation: none;
+}
+
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-real-node,
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-real-node__tower,
+.skillcity-shell--product-v10 .skillcity-roadmap-stage.eco-mode .skillcity-real-district {
+  transition-duration: 90ms;
+}
+
+@media (max-width: 960px) {
+  .skillcity-shell--product-v10 .skillcity-map-preview-card {
+    display: none;
+  }
+
+  .skillcity-shell--product-v10 .skillcity-real-node__interaction {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .skillcity-shell--product-v10 .skillcity-real-node {
+    width: 78px;
+    min-height: 116px;
+  }
+
+  .skillcity-shell--product-v10 .skillcity-real-node__plot {
+    width: 72px;
+  }
+
+  .skillcity-shell--product-v10 .skillcity-real-node__label {
+    min-width: 118px;
+    max-width: 138px;
+  }
+}
+
+/* SkillCity roadmap v11 — professional cleanup, overlap fixes, richer 3D map, smoother interaction. */
+.skillcity-shell--product-v11 {
+  --map-panel-blur: 22px;
+  --map-soft-border: color-mix(in srgb, var(--city-cyan, #6ee7ff) 24%, rgba(255,255,255,0.12));
+  --map-soft-fill: linear-gradient(180deg, rgba(7, 12, 28, 0.9), rgba(7, 10, 24, 0.84));
+  --map-label-fill: linear-gradient(180deg, rgba(8, 12, 28, 0.92), rgba(11, 17, 36, 0.82));
+  --map-shadow-strong: 0 18px 44px rgba(0, 0, 0, 0.36);
+}
+
+.skillcity-shell--product-v11 .skillcity-command,
+.skillcity-shell--product-v11 .skillcity-roadmap-toolbar,
+.skillcity-shell--product-v11 .skillcity-roadmap-stage,
+.skillcity-shell--product-v11 .skillcity-control-deck,
+.skillcity-shell--product-v11 .skillcity-mission-panel,
+.skillcity-shell--product-v11 .skillcity-landmark-dock,
+.skillcity-shell--product-v11 .skillcity-journey-strip,
+.skillcity-shell--product-v11 .skillcity-district-card,
+.skillcity-shell--product-v11 .skillcity-landmark-tile {
+  box-shadow: var(--map-shadow-strong);
+}
+
+.skillcity-shell--product-v11 .skillcity-roadmap-toolbar {
+  padding: 0.9rem 1rem;
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-dock__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.skillcity-shell--product-v11 .skillcity-roadmap-stage__head {
+  margin-bottom: 0.9rem;
+  gap: 1rem;
+}
+
+.skillcity-shell--product-v11 .skillcity-roadmap-stage__head p {
+  max-width: 54ch;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map {
+  position: relative;
+  min-height: 590px;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(130, 96, 255, 0.16), transparent 28%),
+    radial-gradient(circle at 86% 22%, rgba(44, 211, 255, 0.14), transparent 24%),
+    linear-gradient(180deg, rgba(17, 22, 45, 0.94), rgba(11, 16, 34, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(255,255,255,0.04), 0 24px 60px rgba(0,0,0,0.36);
+  isolation: isolate;
+  contain: layout paint;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.055);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 30%, rgba(255,255,255,0.015));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map__surface {
+  opacity: 0.84;
+  background:
+    linear-gradient(180deg, rgba(104, 78, 181, 0.12), rgba(20, 24, 50, 0.03)),
+    radial-gradient(circle at 24% 76%, rgba(83, 40, 111, 0.24), transparent 26%),
+    linear-gradient(135deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 34px),
+    linear-gradient(45deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 34px);
+  background-size: auto, auto, 34px 34px, 34px 34px;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map__fog {
+  opacity: 0.46;
+  filter: blur(16px);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map__lights {
+  opacity: 0.62;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-map__skyline {
+  opacity: 0.2;
+  filter: blur(0.4px);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district {
+  border-color: rgba(255,255,255,0.045);
+  background: linear-gradient(180deg, rgba(14, 18, 34, 0.22), rgba(13, 17, 30, 0.12));
+  backdrop-filter: blur(4px);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district:hover,
+.skillcity-shell--product-v11 .skillcity-real-district.active {
+  transform: translateY(-2px);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district__label,
+.skillcity-shell--product-v11 .skillcity-real-district__landmark {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district.active .skillcity-real-district__label,
+.skillcity-shell--product-v11 .skillcity-real-district.active .skillcity-real-district__landmark,
+.skillcity-shell--product-v11 .skillcity-real-district:hover .skillcity-real-district__label,
+.skillcity-shell--product-v11 .skillcity-real-district:hover .skillcity-real-district__landmark {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district__label {
+  gap: 0.45rem;
+  padding: 0.55rem 0.7rem;
+  max-width: calc(100% - 12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(7, 12, 26, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-district__landmark {
+  bottom: 0.7rem;
+  padding: 0.28rem 0.54rem;
+  border-radius: 999px;
+  background: rgba(7, 13, 28, 0.72);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-road--asphalt {
+  stroke-width: 3.2;
+  stroke: rgba(16, 23, 46, 0.94);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-road--lane {
+  stroke-width: 1.05;
+  stroke-dasharray: 1.3 1.9;
+  opacity: 0.72;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-road--active {
+  stroke-width: 1.7;
+  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--city-cyan, #6ee7ff) 32%, transparent));
+}
+
+.skillcity-shell--product-v11 .skillcity-real-road--preview {
+  stroke-width: 1.45;
+  opacity: 0.56;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node {
+  z-index: 3;
+  transition: transform 180ms ease, filter 180ms ease, opacity 180ms ease;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node:hover,
+.skillcity-shell--product-v11 .skillcity-real-node:focus-visible,
+.skillcity-shell--product-v11 .skillcity-real-node.active,
+.skillcity-shell--product-v11 .skillcity-real-node.current {
+  z-index: 8;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__plot {
+  filter: saturate(1.02);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__tower {
+  transform: perspective(340px) rotateX(5deg);
+  transform-style: preserve-3d;
+  border-width: 1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset -10px 0 18px rgba(0,0,0,0.12),
+    inset 0 -18px 18px rgba(0,0,0,0.18),
+    0 12px 24px rgba(0,0,0,0.22);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__roof {
+  height: 12px;
+  transform: translateY(-5px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 12px rgba(0,0,0,0.14);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__windows {
+  opacity: 0.82;
+  filter: saturate(1.06);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__door {
+  opacity: 0.88;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__base {
+  box-shadow: 0 10px 18px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__shadow {
+  opacity: 0.42;
+  filter: blur(10px);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__badge {
+  box-shadow: 0 10px 18px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__label {
+  min-width: 148px;
+  max-width: 188px;
+  padding: 0.52rem 0.68rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--map-label-fill);
+  backdrop-filter: blur(var(--map-panel-blur));
+  box-shadow: 0 18px 34px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(10px) scale(0.94);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--product-v11 .skillcity-real-node.current .skillcity-real-node__label,
+.skillcity-shell--product-v11 .skillcity-real-node.previewed .skillcity-real-node__label,
+.skillcity-shell--product-v11 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--product-v11 .skillcity-real-node:focus-visible .skillcity-real-node__label {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node__interaction {
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  background: rgba(7, 12, 25, 0.84);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node.locked .skillcity-real-node__interaction {
+  opacity: 0.4;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) .skillcity-real-node__label,
+.skillcity-shell--product-v11 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) .skillcity-real-node__interaction,
+.skillcity-shell--product-v11 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) b,
+.skillcity-shell--product-v11 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) i {
+  opacity: 0;
+}
+
+.skillcity-shell--product-v11 .skillcity-map-focus-card {
+  top: auto;
+  right: auto;
+  left: 18px;
+  bottom: 18px;
+  width: min(310px, calc(100% - 36px));
+  padding: 0.8rem 0.9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--map-soft-fill);
+  backdrop-filter: blur(var(--map-panel-blur));
+  box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+  z-index: 5;
+}
+
+.skillcity-shell--product-v11 .skillcity-map-preview-card {
+  z-index: 9;
+  max-width: 220px;
+  min-width: 160px;
+  padding: 0.6rem 0.72rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(7,12,28,0.95), rgba(10,17,38,0.88));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 36px rgba(0,0,0,0.32);
+  transform: translate(var(--preview-shift-x, -50%), var(--preview-shift-y, -116%));
+  pointer-events: none;
+}
+
+.skillcity-shell--product-v11 .skillcity-map-preview-card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: rgba(8, 12, 28, 0.95);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  transform: translateX(-50%) rotate(45deg);
+  bottom: -6px;
+}
+
+.skillcity-shell--product-v11 .skillcity-map-preview-card[data-anchor='bottom']::after {
+  top: -6px;
+  bottom: auto;
+  transform: translateX(-50%) rotate(225deg);
+}
+
+.skillcity-shell--product-v11 .skillcity-real-avatar {
+  z-index: 10;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,0.26));
+}
+
+.skillcity-shell--product-v11 .skillcity-real-avatar__mini.avatar--roadmap {
+  width: 72px;
+  height: 72px;
+}
+
+.skillcity-shell--product-v11 .skillcity-real-avatar__label {
+  padding: 0.22rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(8, 12, 26, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-model {
+  z-index: 2;
+  filter: drop-shadow(0 16px 26px rgba(0,0,0,0.24));
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-model__level,
+.skillcity-shell--product-v11 .skillcity-landmark-model__copy {
+  background: rgba(8, 11, 24, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-model__copy {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-model:hover .skillcity-landmark-model__copy,
+.skillcity-shell--product-v11 .skillcity-landmark-model.active .skillcity-landmark-model__copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.skillcity-shell--product-v11 .skillcity-landmark-model__stage {
+  background: radial-gradient(circle at 50% 10%, rgba(255,255,255,0.06), transparent 56%), linear-gradient(180deg, rgba(9,14,28,0.76), rgba(6,8,18,0.9));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.skillcity-shell--product-v11 .skillcity-map-hud,
+.skillcity-shell--product-v11 .skillcity-control-card,
+.skillcity-shell--product-v11 .skillcity-mission-panel > div,
+.skillcity-shell--product-v11 .skillcity-briefing-card,
+.skillcity-shell--product-v11 .skillcity-score-card,
+.skillcity-shell--product-v11 .skillcity-mission-goal,
+.skillcity-shell--product-v11 .skillcity-route-note,
+.skillcity-shell--product-v11 .skillcity-reward-row,
+.skillcity-shell--product-v11 .skillcity-checklist,
+.skillcity-shell--product-v11 .skillcity-landmark-unlock-chip,
+.skillcity-shell--product-v11 .skillcity-guide-strip > div,
+.skillcity-shell--product-v11 .skillcity-guide-strip > button {
+  backdrop-filter: blur(14px);
+}
+
+.skillcity-shell--product-v11 .skillcity-mission-panel {
+  gap: 0.85rem;
+}
+
+.skillcity-shell--product-v11 .skillcity-journey-step {
+  min-width: 126px;
+}
+
+.skillcity-shell--product-v11 .skillcity-roadmap-stage.eco-mode .skillcity-real-map__fog,
+.skillcity-shell--product-v11 .skillcity-roadmap-stage.eco-mode .skillcity-real-map__lights {
+  opacity: 0.28;
+}
+
+.skillcity-shell--product-v11 .skillcity-roadmap-stage.eco-mode .skillcity-real-district,
+.skillcity-shell--product-v11 .skillcity-roadmap-stage.eco-mode .skillcity-real-node,
+.skillcity-shell--product-v11 .skillcity-roadmap-stage.eco-mode .skillcity-landmark-model {
+  transition-duration: 120ms;
+}
+
+@media (max-width: 1480px) {
+  .skillcity-shell--product-v11 .skillcity-landmark-dock__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1180px) {
+  .skillcity-shell--product-v11 .skillcity-real-map {
+    min-height: 540px;
+  }
+
+  .skillcity-shell--product-v11 .skillcity-map-focus-card {
+    width: min(280px, calc(100% - 28px));
+  }
+}
+
+@media (max-width: 860px) {
+  .skillcity-shell--product-v11 .skillcity-real-map {
+    min-height: 460px;
+  }
+
+  .skillcity-shell--product-v11 .skillcity-real-district__label,
+  .skillcity-shell--product-v11 .skillcity-real-district__landmark,
+  .skillcity-shell--product-v11 .skillcity-landmark-model__copy,
+  .skillcity-shell--product-v11 .skillcity-map-preview-card,
+  .skillcity-shell--product-v11 .skillcity-real-node__label {
+    opacity: 1;
+    transform: none;
+  }
+
+  .skillcity-shell--product-v11 .skillcity-map-focus-card {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: 12px;
+  }
+}
+
+/* SkillCity roadmap v12 — sharp visibility fix: no cropped 3D, no muddy blur, clearer map. */
+.skillcity-shell--product-v12 {
+  --map-panel-blur: 0px;
+  --map-shadow-strong: 0 14px 30px rgba(0, 0, 0, 0.28);
+  --map-soft-fill: linear-gradient(180deg, rgba(8, 13, 30, 0.96), rgba(9, 14, 30, 0.92));
+  --map-label-fill: linear-gradient(180deg, rgba(8, 13, 29, 0.98), rgba(10, 16, 34, 0.94));
+}
+
+.skillcity-shell--product-v12 .skillcity-command,
+.skillcity-shell--product-v12 .skillcity-roadmap-toolbar,
+.skillcity-shell--product-v12 .skillcity-roadmap-stage,
+.skillcity-shell--product-v12 .skillcity-control-deck,
+.skillcity-shell--product-v12 .skillcity-mission-panel,
+.skillcity-shell--product-v12 .skillcity-landmark-dock,
+.skillcity-shell--product-v12 .skillcity-journey-strip,
+.skillcity-shell--product-v12 .skillcity-district-card,
+.skillcity-shell--product-v12 .skillcity-landmark-tile,
+.skillcity-shell--product-v12 .skillcity-map-focus-card,
+.skillcity-shell--product-v12 .skillcity-map-preview-card,
+.skillcity-shell--product-v12 .skillcity-real-node__label,
+.skillcity-shell--product-v12 .skillcity-real-district__label,
+.skillcity-shell--product-v12 .skillcity-real-district__landmark,
+.skillcity-shell--product-v12 .skillcity-landmark-model__copy,
+.skillcity-shell--product-v12 .skillcity-real-avatar__label {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none;
+}
+
+.skillcity-shell--product-v12 .skillcity-roadmap-layout {
+  align-items: start;
+}
+
+.skillcity-shell--product-v12 .skillcity-map-column {
+  min-width: 0;
+}
+
+.skillcity-shell--product-v12 .skillcity-roadmap-stage {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v12 .skillcity-roadmap-stage__head {
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.65rem;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map {
+  height: clamp(500px, calc(100vh - 318px), 570px);
+  min-height: 500px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(133, 96, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(76, 218, 255, 0.13), transparent 24%),
+    linear-gradient(180deg, rgba(18, 24, 47, 0.98), rgba(11, 17, 35, 1));
+  image-rendering: auto;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map::before {
+  inset: 10px;
+  background: transparent;
+  border-color: rgba(255,255,255,0.07);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map__surface {
+  opacity: 1;
+  filter: none !important;
+  background:
+    linear-gradient(180deg, rgba(128, 94, 255, 0.10), rgba(20, 24, 50, 0.02)),
+    radial-gradient(circle at 24% 76%, rgba(96, 52, 132, 0.20), transparent 26%),
+    linear-gradient(135deg, rgba(255,255,255,0.035) 0, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 34px),
+    linear-gradient(45deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 34px);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map__fog {
+  opacity: 0.12 !important;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map__lights {
+  opacity: 0.36 !important;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map__skyline {
+  opacity: 0.30 !important;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-map__park,
+.skillcity-shell--product-v12 .skillcity-real-map__artery {
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-district {
+  opacity: 1 !important;
+  filter: none !important;
+  border-color: rgba(255,255,255,0.075);
+  background: linear-gradient(180deg, rgba(14, 20, 42, 0.20), rgba(9, 15, 31, 0.08));
+}
+
+.skillcity-shell--product-v12 .skillcity-real-district.muted,
+.skillcity-shell--product-v12 .skillcity-real-node.muted,
+.skillcity-shell--product-v12 .skillcity-landmark-model.muted {
+  opacity: 0.74 !important;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-district.locked {
+  opacity: 0.78 !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-district__label,
+.skillcity-shell--product-v12 .skillcity-real-district__landmark {
+  background: rgba(8, 13, 30, 0.94);
+  color: var(--text);
+  text-shadow: none;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-district.active .skillcity-real-district__label,
+.skillcity-shell--product-v12 .skillcity-real-district:hover .skillcity-real-district__label {
+  opacity: 1;
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model {
+  z-index: 4;
+  max-width: 106px;
+  transform: translate(-50%, -48%) scale(0.72) !important;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.24)) !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model:hover,
+.skillcity-shell--product-v12 .skillcity-landmark-model.active {
+  z-index: 9;
+  transform: translate(-50%, -50%) scale(0.82) !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model__stage {
+  width: 94px;
+  height: 78px;
+  overflow: visible;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(10,15,32,0.96), rgba(7,10,22,0.98));
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model model-viewer {
+  width: 112%;
+  height: 112%;
+  min-height: 76px;
+  transform: translateY(0) scale(0.94);
+  filter: saturate(1.05) contrast(1.04) brightness(1.02) !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model.locked model-viewer {
+  opacity: 0.72;
+  filter: saturate(0.88) contrast(1.02) brightness(0.92) grayscale(0.05) !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model__level {
+  top: -0.62rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  padding: 0.14rem 0.36rem;
+  background: rgba(8, 13, 28, 0.96);
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model__lock {
+  top: 0.26rem;
+  transform: translateX(-50%) scale(0.82);
+  background: rgba(8,13,28,0.94);
+}
+
+.skillcity-shell--product-v12 .skillcity-landmark-model__copy {
+  width: 118px;
+  background: rgba(8, 13, 28, 0.96);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-roads {
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-road--shadow {
+  opacity: 0.45;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-road--asphalt {
+  stroke-width: 3.4;
+  stroke: rgba(8, 13, 28, 0.98);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-road--lane {
+  opacity: 0.82;
+  stroke-width: 1.15;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-road--active {
+  stroke-width: 1.95;
+  opacity: 0.92;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-road--preview {
+  opacity: 0.78;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node {
+  opacity: 1 !important;
+  filter: none !important;
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node:hover,
+.skillcity-shell--product-v12 .skillcity-real-node:focus-visible,
+.skillcity-shell--product-v12 .skillcity-real-node.active,
+.skillcity-shell--product-v12 .skillcity-real-node.current {
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node__plot,
+.skillcity-shell--product-v12 .skillcity-real-node__tower,
+.skillcity-shell--product-v12 .skillcity-real-node__roof,
+.skillcity-shell--product-v12 .skillcity-real-node__windows,
+.skillcity-shell--product-v12 .skillcity-real-node__base,
+.skillcity-shell--product-v12 .skillcity-real-node__badge {
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node__tower {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--node-color, var(--city-main)) 30%, #17203d), #0d1428 58%, #080d1e);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset -8px 0 16px rgba(0,0,0,0.16), 0 10px 18px rgba(0,0,0,0.20);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node.locked .skillcity-real-node__tower {
+  background: linear-gradient(180deg, #1d263d, #10182c 56%, #0b1020);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node__shadow {
+  opacity: 0.36;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node__label {
+  background: rgba(7, 12, 28, 0.97);
+  border-color: rgba(255,255,255,0.09);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.28);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) .skillcity-real-node__label,
+.skillcity-shell--product-v12 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) .skillcity-real-node__interaction,
+.skillcity-shell--product-v12 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) b,
+.skillcity-shell--product-v12 .skillcity-real-node.locked:not(:hover):not(.active):not(.current) i {
+  opacity: 0;
+}
+
+.skillcity-shell--product-v12 .skillcity-map-focus-card {
+  left: 14px;
+  bottom: 14px;
+  width: min(288px, calc(100% - 28px));
+  background: rgba(7, 12, 28, 0.97);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.26);
+}
+
+.skillcity-shell--product-v12 .skillcity-map-preview-card {
+  max-width: 205px;
+  background: rgba(7, 12, 28, 0.98);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.30);
+}
+
+.skillcity-shell--product-v12 .skillcity-real-avatar {
+  z-index: 12;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-avatar__mini.avatar--roadmap {
+  width: 64px;
+  height: 64px;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-avatar__mini.avatar--roadmap .player-model--mini model-viewer {
+  filter: saturate(1.05) contrast(1.05) brightness(1.03) !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-real-avatar__trail {
+  opacity: 0.44;
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-side-column {
+  min-width: 320px;
+}
+
+.skillcity-shell--product-v12 .skillcity-mission-panel {
+  max-height: none;
+  overflow: visible;
+}
+
+.skillcity-shell--product-v12 .skillcity-mission-panel,
+.skillcity-shell--product-v12 .skillcity-control-deck {
+  filter: none !important;
+}
+
+.skillcity-shell--product-v12 .skillcity-panel-actions {
+  position: sticky;
+  bottom: 0.65rem;
+  background: linear-gradient(180deg, rgba(8,13,28,0.74), rgba(8,13,28,0.98));
+  padding-top: 0.5rem;
+  z-index: 3;
+}
+
+.skillcity-shell--product-v12 .skillcity-journey-strip,
+.skillcity-shell--product-v12 .skillcity-landmark-dock {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v12 .skillcity-journey-track,
+.skillcity-shell--product-v12 .skillcity-landmark-dock__grid {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v12 .skillcity-roadmap-stage.eco-mode .skillcity-real-map__fog,
+.skillcity-shell--product-v12 .skillcity-roadmap-stage.eco-mode .skillcity-real-map__lights {
+  opacity: 0.10 !important;
+}
+
+@media (max-width: 1320px) {
+  .skillcity-shell--product-v12 .skillcity-real-map {
+    height: clamp(480px, calc(100vh - 300px), 540px);
+    min-height: 480px;
+  }
+
+  .skillcity-shell--product-v12 .skillcity-side-column {
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 980px) {
+  .skillcity-shell--product-v12 .skillcity-real-map {
+    height: 500px;
+    min-height: 500px;
+  }
+
+  .skillcity-shell--product-v12 .skillcity-landmark-model {
+    transform: translate(-50%, -46%) scale(0.62) !important;
+  }
+}
+
+/* SkillCity roadmap v13 — crop fixes, larger 3D landmarks, cleaner labels. */
+.skillcity-shell--product-v13 .skillcity-roadmap-stage,
+.skillcity-shell--product-v13 .skillcity-roadmap-stage__head,
+.skillcity-shell--product-v13 .skillcity-real-stage__head {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v13 .skillcity-roadmap-stage__head {
+  position: relative;
+  z-index: 2;
+  padding-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-roadmap-stage__head h3 {
+  margin-bottom: 0.2rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-roadmap-stage__head p {
+  max-width: 60ch;
+  line-height: 1.35;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-map {
+  min-height: 620px;
+  height: clamp(560px, calc(100vh - 250px), 650px);
+  overflow: hidden;
+  padding: 0.25rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-map::before {
+  inset: 10px;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node {
+  width: clamp(98px, 7.1vw, 128px);
+  min-height: 144px;
+  transform: translate(-50%, -62%) scale(1);
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node:hover,
+.skillcity-shell--product-v13 .skillcity-real-node.active,
+.skillcity-shell--product-v13 .skillcity-real-node.current {
+  transform: translate(-50%, -63%) translateY(-6px) scale(1.08);
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__plot {
+  width: 84px;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node.boss .skillcity-real-node__plot {
+  width: 92px;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__tower {
+  border-radius: 18px 18px 14px 14px;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__label {
+  min-width: 132px;
+  max-width: 164px;
+  padding: 0.45rem 0.56rem;
+  gap: 0.12rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__label strong,
+.skillcity-shell--product-v13 .skillcity-real-node__label small {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  text-align: center;
+  line-height: 1.12;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__label strong {
+  font-size: 0.68rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node__label small {
+  font-size: 0.56rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-real-node.edge-top .skillcity-real-node__label,
+.skillcity-shell--product-v13 .skillcity-real-node.edge-bottom .skillcity-real-node__label,
+.skillcity-shell--product-v13 .skillcity-real-node.edge-left .skillcity-real-node__label,
+.skillcity-shell--product-v13 .skillcity-real-node.edge-right .skillcity-real-node__label {
+  max-width: 156px;
+}
+
+.skillcity-shell--product-v13 .skillcity-map-focus-card {
+  width: min(300px, calc(100% - 28px));
+}
+
+.skillcity-shell--product-v13 .skillcity-map-preview-card {
+  max-width: 196px;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model {
+  max-width: 148px;
+  transform: translate(-50%, -68%) scale(0.92) !important;
+  z-index: 4;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model:hover,
+.skillcity-shell--product-v13 .skillcity-landmark-model.active {
+  transform: translate(-50%, -70%) scale(1) !important;
+  z-index: 9;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__stage {
+  width: 108px;
+  height: 90px;
+  overflow: visible;
+  border-radius: 24px;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model model-viewer {
+  width: 122%;
+  height: 122%;
+  min-height: 92px;
+  transform: translateY(-1%) scale(1.02);
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy {
+  width: 130px;
+  padding: 0.3rem 0.42rem;
+  border-radius: 13px;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy strong,
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy small {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.12;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy strong {
+  font-size: 0.62rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy small {
+  font-size: 0.53rem;
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy.edge-left {
+  transform: translateX(6%);
+}
+
+.skillcity-shell--product-v13 .skillcity-landmark-model__copy.edge-right {
+  transform: translateX(-6%);
+}
+
+.skillcity-shell--product-v13 .skillcity-real-legend {
+  right: 0.8rem;
+  left: auto;
+  bottom: 0.8rem;
+  background: rgba(7, 12, 28, 0.84);
+  padding: 0.36rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 1320px) {
+  .skillcity-shell--product-v13 .skillcity-real-map {
+    min-height: 560px;
+    height: clamp(520px, calc(100vh - 280px), 600px);
+  }
+}
+
+@media (max-width: 980px) {
+  .skillcity-shell--product-v13 .skillcity-real-map {
+    min-height: 500px;
+    height: 500px;
+  }
+
+  .skillcity-shell--product-v13 .skillcity-real-node {
+    width: 94px;
+    min-height: 132px;
+  }
+
+  .skillcity-shell--product-v13 .skillcity-landmark-model {
+    transform: translate(-50%, -60%) scale(0.78) !important;
+  }
+
+  .skillcity-shell--product-v13 .skillcity-landmark-model:hover,
+  .skillcity-shell--product-v13 .skillcity-landmark-model.active {
+    transform: translate(-50%, -61%) scale(0.84) !important;
+  }
+}
+
+/* SkillCity roadmap v14 — fix cropped hover labels */
+.skillcity-shell--product-v14 .skillcity-real-map,
+.skillcity-shell--product-v14 .skillcity-real-roads {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node {
+  overflow: visible;
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 0.55rem);
+  min-width: 136px;
+  max-width: 172px;
+  z-index: 11;
+  transform: translate(-50%, 8px) scale(0.96);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.current .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.previewed .skillcity-real-node__label {
+  transform: translate(-50%, 0) scale(1);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top .skillcity-real-node__label {
+  top: calc(100% - 0.25rem);
+  bottom: auto;
+  transform: translate(-50%, -8px) scale(0.96);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top:hover .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top.active .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top.current .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top.previewed .skillcity-real-node__label {
+  transform: translate(-50%, 0) scale(1);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-left .skillcity-real-node__label {
+  left: 0;
+  transform: translate(0, 8px) scale(0.96);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-left:hover .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-left.active .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-left.current .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-left.previewed .skillcity-real-node__label {
+  transform: translate(0, 0) scale(1);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-right .skillcity-real-node__label {
+  left: auto;
+  right: 0;
+  transform: translate(0, 8px) scale(0.96);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-right:hover .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-right.active .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-right.current .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-right.previewed .skillcity-real-node__label {
+  transform: translate(0, 0) scale(1);
+}
+
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top.edge-left .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-real-node.edge-top.edge-right .skillcity-real-node__label {
+  top: calc(100% - 0.25rem);
+  bottom: auto;
+}
+
+.skillcity-shell--product-v14 .skillcity-roadmap-stage.preview-mode .skillcity-real-node:not(.previewed):not(:hover) .skillcity-real-node__label,
+.skillcity-shell--product-v14 .skillcity-roadmap-stage.preview-mode .skillcity-real-node:not(.previewed):not(:hover) .skillcity-real-node__interaction {
+  opacity: 0 !important;
+}
+
+.skillcity-shell--product-v14 .skillcity-roadmap-stage.preview-mode .skillcity-real-node.previewed {
+  z-index: 18;
+}
+
+.skillcity-shell--product-v14 .skillcity-map-preview-card {
+  z-index: 18;
+}
+
+.skillcity-shell--product-v14 .skillcity-map-focus-card {
+  z-index: 6;
+}
+
+@media (max-width: 980px) {
+  .skillcity-shell--product-v14 .skillcity-real-node__label {
+    min-width: 124px;
+    max-width: 150px;
+  }
+}
+
+/* SkillCity roadmap v21 — clean hover effects without unnecessary hover lines/noise. */
+.skillcity-shell--hoverclean-v21 .skillcity-real-map {
+  isolation: isolate;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node {
+  z-index: 5;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:hover,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:focus-visible,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.previewed,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.active,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.current {
+  z-index: 28;
+}
+
+/* Hide local hover labels; keep them only for active/current so hovering stays clean. */
+.skillcity-shell--hoverclean-v21 .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:focus-visible .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.previewed .skillcity-real-node__label {
+  opacity: 0 !important;
+  transform: translate(-50%, 8px) scale(0.96) !important;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.current .skillcity-real-node__label {
+  opacity: 1 !important;
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-left.active .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-left.current .skillcity-real-node__label {
+  transform: translate(0, 0) scale(1) !important;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-right.active .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-right.current .skillcity-real-node__label {
+  transform: translate(0, 0) scale(1) !important;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-top.active .skillcity-real-node__label,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.edge-top.current .skillcity-real-node__label {
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+/* Remove noisy hover pill/extra lines entirely. */
+.skillcity-shell--hoverclean-v21 .skillcity-real-node__interaction,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:hover .skillcity-real-node__interaction,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node:focus-visible .skillcity-real-node__interaction,
+.skillcity-shell--hoverclean-v21 .skillcity-real-node.previewed .skillcity-real-node__interaction {
+  display: none !important;
+}
+
+/* Stable hover card pinned to top-right of the map instead of floating around nodes. */
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card {
+  left: auto !important;
+  right: 14px;
+  top: 14px !important;
+  bottom: auto;
+  transform: none !important;
+  width: min(300px, calc(100% - 28px));
+  max-width: 300px;
+  min-width: 0;
+  padding: 0.68rem 0.78rem;
+  border-radius: 16px;
+  z-index: 34;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7,12,28,0.97), rgba(10,17,38,0.94));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 32px rgba(0,0,0,0.28);
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card::after {
+  display: none;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0.06rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card strong,
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card small,
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card em {
+  display: block;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card strong {
+  margin-top: 0.34rem;
+  line-height: 1.12;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card small {
+  margin-top: 0.16rem;
+  line-height: 1.24;
+  color: rgba(225,233,248,0.72);
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-preview-card em {
+  margin-top: 0.42rem;
+  padding-top: 0.42rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-style: normal;
+  line-height: 1.26;
+  color: rgba(225,233,248,0.68);
+  font-size: 0.74rem;
+}
+
+.skillcity-shell--hoverclean-v21 .skillcity-map-focus-card {
+  z-index: 20;
+}
+
+/* Do not hide half the map on preview; just keep hover readable. */
+.skillcity-shell--hoverclean-v21 .skillcity-roadmap-stage.preview-mode .skillcity-real-node:not(.previewed):not(.active):not(.current) {
+  opacity: 0.88;
+}
+
+@media (max-width: 980px) {
+  .skillcity-shell--hoverclean-v21 .skillcity-map-preview-card {
+    right: 10px;
+    top: 10px !important;
+    width: calc(100% - 20px);
+    max-width: none;
+  }
+}
+
+
+/* SkillCity roadmap v24 — building-only hover, normal clean interface. */
+.skillcity-shell--buildingonly-v24 .skillcity-map-preview-card,
+.skillcity-shell--buildingonly-v24 .skillcity-map-focus-card,
+.skillcity-shell--buildingonly-v24 .skillcity-map-callout,
+.skillcity-shell--buildingonly-v24 .skillcity-real-road--preview {
+  display: none !important;
+}
+
+/* No extra hover text / pills / lines on the node itself. */
+.skillcity-shell--buildingonly-v24 .skillcity-real-node__interaction,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__interaction,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__interaction,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.previewed .skillcity-real-node__interaction {
+  display: none !important;
+}
+
+/* Do not change the whole map on hover. */
+.skillcity-shell--buildingonly-v24 .skillcity-roadmap-stage.preview-mode .skillcity-real-node,
+.skillcity-shell--buildingonly-v24 .skillcity-roadmap-stage.preview-mode .skillcity-real-node:not(.previewed):not(.active):not(.current) {
+  opacity: 1 !important;
+}
+
+/* Local labels stay off on hover; only selected/current building may show its small label. */
+.skillcity-shell--buildingonly-v24 .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.previewed .skillcity-real-node__label {
+  opacity: 0 !important;
+  transform: translate(-50%, 8px) scale(0.96) !important;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.current .skillcity-real-node__label {
+  opacity: 1 !important;
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-left.active .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-left.current .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-right.active .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-right.current .skillcity-real-node__label {
+  transform: translate(0, 0) scale(1) !important;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-top.active .skillcity-real-node__label,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.edge-top.current .skillcity-real-node__label {
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+/* Actual hover effect: only the building reacts. */
+.skillcity-shell--buildingonly-v24 .skillcity-real-node {
+  transition: transform 140ms ease, filter 140ms ease, opacity 140ms ease;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible {
+  z-index: 28;
+  transform: translate(-50%, -64%) scale(1.035);
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.18));
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__tower,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__tower {
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 48%, rgba(255,255,255,0.16));
+  filter: saturate(1.06) contrast(1.04) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset -10px 0 18px rgba(0,0,0,0.10),
+    inset 0 -18px 18px rgba(0,0,0,0.14),
+    0 13px 22px rgba(0,0,0,0.22),
+    0 0 0 1px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent),
+    0 0 16px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent);
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__roof,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__roof {
+  filter: brightness(1.08);
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__windows,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__windows {
+  opacity: 0.72;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__badge,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__badge {
+  transform: translateY(-2px) scale(1.04);
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 46%, rgba(255,255,255,0.16));
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__base,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__base {
+  opacity: 0.92;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:hover .skillcity-real-node__shadow,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible .skillcity-real-node__shadow {
+  opacity: 0.34;
+  filter: blur(8px);
+}
+
+/* Selected building is clear, but not noisy. */
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.active,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.current {
+  z-index: 26;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.active .skillcity-real-node__tower,
+.skillcity-shell--buildingonly-v24 .skillcity-real-node.current .skillcity-real-node__tower {
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 56%, rgba(255,255,255,0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset -10px 0 18px rgba(0,0,0,0.10),
+    inset 0 -18px 18px rgba(0,0,0,0.14),
+    0 14px 24px rgba(0,0,0,0.24),
+    0 0 0 2px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent),
+    0 0 18px color-mix(in srgb, var(--node-color, var(--primary)) 20%, transparent);
+}
+
+/* Main district click effect stays minimal: outline only, no extra overlay. */
+.skillcity-shell--buildingonly-v24 .skillcity-real-district.active {
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 36%, rgba(255,255,255,0.12));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035);
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-real-district.active .skillcity-real-district__label {
+  opacity: 1 !important;
+}
+
+/* 3D landmark hover stays local to model, with no extra info panel. */
+.skillcity-shell--buildingonly-v24 .skillcity-landmark-model:hover,
+.skillcity-shell--buildingonly-v24 .skillcity-landmark-model:focus-visible {
+  z-index: 24;
+  transform: translate(-50%, -66%) scale(1.02);
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-landmark-model:not(:hover):not(.active) .skillcity-landmark-model__copy {
+  opacity: 0 !important;
+}
+
+.skillcity-shell--buildingonly-v24 .skillcity-landmark-model.active .skillcity-landmark-model__copy {
+  opacity: 0.92;
+}
+
+/* Keep the right mission panel as the source of detailed information. */
+.skillcity-shell--buildingonly-v24 .skillcity-mission-panel {
+  position: sticky;
+  top: 0.75rem;
+}
+
+@media (max-width: 980px) {
+  .skillcity-shell--buildingonly-v24 .skillcity-real-node:hover,
+  .skillcity-shell--buildingonly-v24 .skillcity-real-node:focus-visible {
+    transform: translate(-50%, -63%) scale(1.02);
+  }
+}
+
+/* SkillCity roadmap v25 — remove remaining above-building UI and keep avatar in front. */
+.skillcity-shell--buildingfix-v25 .skillcity-map-preview-card,
+.skillcity-shell--buildingfix-v25 .skillcity-map-callout {
+  display: none !important;
+}
+
+/* No more text floating over / under buildings on the map. */
+.skillcity-shell--buildingfix-v25 .skillcity-real-node__label,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:hover .skillcity-real-node__label,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:focus-visible .skillcity-real-node__label,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node.active .skillcity-real-node__label,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node.current .skillcity-real-node__label,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node > b,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node > i,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node__interaction {
+  display: none !important;
+}
+
+/* Keep hover clean: only the building itself reacts. */
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:hover,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:focus-visible {
+  transform: translate(-50%, -64%) scale(1.03);
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:hover .skillcity-real-node__tower,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:focus-visible .skillcity-real-node__tower {
+  border-color: color-mix(in srgb, var(--node-color, var(--primary)) 50%, rgba(255,255,255,0.18));
+  filter: saturate(1.05) contrast(1.04) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset -10px 0 18px rgba(0,0,0,0.10),
+    inset 0 -18px 18px rgba(0,0,0,0.14),
+    0 13px 22px rgba(0,0,0,0.22),
+    0 0 0 1px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent),
+    0 0 16px color-mix(in srgb, var(--node-color, var(--primary)) 18%, transparent);
+}
+
+/* Avatar should stay in the foreground versus regular buildings. */
+.skillcity-shell--buildingfix-v25 .skillcity-real-node {
+  z-index: 8;
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:hover,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node:focus-visible,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node.active,
+.skillcity-shell--buildingfix-v25 .skillcity-real-node.current {
+  z-index: 18;
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-avatar {
+  z-index: 30;
+}
+
+/* But for the 4 main city landmarks, keep the avatar beside them instead of covering them. */
+.skillcity-shell--buildingfix-v25 .skillcity-landmark-model {
+  z-index: 32;
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-avatar.beside-city {
+  z-index: 30;
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-avatar.beside-city .skillcity-real-avatar__mini.avatar--roadmap {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+}
+
+.skillcity-shell--buildingfix-v25 .skillcity-real-avatar.beside-city .skillcity-real-avatar__label {
+  opacity: 0.86;
+}
+.skillcity-shell--buildingfix-v25 .skillcity-map-focus-card {
+  display: none !important;
+}
+
+/* SkillCity roadmap v26 — fit map better, keep all elements reachable. */
+.skillcity-shell--fit-v26 .skillcity-roadmap-layout {
+  grid-template-columns: minmax(0, 1.62fr) minmax(290px, 0.78fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.skillcity-shell--fit-v26 .skillcity-map-column {
+  min-width: 0;
+}
+
+.skillcity-shell--fit-v26 .skillcity-side-column {
+  gap: 0.75rem;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-map {
+  min-height: 700px;
+}
+
+/* District chrome slightly smaller so more room stays for nodes and landmark models. */
+.skillcity-shell--fit-v26 .skillcity-real-district__label {
+  padding: 0.34rem 0.46rem;
+  border-radius: 12px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-district__label > span {
+  width: 22px;
+  height: 22px;
+  font-size: 0.78rem;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-district__label strong {
+  font-size: 0.68rem;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-district__label small {
+  font-size: 0.54rem;
+}
+
+/* Buildings visually smaller, but hit-area remains generous for mouse access. */
+.skillcity-shell--fit-v26 .skillcity-real-node {
+  width: 86px;
+  min-height: 112px;
+  padding: 10px 8px 14px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node__plot {
+  width: 68px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node.boss .skillcity-real-node__plot {
+  width: 74px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node__badge {
+  top: 6px;
+  right: 8px;
+  min-width: 24px;
+  height: 24px;
+  font-size: 0.74rem;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node__progress {
+  bottom: 4px;
+  width: 48px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-node:hover,
+.skillcity-shell--fit-v26 .skillcity-real-node:focus-visible {
+  transform: translate(-50%, -63%) scale(1.02);
+}
+
+/* Landmark models slightly smaller so they don't block nearby nodes. */
+.skillcity-shell--fit-v26 .skillcity-landmark-model {
+  transform: translate(-50%, -61%) scale(0.84);
+}
+
+.skillcity-shell--fit-v26 .skillcity-landmark-model:hover,
+.skillcity-shell--fit-v26 .skillcity-landmark-model.active {
+  transform: translate(-50%, -62%) scale(0.88);
+}
+
+.skillcity-shell--fit-v26 .skillcity-landmark-model__stage {
+  width: 74px;
+  height: 62px;
+  border-radius: 18px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-landmark-model model-viewer {
+  width: 108%;
+  height: 108%;
+  min-height: 72px;
+}
+
+/* Make landmark label compact and non-intrusive. */
+.skillcity-shell--fit-v26 .skillcity-landmark-model__level,
+.skillcity-shell--fit-v26 .skillcity-landmark-model__copy {
+  transform: scale(0.94);
+  transform-origin: center;
+}
+
+/* Keep avatar prominent but compact so it doesn't cover clicks. */
+.skillcity-shell--fit-v26 .skillcity-real-avatar {
+  min-width: 68px;
+  padding: 0.1rem 0.26rem 0.1rem 0.1rem;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-avatar__mini.avatar--roadmap {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 15px;
+}
+
+.skillcity-shell--fit-v26 .skillcity-real-avatar__label {
+  padding: 0.14rem 0.3rem;
+  font-size: 0.48rem;
+}
+
+/* Control cards slightly tighter so the map gets more visual weight. */
+.skillcity-shell--fit-v26 .skillcity-control-card,
+.skillcity-shell--fit-v26 .skillcity-mission-panel,
+.skillcity-shell--fit-v26 .skillcity-journey-strip,
+.skillcity-shell--fit-v26 .skillcity-landmark-dock {
+  padding: 0.82rem;
+}
+
+@media (max-width: 1360px) {
+  .skillcity-shell--fit-v26 .skillcity-roadmap-layout {
+    grid-template-columns: minmax(0, 1.48fr) minmax(280px, 0.84fr);
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-real-map {
+    min-height: 650px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .skillcity-shell--fit-v26 .skillcity-roadmap-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-side-column {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-real-map {
+    min-height: 620px;
+  }
+}
+
+@media (max-width: 860px) {
+  .skillcity-shell--fit-v26 .skillcity-real-map {
+    min-height: 520px;
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-real-node {
+    width: 78px;
+    min-height: 102px;
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-real-node__plot {
+    width: 61px;
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-landmark-model {
+    transform: translate(-50%, -60%) scale(0.76);
+  }
+
+  .skillcity-shell--fit-v26 .skillcity-landmark-model:hover,
+  .skillcity-shell--fit-v26 .skillcity-landmark-model.active {
+    transform: translate(-50%, -61%) scale(0.8);
+  }
+}
