@@ -216,11 +216,24 @@ public class TrainingSessionService {
 
         if (words < 3 || normalizedAnswer.length() < 10) {
             return """
-                    Ocena: %d/100
-                    Dobro: Odgovor je bil oddan.
-                    Izboljšaj: Odgovor je prekratek za realno oceno.
-                    Boljša verzija: Dodaj konkreten odgovor z uvodom, razlago in zaključkom.
-                    Mini izziv: Napiši vsaj 40 besed.
+                    Ocena:
+                    %d/100
+
+                    Kaj ti gre dobro:
+                    - Začel si z vajo in izbral scenarij, zato lahko sistem začne spremljati tvoj napredek.
+
+                    Najšibkejše področje:
+                    - Jasnost in struktura, ker je odgovor prekratek za realno oceno.
+
+                    V čem se moraš izboljšati:
+                    - Dodaj kontekst, konkreten predlog in jasen zaključek.
+                    - Pokaži vsaj eno komunikacijsko veščino, na primer empatijo ali samozavest.
+
+                    Kaj naredi naprej:
+                    - Napiši vsaj 40 besed po strukturi: razumem situacijo → moj predlog → naslednji korak.
+
+                    Boljša verzija odgovora:
+                    - Razumem tvojo skrb. Predlagam, da najprej preverimo glavni problem, nato pa se dogovorimo za konkreten naslednji korak. Tako bomo lažje prišli do rešitve.
                     """.formatted(score).trim();
         }
 
@@ -254,14 +267,36 @@ public class TrainingSessionService {
                     Lokalna ocena: %d/100
                     Podocene: %s
 
-                    Vrni samo v slovenščini. Največ 80 besed.
-                    Bodi konkreten, pošten in uporaben.
-                    Format:
+                    Vrni samo v slovenščini. Največ 180 besed.
+                    Ne piši generično. Uporabi podocene in dejanski odgovor uporabnika.
+                    Če je uporabnik dober v empatiji, jasnosti, strukturi, reševanju problema ali samozavesti, to jasno napiši.
+                    Če je katera podocena nizka, napiši to kot glavni fokus izboljšave.
+
+                    Uporabi točno ta format:
+
                     Ocena:
-                    Dobro:
-                    Izboljšaj:
-                    Boljša verzija:
-                    Mini izziv:
+                    %d/100
+
+                    Kaj ti gre dobro:
+                    - [konkretno področje, npr. empatija/jasnost/samozavest, glede na podocene]
+                    - [konkreten dokaz iz odgovora]
+
+                    Najšibkejše področje:
+                    - [področje z najnižjo podoceno in zakaj]
+
+                    V čem se moraš izboljšati:
+                    - [konkretna slabost]
+                    - [konkretna slabost]
+
+                    Kako se izboljšaš:
+                    - [praktičen korak za naslednji odgovor]
+                    - [praktičen korak za vadbo]
+
+                    Naslednja vaja:
+                    - [kratka naloga za uporabnika]
+
+                    Boljša verzija odgovora:
+                    - [izboljšan primer v 2 do 4 stavkih]
                     """,
                     limitText(systemPrompt, 280),
                     limitText(challenge.getTitle(), 140),
@@ -270,7 +305,8 @@ public class TrainingSessionService {
                     limitText(criteria, 180),
                     limitText(answer, 800),
                     score,
-                    buildStructuredScoreText(structuredScores)
+                    buildStructuredScoreText(structuredScores),
+                    score
             );
 
             String url = String.format(

@@ -409,3 +409,266 @@
     grid-column: 1;
   }
 }
+
+
+.app-workbench--simulator .content-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.app-workbench--simulator .section-title {
+  margin-bottom: .15rem;
+}
+
+.app-workbench--simulator .personalized-challenge-card,
+.app-workbench--simulator .competition-mode-banner {
+  margin: 0;
+}
+
+.app-workbench--simulator .simulation-form {
+  display: grid;
+  grid-template-columns: minmax(280px, .82fr) minmax(420px, 1.18fr);
+  grid-template-areas:
+    "scenario answer"
+    "challenge answer"
+    "situation answer"
+    "coach status"
+    "submit submit";
+  gap: 1rem;
+  align-items: stretch;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--primary) 10%, transparent), transparent 32%),
+    color-mix(in srgb, var(--panel) 94%, transparent);
+  box-shadow: var(--soft-shadow);
+}
+
+.app-workbench--simulator .simulation-form > label:first-child {
+  grid-area: scenario;
+}
+
+.app-workbench--simulator .challenge-card {
+  grid-area: challenge;
+}
+
+.app-workbench--simulator .custom-situation-card {
+  grid-area: situation;
+}
+
+.app-workbench--simulator .coach-box {
+  grid-area: coach;
+}
+
+.app-workbench--simulator .simulation-form > label:has(.answer-composer) {
+  grid-area: answer;
+}
+
+.app-workbench--simulator .input-assist-status,
+.app-workbench--simulator .ai-thinking-card {
+  grid-area: status;
+}
+
+.app-workbench--simulator .submit-button {
+  grid-area: submit;
+}
+
+.app-workbench--simulator .simulation-form > label,
+.app-workbench--simulator .challenge-card,
+.app-workbench--simulator .coach-box,
+.app-workbench--simulator .input-assist-status,
+.app-workbench--simulator .ai-thinking-card {
+  margin: 0;
+  padding: 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+  box-shadow: none;
+}
+
+.app-workbench--simulator .simulation-form > label {
+  display: grid;
+  gap: .7rem;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.app-workbench--simulator .simulation-form select,
+.app-workbench--simulator .simulation-form textarea {
+  border-radius: 16px;
+  border-color: var(--border);
+  background: var(--panel);
+}
+
+.app-workbench--simulator .challenge-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .85rem;
+}
+
+.app-workbench--simulator .challenge-card h3 {
+  margin: .2rem 0 .45rem;
+}
+
+.app-workbench--simulator .challenge-card > span {
+  align-self: start;
+  white-space: nowrap;
+}
+
+.app-workbench--simulator .mini-list {
+  gap: .45rem;
+}
+
+.app-workbench--simulator .coach-box {
+  display: grid;
+  gap: .85rem;
+}
+
+.app-workbench--simulator .quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .55rem;
+}
+
+.app-workbench--simulator .quick-actions button {
+  width: 100%;
+  text-align: left;
+}
+
+.app-workbench--simulator .answer-composer {
+  display: grid;
+  grid-template-rows: minmax(360px, 1fr) auto;
+  min-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--panel);
+}
+
+.app-workbench--simulator .answer-composer textarea {
+  min-height: 360px;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  resize: vertical;
+}
+
+.app-workbench--simulator .composer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .65rem;
+  padding: .8rem;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel-strong) 88%, transparent);
+}
+
+.app-workbench--simulator .composer-icon-button {
+  flex: 1 1 150px;
+  justify-content: center;
+  border-radius: 16px;
+}
+
+.app-workbench--simulator .mic-button.recording {
+  color: color-mix(in srgb, var(--danger) 72%, var(--text));
+  border-color: color-mix(in srgb, var(--danger) 44%, var(--border));
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel-strong));
+}
+
+.app-workbench--simulator .input-assist-status {
+  align-self: start;
+}
+
+.app-workbench--simulator .submit-button {
+  width: 100%;
+  min-height: 58px;
+  margin: 0;
+  border-radius: 20px;
+}
+
+.metric-progress-report {
+  padding: 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--panel-strong) 84%, transparent);
+  box-shadow: var(--soft-shadow);
+}
+
+.metric-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: .8rem;
+}
+
+.metric-progress-card {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--panel-strong));
+}
+
+.metric-progress-card > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.metric-progress-card strong {
+  color: var(--text);
+}
+
+.metric-progress-card span {
+  padding: .32rem .6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.metric-progress-card small {
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.metric-progress-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 1050px) {
+  .app-workbench--simulator .simulation-form {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "scenario"
+      "challenge"
+      "situation"
+      "coach"
+      "answer"
+      "status"
+      "submit";
+  }
+
+  .app-workbench--simulator .answer-composer,
+  .app-workbench--simulator .answer-composer textarea {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-workbench--simulator .simulation-form {
+    padding: .7rem;
+    border-radius: 22px;
+  }
+
+  .app-workbench--simulator .quick-actions {
+    grid-template-columns: 1fr;
+  }
+}

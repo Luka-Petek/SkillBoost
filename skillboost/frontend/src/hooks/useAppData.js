@@ -814,6 +814,14 @@ function buildDemoReport(session, selectedSkillKeys, reward, user) {
             averageScore: session.score,
             nextSuggestedChallenge: 'Ponovi simulacijo z bolj konkretnim primerom in mentorjevim komentarjem.'
         })),
+        metricProgress: Object.entries(session.structuredScores || {}).map(([metricKey, value]) => ({
+            metricKey,
+            label: metricKey === 'empathy' ? 'Empatija' : metricKey === 'clarity' ? 'Jasnost' : metricKey === 'structure' ? 'Struktura odgovora' : metricKey === 'impact' ? 'Reševanje problema' : metricKey === 'confidence' ? 'Samozavest' : metricKey,
+            averageScore: value,
+            sessions: 1,
+            status: value >= 80 ? 'močno področje' : value >= 60 ? 'dobro, ampak še izboljšljivo' : 'fokus za izboljšavo',
+            advice: value >= 80 ? 'To področje ti gre dobro. Ohrani ta pristop tudi pri naslednjih vajah.' : 'Pri naslednji vaji dodaj bolj konkreten primer, jasen predlog in naslednji korak.'
+        })),
         recommendations: [
             reward.leveledUp ? `Nov level: ${reward.newLevel}. Nadaljuj z dnevno rutino.` : 'Odgovor popravi po AI povratni informaciji in ga oddaj ponovno.',
             'Dodaj mentorjevo opombo, če želiš človeški vpogled v napredek.',

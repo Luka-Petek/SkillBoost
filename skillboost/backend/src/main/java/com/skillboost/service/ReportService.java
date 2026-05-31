@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
@@ -75,31 +76,12 @@ public class ReportService {
                 })
                 .toList();
 
+        List<ReportResponse.MetricProgress> metricProgress = buildMetricProgress(sessions);
+
         List<TrainingSession> todaysSessions = findTodaysSessions(userId);
         List<DailyQuest> dailyQuests = gamificationService.buildDailyQuests(todaysSessions, null);
 
-        List<String> recommendations = new ArrayList<>();
-        if (sessions.isEmpty()) {
-            recommendations.add("Začni z eno kratko simulacijo in shrani prvi rezultat.");
-            recommendations.add("Izberi dve povezani veščini, npr. javno nastopanje + samozavestna komunikacija.");
-        } else {
-            long practicedSkills = bySkill.keySet().size();
-            if (averageScore < 60) {
-                recommendations.add("Odgovore strukturiraj po vzorcu: situacija, razumevanje, predlog, dogovor.");
-                recommendations.add("Po AI povratni informaciji popravi isti odgovor in ga oddaj ponovno.");
-            } else if (averageScore < 80) {
-                recommendations.add("Rezultati so stabilni. Dodaj več konkretnih primerov in merljive naslednje korake.");
-                recommendations.add("Mentor naj pregleda vsaj eno simulacijo, da dobiš človeško povratno informacijo.");
-            } else {
-                recommendations.add("Odličen napredek. Preizkusi težji scenarij ali kombinacijo treh veščin hkrati.");
-                recommendations.add("Za realen razvoj vadi isto veščino več dni zapored in primerjaj poročila.");
-            }
-            if (practicedSkills < 2) {
-                recommendations.add("Dodaj še vsaj eno veščino, da bo učni načrt bolj prilagojen tvojim ciljem.");
-            }
-            gamificationService.buildMissingDailyQuests(todaysSessions)
-                    .forEach(quest -> recommendations.add("Dnevni cilj: " + quest + "."));
-        }
+        List<String> recommendations = buildPersonalizedRecommendations(sessions, bySkill, metricProgress, averageScore, todaysSessions);
 
         List<ReportResponse.MentorComment> mentorComments = sessions.stream()
                 .filter(session -> session.getMentorNote() != null && !session.getMentorNote().isBlank())
@@ -132,9 +114,110 @@ public class ReportService {
                 user.getBadges(),
                 dailyQuests,
                 skillProgress,
+                metricProgress,
                 recommendations,
                 mentorComments
         );
+    }
+
+    private List<ReportResponse.MetricProgress> buildMetricProgress(List<TrainingSession> sessions) {
+        Map<String, List<Integer>> valuesByMetric = new java.util.LinkedHashMap<>();
+        for (TrainingSession session : sessions) {
+            if (session.getStructuredScores() == null || session.getStructuredScores().isEmpty()) {
+                continue;
+            }
+            session.getStructuredScores().forEach((metric, value) -> {
+                if (value != null) {
+                    valuesByMetric.computeIfAbsent(metric, key -> new ArrayList<>()).add(value);
+                }
+            });
+        }
+
+        return valuesByMetric.entrySet()
+                .stream()
+                .map(entry -> {
+                    double average = entry.getValue().stream().mapToInt(Integer::intValue).average().orElse(0);
+                    String metric = entry.getKey();
+                    return new ReportResponse.MetricProgress(
+                            metric,
+                            metricLabel(metric),
+                            entry.getValue().size(),
+                            round(average),
+                            metricStatus(average),
+                            metricRecommendation(metric, average)
+                    );
+                })
+                .sorted(Comparator.comparingDouble(ReportResponse.MetricProgress::averageScore).reversed())
+                .toList();
+    }
+
+    private List<String> buildPersonalizedRecommendations(
+            List<TrainingSession> sessions,
+            Map<String, List<TrainingSession>> bySkill,
+            List<ReportResponse.MetricProgress> metricProgress,
+            double averageScore,
+            List<TrainingSession> todaysSessions
+    ) {
+        List<String> recommendations = new ArrayList<>();
+        if (sessions.isEmpty()) {
+            recommendations.add("Začni z eno kratko simulacijo in shrani prvi rezultat.");
+            recommendations.add("Izberi dve povezani veščini, npr. javno nastopanje + samozavestna komunikacija.");
+            return recommendations;
+        }
+
+        metricProgress.stream().max(Comparator.comparingDouble(ReportResponse.MetricProgress::averageScore))
+                .ifPresent(best -> recommendations.add("Močna točka: " + best.label() + " (" + best.averageScore() + "/100). To uporabljaj kot prednost tudi pri težjih scenarijih."));
+
+        metricProgress.stream().min(Comparator.comparingDouble(ReportResponse.MetricProgress::averageScore))
+                .ifPresent(weakest -> recommendations.add("Največja priložnost za izboljšavo: " + weakest.label() + " (" + weakest.averageScore() + "/100). " + weakest.recommendation()));
+
+        long practicedSkills = bySkill.keySet().size();
+        if (averageScore < 60) {
+            recommendations.add("Pri naslednjih odgovorih uporabi strukturo: razumem situacijo → moj konkreten predlog → naslednji korak.");
+        } else if (averageScore < 80) {
+            recommendations.add("Rezultati so stabilni. Dodaj več dokazov, konkretnih primerov in bolj merljiv zaključek.");
+        } else {
+            recommendations.add("Odličen napredek. Preizkusi težji scenarij ali kombinacijo več veščin hkrati.");
+        }
+
+        if (practicedSkills < 2) {
+            recommendations.add("Dodaj še vsaj eno veščino, da bo poročilo bolj uravnoteženo in uporabno.");
+        }
+
+        gamificationService.buildMissingDailyQuests(todaysSessions)
+                .forEach(quest -> recommendations.add("Dnevni cilj: " + quest + "."));
+
+        return recommendations;
+    }
+
+    private String metricLabel(String metric) {
+        return switch (metric) {
+            case "clarity" -> "Jasnost";
+            case "empathy" -> "Empatija";
+            case "structure" -> "Struktura odgovora";
+            case "impact" -> "Reševanje problema";
+            case "confidence" -> "Samozavest";
+            default -> metric;
+        };
+    }
+
+    private String metricStatus(double average) {
+        if (average >= 80) return "močno področje";
+        if (average >= 65) return "dobro, a še nadgradljivo";
+        if (average >= 45) return "potrebuje več vaje";
+        return "glavni fokus za izboljšavo";
+    }
+
+    private String metricRecommendation(String metric, double average) {
+        String prefix = average >= 70 ? "Za naslednji nivo: " : "Za izboljšavo: ";
+        return switch (metric) {
+            case "clarity" -> prefix + "piši krajše stavke, najprej povej glavno misel in nato dodaj en konkreten primer.";
+            case "empathy" -> prefix + "najprej priznaj občutek ali skrb sogovornika, nato ponudi rešitev.";
+            case "structure" -> prefix + "uporabi vrstni red: situacija, razlaga, dejanje, rezultat oziroma dogovor.";
+            case "impact" -> prefix + "dodaj jasen naslednji korak in povej, kakšen učinek bo imel tvoj predlog.";
+            case "confidence" -> prefix + "uporabi bolj odločen ton, manj negotovih izrazov in jasen zaključek.";
+            default -> prefix + "napiši bolj konkreten odgovor z jasnim primerom in naslednjim korakom.";
+        };
     }
 
     private List<TrainingSession> findTodaysSessions(String userId) {
