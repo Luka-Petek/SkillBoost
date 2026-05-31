@@ -246,6 +246,34 @@ body {
   grid-template-columns: minmax(0, 1fr) 300px;
 }
 
+/* SkillCity needs the map to be the main canvas, so the global right rail is hidden only on this route. */
+.app-workbench--quest {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-workbench--quest .app-right-panel {
+  display: none;
+}
+
+.app-workbench--quest .app-main-panel {
+  padding: 12px;
+  overflow: auto;
+}
+
+.app-frame--quest .app-header {
+  min-height: 72px;
+  padding: 12px 16px;
+}
+
+.app-frame--quest .app-header h1 {
+  font-size: clamp(1.28rem, 2.1vw, 1.78rem);
+}
+
+.app-frame--quest .app-header > div > span {
+  margin-top: 4px;
+  font-size: 0.86rem;
+}
+
 .app-main-panel,
 .app-right-panel {
   border: 1px solid var(--border);

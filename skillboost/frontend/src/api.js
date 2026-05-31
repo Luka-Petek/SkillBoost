@@ -43,5 +43,8 @@ export const api = {
   getReport: (userId) => request(`/reports/${userId}`),
   getMentorDashboard: () => request('/mentor/dashboard'),
   getProfile: () => request('/profile'),
-  updateProfile: (payload) => request('/profile', { method: 'PUT', body: JSON.stringify(payload) })
+  updateProfile: (payload) => request('/profile', { method: 'PUT', body: JSON.stringify(payload) }),
+  getQuestMap: (userId) => request(`/quest-map/user/${encodeURIComponent(userId)}`),
+  updateQuestNode: (userId, nodeKey, payload) => request(`/quest-map/user/${encodeURIComponent(userId)}/nodes/${encodeURIComponent(nodeKey)}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  resetQuestMap: (userId) => request(`/quest-map/user/${encodeURIComponent(userId)}`, { method: 'DELETE' })
 };

@@ -27,6 +27,8 @@ export function useAppData() {
     const [lastReward, setLastReward] = useState(null);
     const [mentorNote, setMentorNote] = useState('');
     const [report, setReport] = useState(null);
+    const [questMap, setQuestMap] = useState(null);
+    const [questLoading, setQuestLoading] = useState(false);
     const [mentorDashboard, setMentorDashboard] = useState(null);
 
     const [newPrompt, setNewPrompt] = useState(emptyPrompt);
@@ -96,6 +98,7 @@ export function useAppData() {
         setChallenges(demoChallenges);
         setPrompts(demoPrompts);
         setSelectedUserId(demoUser.id);
+        setQuestMap(null);
         setReport({
             userId: demoUser.id,
             userName: demoUser.name,
@@ -152,6 +155,21 @@ export function useAppData() {
             setError(err.message);
         }
     }, [demoMode]);
+
+    const loadQuestMap = useCallback(async (userId = selectedUserId) => {
+        if (demoMode || !userId) return null;
+        try {
+            setQuestLoading(true);
+            const nextQuestMap = await api.getQuestMap(userId);
+            setQuestMap(nextQuestMap);
+            return nextQuestMap;
+        } catch (err) {
+            console.warn('SkillQuest mapa ni dosegljiva:', err.message);
+            return null;
+        } finally {
+            setQuestLoading(false);
+        }
+    }, [demoMode, selectedUserId]);
 
     const loadPublicData = useCallback(async () => {
         try {
@@ -222,8 +240,9 @@ export function useAppData() {
     useEffect(() => {
         if (selectedUserId) {
             loadReport(selectedUserId);
+            loadQuestMap(selectedUserId);
         }
-    }, [selectedUserId, loadReport]);
+    }, [selectedUserId, loadReport, loadQuestMap]);
 
     useEffect(() => {
         if (!selectedSkillKeys.includes(selectedSkillKey)) {
@@ -334,7 +353,7 @@ export function useAppData() {
             setAnswer('');
             setCustomSituation('');
             setDailyChallengeActive(false);
-            await Promise.all([loadReport(selectedUserId), refreshUsers()]);
+            await Promise.all([loadReport(selectedUserId), loadQuestMap(selectedUserId), refreshUsers()]);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -477,6 +496,43 @@ export function useAppData() {
         setError('');
     }, [personalizedDailyChallenge, preferredSkillKeys, selectedSkillKey]);
 
+    const handleQuestNodeAction = async (nodeKey, action = 'START') => {
+        if (!selectedUserId || !nodeKey) return null;
+
+        if (demoMode) {
+            return null;
+        }
+
+        try {
+            setQuestLoading(true);
+            setError('');
+            const nextQuestMap = await api.updateQuestNode(selectedUserId, nodeKey, { action });
+            setQuestMap(nextQuestMap);
+            return nextQuestMap;
+        } catch (err) {
+            setError('Napaka pri SkillQuest mapi: ' + err.message);
+            throw err;
+        } finally {
+            setQuestLoading(false);
+        }
+    };
+
+    const handleResetQuestMap = async () => {
+        if (!selectedUserId || demoMode) return null;
+        try {
+            setQuestLoading(true);
+            setError('');
+            const nextQuestMap = await api.resetQuestMap(selectedUserId);
+            setQuestMap(nextQuestMap);
+            return nextQuestMap;
+        } catch (err) {
+            setError('Napaka pri resetiranju SkillQuest mape: ' + err.message);
+            throw err;
+        } finally {
+            setQuestLoading(false);
+        }
+    };
+
     const handleUpdateProfile = async (profileData) => {
         try {
             setSaving(true);
@@ -541,6 +597,8 @@ export function useAppData() {
         mentorNote,
         setMentorNote,
         report,
+        questMap,
+        questLoading,
         newPrompt,
         setNewPrompt,
         loading,
@@ -549,10 +607,13 @@ export function useAppData() {
         demoMode,
         loadPublicData,
         handleSuccessfulAuth,
+        loadQuestMap,
         handleSubmitSession,
         handleCreatePrompt,
         handleMentorNote,
         handleMentorSessionNote,
+        handleQuestNodeAction,
+        handleResetQuestMap,
         selectedUser,
         selectedSkills,
         filteredChallenges,

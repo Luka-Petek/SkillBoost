@@ -4,7 +4,7 @@ import { Icon } from './Icon';
 const MODEL_ROOT = '/models';
 const MODEL_VIEWER_SRC = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
 
-function useModelViewerReady() {
+export function useModelViewerReady() {
     const [ready, setReady] = useState(() => typeof window !== 'undefined' && Boolean(window.customElements?.get('model-viewer')));
 
     useEffect(() => {
