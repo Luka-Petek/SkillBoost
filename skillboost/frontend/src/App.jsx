@@ -3,6 +3,7 @@ import { useAuth } from './hooks/useAuth';
 import { useTheme } from './hooks/useTheme';
 import { useAppData } from './hooks/useAppData';
 import { ProfileSection } from './components/ProfileSection';
+import { SkillQuestMap } from './components/SkillQuestMap';
 import { LogoIntro } from './components/LogoIntro';
 import { Icon } from './components/Icon';
 import { AvatarMini } from './components/AvatarStudio';
@@ -26,6 +27,7 @@ const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: 'chart' },
     { key: 'simulator', label: 'Simulator', icon: 'message' },
     { key: 'skills', label: 'Veščine', icon: 'target' },
+    { key: 'quest', label: 'SkillCity', icon: 'compass' },
     { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
     { key: 'prompts', label: 'Prompti', icon: 'sparkles' },
     { key: 'report', label: 'Poročilo', icon: 'chart' },
@@ -48,6 +50,11 @@ const sectionMeta = {
         eyebrow: 'Tvoj fokus',
         title: 'Katalog veščin',
         helper: 'Izberi veščine brez odpiranja dolge landing strani.'
+    },
+    quest: {
+        eyebrow: 'Campaign roadmap',
+        title: 'SkillCity',
+        helper: 'Odpiraj mesto po okrožjih: ena misija, ena stavba, en jasen naslednji korak.'
     },
     competition: {
         eyebrow: 'Igraj proti drugim',
@@ -184,7 +191,7 @@ export default function App() {
                     </div>
                 </aside>
 
-                <div className="app-frame">
+                <div className={`app-frame app-frame--${activeSection}`}>
                     <header className="app-header" id="top">
                         <div>
                             <p className="eyebrow">{currentMeta.eyebrow}</p>
@@ -284,6 +291,24 @@ export default function App() {
                                         setSelectedSkillKey={data.setSelectedSkillKey}
                                         setSelectedSkillKeys={data.setSelectedSkillKeys}
                                         setSelectedChallengeId={data.setSelectedChallengeId}
+                                        openSimulator={() => handleNavigate('simulator')}
+                                    />
+                                )}
+
+                                {activeSection === 'quest' && (
+                                    <SkillQuestMap
+                                        user={data.selectedUser}
+                                        report={data.report}
+                                        questMap={data.questMap}
+                                        questLoading={data.questLoading}
+                                        skills={data.skills}
+                                        challenges={data.challenges}
+                                        selectedSkillKeys={data.selectedSkillKeys}
+                                        setSelectedSkillKey={data.setSelectedSkillKey}
+                                        setSelectedSkillKeys={data.setSelectedSkillKeys}
+                                        setSelectedChallengeId={data.setSelectedChallengeId}
+                                        onQuestNodeAction={data.handleQuestNodeAction}
+                                        onResetQuestMap={data.handleResetQuestMap}
                                         openSimulator={() => handleNavigate('simulator')}
                                     />
                                 )}

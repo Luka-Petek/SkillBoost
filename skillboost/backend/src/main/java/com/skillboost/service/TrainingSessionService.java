@@ -38,6 +38,7 @@ public class TrainingSessionService {
     private final TrainingChallengeRepository challengeRepository;
     private final LearningPromptRepository promptRepository;
     private final GamificationService gamificationService;
+    private final QuestMapService questMapService;
 
     private final RestClient restClient = RestClient.builder()
             .requestFactory(createRequestFactory())
@@ -79,13 +80,15 @@ public class TrainingSessionService {
             UserProfileRepository userRepository,
             TrainingChallengeRepository challengeRepository,
             LearningPromptRepository promptRepository,
-            GamificationService gamificationService
+            GamificationService gamificationService,
+            QuestMapService questMapService
     ) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.promptRepository = promptRepository;
         this.gamificationService = gamificationService;
+        this.questMapService = questMapService;
     }
 
     public List<TrainingSession> findAll() {
@@ -152,6 +155,7 @@ public class TrainingSessionService {
 
         RewardSummary reward = gamificationService.applyReward(user, session, sessionsIncludingCurrent);
         TrainingSession saved = sessionRepository.save(session);
+        questMapService.syncProgressAfterSession(saved);
         UserProfile savedUser = userRepository.save(user);
 
         return new SessionSubmissionResponse(saved, reward, savedUser);

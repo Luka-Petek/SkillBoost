@@ -77,7 +77,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/profile/**",
                                 "/api/reports/**",
-                                "/api/sessions/**"
+                                "/api/sessions/**",
+                                "/api/quest-map/**"
                         ).authenticated()
 
                         .anyRequest().authenticated()
