@@ -1,0 +1,101 @@
+[
+  {
+    "file": "ai-lab.glb",
+    "original_bytes": 36606720,
+    "optimized_bytes": 988216,
+    "original_mb": 34.91,
+    "optimized_mb": 0.94,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "battle-city.glb",
+    "original_bytes": 37219596,
+    "optimized_bytes": 992172,
+    "original_mb": 35.5,
+    "optimized_mb": 0.95,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "boss-tower.glb",
+    "original_bytes": 44684052,
+    "optimized_bytes": 1197876,
+    "original_mb": 42.61,
+    "optimized_mb": 1.14,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "career-city.glb",
+    "original_bytes": 42636756,
+    "optimized_bytes": 1148808,
+    "original_mb": 40.66,
+    "optimized_mb": 1.1,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "foundation-city.glb",
+    "original_bytes": 30931680,
+    "optimized_bytes": 838924,
+    "original_mb": 29.5,
+    "optimized_mb": 0.8,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "mastery-castle.glb",
+    "original_bytes": 46347324,
+    "optimized_bytes": 1239488,
+    "original_mb": 44.2,
+    "optimized_mb": 1.18,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "node-house.glb",
+    "original_bytes": 27002024,
+    "optimized_bytes": 721012,
+    "original_mb": 25.75,
+    "optimized_mb": 0.69,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "practice-city.glb",
+    "original_bytes": 34627368,
+    "optimized_bytes": 932592,
+    "original_mb": 33.02,
+    "optimized_mb": 0.89,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  },
+  {
+    "file": "reward-hub.glb",
+    "original_bytes": 43406508,
+    "optimized_bytes": 1173672,
+    "original_mb": 41.4,
+    "optimized_mb": 1.12,
+    "reduction_pct": 97.3,
+    "compression": "draco",
+    "simplify_ratio": 0.3,
+    "simplify_error": 0.004
+  }
+]

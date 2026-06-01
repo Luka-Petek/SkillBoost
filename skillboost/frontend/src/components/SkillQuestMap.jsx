@@ -1,5 +1,11 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { AvatarMini, AvatarPreview, accentPalettes, applySkillBoostMaterialTint, normalizeAvatar, useModelViewerReady } from './AvatarStudio';
+import {
+    AvatarMini,
+    accentPalettes,
+    applySkillBoostMaterialTint,
+    normalizeAvatar,
+    useModelViewerReady
+} from './AvatarStudio';
 import { Icon } from './Icon';
 
 const STORAGE_KEY = 'skillboost.skillcity.local-progress';
@@ -14,7 +20,8 @@ const DISTRICTS = [
         theme: 'violet',
         landmark: 'Training Harbor',
         unlockCopy: 'Začni tukaj in postavi temelje mesta.',
-        rect: { left: 5, top: 57, width: 34, height: 34 }
+        rect: { left: 6, top: 56, width: 32, height: 34 },
+        model: '/models/skillboost-roadmap/foundation-city.glb'
     },
     {
         id: 'social-core',
@@ -25,7 +32,8 @@ const DISTRICTS = [
         theme: 'green',
         landmark: 'Connection Square',
         unlockCopy: 'Odpre se, ko obvladaš osnove komunikacije.',
-        rect: { left: 5, top: 24, width: 34, height: 30 }
+        rect: { left: 6, top: 22, width: 32, height: 30 },
+        model: '/models/skillboost-roadmap/practice-city.glb'
     },
     {
         id: 'work-arena',
@@ -36,7 +44,8 @@ const DISTRICTS = [
         theme: 'amber',
         landmark: 'Productivity Hub',
         unlockCopy: 'Odpre se po socialnem boss checkpointu.',
-        rect: { left: 35, top: 42, width: 32, height: 28 }
+        rect: { left: 35, top: 42, width: 31, height: 28 },
+        model: '/models/skillboost-roadmap/battle-city.glb'
     },
     {
         id: 'focus-engine',
@@ -47,7 +56,8 @@ const DISTRICTS = [
         theme: 'blue',
         landmark: 'Calm Engine',
         unlockCopy: 'Odpre se, ko stabiliziraš delovni ritem.',
-        rect: { left: 49, top: 10, width: 38, height: 28 }
+        rect: { left: 49, top: 10, width: 38, height: 28 },
+        model: '/models/skillboost-roadmap/ai-lab.glb'
     },
     {
         id: 'career-league',
@@ -58,7 +68,8 @@ const DISTRICTS = [
         theme: 'pink',
         landmark: 'Opportunity Towers',
         unlockCopy: 'Odpre se po Focus Park bossu.',
-        rect: { left: 61, top: 60, width: 35, height: 32 }
+        rect: { left: 61, top: 61, width: 34, height: 31 },
+        model: '/models/skillboost-roadmap/career-city.glb'
     },
     {
         id: 'boss-tower',
@@ -69,7 +80,8 @@ const DISTRICTS = [
         theme: 'teal',
         landmark: 'Boss Citadel',
         unlockCopy: 'Odpre se šele po kariernem bossu.',
-        rect: { left: 72, top: 30, width: 24, height: 25 }
+        rect: { left: 72, top: 30, width: 24, height: 25 },
+        model: '/models/skillboost-roadmap/mastery-castle.glb'
     }
 ];
 
@@ -78,40 +90,82 @@ const ROADMAP = [
     ['active-listening', 'foundation', 2, 24, 68, 58, false],
     ['clear-writing', 'foundation', 3, 36, 76, 60, false],
     ['digital-communication', 'foundation', 4, 50, 68, 65, true],
-
     ['asking-for-help', 'social-core', 5, 50, 39, 60, false],
     ['empathy', 'social-core', 6, 36, 31, 62, false],
     ['boundaries', 'social-core', 7, 22, 40, 66, false],
     ['networking', 'social-core', 8, 10, 32, 68, true],
-
     ['meeting-facilitation', 'work-arena', 9, 27, 54, 62, false],
     ['feedback-giving', 'work-arena', 10, 42, 48, 68, false],
     ['prioritization', 'work-arena', 11, 58, 55, 66, false],
     ['time-management', 'work-arena', 12, 73, 48, 70, true],
-
     ['focus-discipline', 'focus-engine', 13, 78, 29, 64, false],
     ['stress-management', 'focus-engine', 14, 65, 19, 66, false],
     ['emotional-regulation', 'focus-engine', 15, 53, 28, 70, false],
     ['decision-making', 'focus-engine', 16, 42, 20, 72, true],
-
     ['job-interview', 'career-league', 17, 64, 72, 70, false],
     ['self-confidence', 'career-league', 18, 75, 82, 68, false],
     ['negotiation', 'career-league', 19, 86, 73, 74, false],
     ['leadership-basics', 'career-league', 20, 94, 83, 76, true],
-
     ['conflict-resolution', 'boss-tower', 21, 90, 47, 76, false],
     ['difficult-conversations', 'boss-tower', 22, 80, 38, 78, false],
     ['resilience', 'boss-tower', 23, 70, 47, 76, false],
     ['personal-finance', 'boss-tower', 24, 60, 38, 78, true]
 ];
 
-const STATUS_COPY = {
-    COMPLETED: 'Zgrajeno',
-    READY_TO_CLAIM: 'Nagrada čaka',
-    IN_PROGRESS: 'V gradnji',
-    AVAILABLE: 'Odprto',
-    LOCKED: 'Zaklenjeno'
+
+const DISTRICT_CITY_LAYOUT = {
+    foundation: {
+        hubX: 18,
+        hubY: 58,
+        offsets: [[-9, 4], [-2, -7], [8, 3], [15, -5]]
+    },
+    'social-core': {
+        hubX: 19,
+        hubY: 30,
+        offsets: [[14, 3], [4, -7], [-6, 3], [-15, -5]]
+    },
+    'work-arena': {
+        hubX: 44,
+        hubY: 52,
+        offsets: [[-12, 4], [-1, -7], [10, 4], [19, -5]]
+    },
+    'focus-engine': {
+        hubX: 57,
+        hubY: 22,
+        offsets: [[15, 4], [5, -7], [-6, 4], [-17, -5]]
+    },
+    'career-league': {
+        hubX: 78,
+        hubY: 58,
+        offsets: [[-13, 2], [-3, 8], [9, 2], [16, 7]]
+    },
+    'boss-tower': {
+        hubX: 80,
+        hubY: 35,
+        offsets: [[12, 4], [3, -8], [-8, 4], [-18, -6]]
+    }
 };
+
+function groupedCityPosition(phaseId, slot = 0, boss = false) {
+    const layout = DISTRICT_CITY_LAYOUT[phaseId] || DISTRICT_CITY_LAYOUT.foundation;
+    const offsets = layout.offsets || [];
+    const [dx, dy] = offsets[slot % offsets.length] || [0, 0];
+    const scale = boss ? 1.08 : 1;
+    return {
+        x: clamp(layout.hubX + dx * scale, 8, 94),
+        y: clamp(layout.hubY + dy * scale, 10, 90),
+        hubX: layout.hubX,
+        hubY: layout.hubY
+    };
+}
+
+function phaseSlotForNode(skillKey, phaseId, explicitSlot, order) {
+    if (typeof explicitSlot === 'number' && Number.isFinite(explicitSlot)) return explicitSlot;
+    const roadmapPhase = ROADMAP.filter((item) => item[1] === phaseId).map((item) => item[0]);
+    const found = roadmapPhase.findIndex((value) => value === skillKey);
+    if (found >= 0) return found;
+    return Math.max(0, ((order || 1) - 1) % 4);
+}
 
 const SKILL_ICONS = {
     'public-speaking': '🎤',
@@ -140,78 +194,80 @@ const SKILL_ICONS = {
     'personal-finance': '🪙'
 };
 
+const STATUS_COPY = {
+    COMPLETED: 'Zgrajeno',
+    READY_TO_CLAIM: 'Nagrada čaka',
+    IN_PROGRESS: 'V gradnji',
+    AVAILABLE: 'Odprto',
+    LOCKED: 'Zaklenjeno'
+};
 
-const CITY_LANDMARKS = [
-    {
-        key: 'core-beacon',
-        title: 'Core Beacon',
-        subtitle: 'Začetni mestni shard',
-        levelLabel: 'CITY LVL 1',
-        phaseId: 'foundation',
-        unlocksAtStart: true,
-        unlockNodeKey: 'public-speaking',
-        x: 28,
-        y: 84,
-        size: 132,
-        source: '/city-models/city-level-01-core-beacon.glb',
-        fallbackIcon: '◆',
-        orbit: '18deg 68deg 3.9m',
-        cameraTarget: '0m 0m 0m',
-        exposure: 0.92,
-        unlockCopy: 'Odprto od začetka — prvi orientir v mestu.'
-    },
-    {
-        key: 'guild-plaza',
-        title: 'Guild Plaza',
-        subtitle: 'Odnosi in ekipni flow',
-        levelLabel: 'CITY LVL 2',
-        phaseId: 'social-core',
-        unlockNodeKey: 'digital-communication',
-        x: 17,
-        y: 24,
-        size: 132,
-        source: '/city-models/city-level-02-guild-plaza.glb',
-        fallbackIcon: '◇',
-        orbit: '16deg 68deg 4.05m',
-        cameraTarget: '0m 0m 0m',
-        exposure: 0.9,
-        unlockCopy: 'Odkleni z zaključkom Foundation boss stavbe.'
-    },
-    {
-        key: 'focus-engine',
-        title: 'Focus Engine',
-        subtitle: 'Produktivnost in fokus',
-        levelLabel: 'CITY LVL 3',
-        phaseId: 'focus-engine',
-        unlockNodeKey: 'time-management',
-        x: 72,
-        y: 18,
-        size: 136,
-        source: '/city-models/city-level-03-focus-engine.glb',
-        fallbackIcon: '⬡',
-        orbit: '14deg 66deg 4.2m',
-        cameraTarget: '0m 0m 0m',
-        exposure: 0.88,
-        unlockCopy: 'Odkleni po delovnem boss checkpointu.'
-    },
-    {
-        key: 'ascendant-citadel',
-        title: 'Ascendant Citadel',
-        subtitle: 'Finalni prestige landmark',
-        levelLabel: 'CITY LVL 4',
-        phaseId: 'boss-tower',
-        unlockNodeKey: 'leadership-basics',
-        x: 88,
-        y: 39,
-        size: 140,
-        source: '/city-models/city-level-04-ascendant-citadel.glb',
-        fallbackIcon: '⬢',
-        orbit: '10deg 64deg 4.3m',
-        cameraTarget: '0m 0m 0m',
-        exposure: 0.86,
-        unlockCopy: 'Odkleni po kariernem bossu — zaključni del mesta.'
-    }
-];
+const ROADMAP_MODEL_ROOT = '/models/skillboost-roadmap';
+
+const ROADMAP_MODELS = {
+    nodeHouse: `${ROADMAP_MODEL_ROOT}/node-house.glb`,
+    foundation: `${ROADMAP_MODEL_ROOT}/foundation-city.glb`,
+    socialCore: `${ROADMAP_MODEL_ROOT}/practice-city.glb`,
+    practiceCity: `${ROADMAP_MODEL_ROOT}/practice-city.glb`,
+    workArena: `${ROADMAP_MODEL_ROOT}/battle-city.glb`,
+    battleCity: `${ROADMAP_MODEL_ROOT}/battle-city.glb`,
+    focusEngine: `${ROADMAP_MODEL_ROOT}/ai-lab.glb`,
+    aiLab: `${ROADMAP_MODEL_ROOT}/ai-lab.glb`,
+    careerLeague: `${ROADMAP_MODEL_ROOT}/career-city.glb`,
+    careerCity: `${ROADMAP_MODEL_ROOT}/career-city.glb`,
+    rewardHub: `${ROADMAP_MODEL_ROOT}/reward-hub.glb`,
+    bossTower: `${ROADMAP_MODEL_ROOT}/boss-tower.glb`,
+    masteryCastle: `${ROADMAP_MODEL_ROOT}/mastery-castle.glb`
+};
+
+const DISTRICT_MODEL_BY_ID = {
+    foundation: ROADMAP_MODELS.foundation,
+    'social-core': ROADMAP_MODELS.socialCore,
+    'work-arena': ROADMAP_MODELS.workArena,
+    'focus-engine': ROADMAP_MODELS.focusEngine,
+    'career-league': ROADMAP_MODELS.careerLeague,
+    'boss-tower': ROADMAP_MODELS.masteryCastle
+};
+
+const ROADMAP_MODEL_BY_SKILL = {
+    'public-speaking': ROADMAP_MODELS.foundation,
+    'active-listening': ROADMAP_MODELS.nodeHouse,
+    'clear-writing': ROADMAP_MODELS.aiLab,
+    'digital-communication': ROADMAP_MODELS.rewardHub,
+
+    'asking-for-help': ROADMAP_MODELS.practiceCity,
+    empathy: ROADMAP_MODELS.nodeHouse,
+    boundaries: ROADMAP_MODELS.battleCity,
+    networking: ROADMAP_MODELS.rewardHub,
+
+    'meeting-facilitation': ROADMAP_MODELS.careerCity,
+    'feedback-giving': ROADMAP_MODELS.battleCity,
+    prioritization: ROADMAP_MODELS.aiLab,
+    'time-management': ROADMAP_MODELS.rewardHub,
+
+    'focus-discipline': ROADMAP_MODELS.aiLab,
+    'stress-management': ROADMAP_MODELS.nodeHouse,
+    'emotional-regulation': ROADMAP_MODELS.practiceCity,
+    'decision-making': ROADMAP_MODELS.battleCity,
+
+    'job-interview': ROADMAP_MODELS.careerCity,
+    'self-confidence': ROADMAP_MODELS.foundation,
+    negotiation: ROADMAP_MODELS.battleCity,
+    'leadership-basics': ROADMAP_MODELS.masteryCastle,
+
+    'conflict-resolution': ROADMAP_MODELS.bossTower,
+    'difficult-conversations': ROADMAP_MODELS.battleCity,
+    resilience: ROADMAP_MODELS.practiceCity,
+    'personal-finance': ROADMAP_MODELS.masteryCastle
+};
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, Number(value) || 0));
+}
+
+function clampPercent(value) {
+    return clamp(Math.round(value || 0), 0, 100);
+}
 
 function readLocalProgress(userId) {
     try {
@@ -229,7 +285,7 @@ function writeLocalProgress(userId, progress) {
         all[key] = progress;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
     } catch {
-        // Fallback progress is intentionally best-effort only.
+        // local roadmap progress is best-effort fallback only
     }
 }
 
@@ -253,8 +309,30 @@ function sessionsForSkill(report, skillKey) {
     return report?.skillProgress?.find((item) => item.skillKey === skillKey)?.sessions || 0;
 }
 
-function clampPercent(value) {
-    return Math.max(0, Math.min(100, Math.round(value || 0)));
+function nodeProgress(node) {
+    return clampPercent(((node?.bestScore || 0) / Math.max(node?.requiredScore || 1, 1)) * 100);
+}
+
+function nodeStatusSlug(node) {
+    return String(node?.status || 'AVAILABLE').toLowerCase().replaceAll('_', '-');
+}
+
+function missingScoreFor(node) {
+    if (!node?.unlocked || node.completed || node.claimable) return 0;
+    return Math.max(0, (node.requiredScore || 0) - (node.bestScore || 0));
+}
+
+function shardRewardForNode(node) {
+    if (node?.boss) return { count: 4, label: 'Boss shard' };
+    if (node?.completed) return { count: 3, label: 'Mastery shard' };
+    if (node?.claimable || node?.status === 'READY_TO_CLAIM') return { count: 2, label: 'Reward shard' };
+    return { count: 1, label: 'Practice shard' };
+}
+
+function modelForNode(node) {
+    if (node?.boss) return ROADMAP_MODELS.bossTower;
+    if (node?.claimable || node?.status === 'READY_TO_CLAIM') return ROADMAP_MODELS.rewardHub;
+    return ROADMAP_MODELS.nodeHouse;
 }
 
 function avatarCityPaletteVars(config) {
@@ -270,49 +348,99 @@ function avatarCityPaletteVars(config) {
     };
 }
 
-function nodeProgress(node) {
-    return clampPercent(((node?.bestScore || 0) / Math.max(node?.requiredScore || 1, 1)) * 100);
-}
+function decorateNode(node, index = 0) {
+    const district = districtById(node.phaseId || node.phase);
+    const phaseOrder = node.phaseOrder || DISTRICTS.findIndex((phase) => phase.id === district.id) + 1;
+    const skillKey = node.skillKey || node.nodeKey || node.id;
+    const order = node.order || index + 1;
+    const fallback = ROADMAP.find((item) => item[0] === skillKey);
+    const phaseNodeSlot = phaseSlotForNode(skillKey, district.id, node.phaseNodeSlot, order);
+    const groupedPosition = groupedCityPosition(district.id, phaseNodeSlot, Boolean(node.boss || fallback?.[6]));
+    const x = groupedPosition.x;
+    const y = groupedPosition.y;
+    const status = node.status || (node.completed ? 'COMPLETED' : node.unlocked ? 'AVAILABLE' : 'LOCKED');
+    const completed = Boolean(node.completed || status === 'COMPLETED');
+    const unlocked = Boolean(node.unlocked || completed || status !== 'LOCKED');
+    const claimable = Boolean(node.claimable || status === 'READY_TO_CLAIM');
+    const inProgress = Boolean(node.inProgress || status === 'IN_PROGRESS' || claimable);
+    const boss = Boolean(node.boss || fallback?.[6]);
+    const reward = shardRewardForNode({ ...node, boss, completed, claimable });
 
-function decoratePhase(phase) {
-    const meta = districtById(phase.id);
-    return {
-        ...phase,
-        title: phase.title || meta.title,
-        subtitle: phase.subtitle || meta.subtitle,
-        description: phase.description || meta.description,
-        emoji: phase.emoji || meta.emoji,
-        theme: phase.theme || meta.theme,
-        landmark: phase.landmark || meta.landmark,
-        unlockCopy: phase.unlockCopy || meta.unlockCopy,
-        rect: phase.rect || meta.rect
-    };
-}
-
-function decorateNode(node) {
-    const district = districtById(node.phaseId);
-    const shardReward = shardRewardForNode(node);
     return {
         ...node,
+        id: node.id || skillKey,
+        nodeKey: node.nodeKey || skillKey,
+        skillKey,
+        skillName: node.skillName || node.title || fallbackTitle(skillKey),
+        category: node.category || district.title,
+        phaseId: district.id,
         phaseTitle: node.phaseTitle || district.title,
         theme: node.theme || district.theme,
-        emoji: SKILL_ICONS[node.skillKey] || node.emoji || district.emoji,
+        emoji: node.emoji || SKILL_ICONS[skillKey] || district.emoji,
+        challengeId: node.challengeId,
+        challengeTitle: node.challengeTitle || 'Mini trening',
+        scenario: node.scenario || node.description || 'Odgovori kot v realni situaciji.',
+        expectedOutcome: node.expectedOutcome || 'Oddaj kratek, konkreten odgovor in zaključi z naslednjim korakom.',
+        evaluationCriteria: node.evaluationCriteria || [],
+        outcomes: node.outcomes || [],
+        status,
+        unlocked,
+        completed,
+        inProgress,
+        claimable,
+        boss,
+        order,
+        phaseOrder,
+        phaseNodeSlot,
+        x,
+        y,
+        districtHubX: groupedPosition.hubX,
+        districtHubY: groupedPosition.hubY,
+        requiredScore: node.requiredScore || fallback?.[5] || 60,
+        bestScore: Math.round(node.bestScore || 0),
+        sessions: node.sessions || 0,
+        rewardXp: node.rewardXp || 60 + (boss ? 80 : 25),
+        rewardStars: node.rewardStars || (boss ? 4 : 2),
+        estimatedMinutes: node.estimatedMinutes || 10,
+        lockReason: node.lockReason || 'Najprej zgradi prejšnjo stavbo.',
+        nextUnlockText: node.nextUnlockText || (boss ? `${district.title} boss odpre novo mestno območje.` : 'Zaključi misijo, da odpreš naslednjo ulico.'),
         districtLandmark: district.landmark,
         districtSubtitle: district.subtitle,
-        rewardShardCount: shardReward.count,
-        rewardShardLabel: shardReward.label,
-        cityUnlockText: node.boss
-            ? `${district.title} boss odklene naslednji del mesta.`
-            : 'Zaključi misijo in prižgi naslednjo stavbo.'
+        rewardShardCount: reward.count,
+        rewardShardLabel: reward.label,
+        modelSource: modelForNode({ ...node, boss, phaseOrder })
     };
 }
 
-function buildFallbackMap({ userId, skills, challenges, report, localProgress }) {
+function decoratePhase(phase, nodes = []) {
+    const meta = districtById(phase.id);
+    const phaseNodes = nodes.filter((node) => node.phaseId === meta.id);
+    const totalNodes = phase.totalNodes ?? phaseNodes.length;
+    const completedNodes = phase.completedNodes ?? phaseNodes.filter((node) => node.completed).length;
+    const unlockedNodes = phase.unlockedNodes ?? phaseNodes.filter((node) => node.unlocked).length;
+    return {
+        ...meta,
+        ...phase,
+        id: meta.id,
+        order: phase.order || DISTRICTS.findIndex((item) => item.id === meta.id) + 1,
+        totalNodes,
+        completedNodes,
+        unlockedNodes,
+        progressPercent: phase.progressPercent ?? (totalNodes ? Math.round((completedNodes / totalNodes) * 100) : 0),
+        unlocked: phase.unlocked ?? unlockedNodes > 0,
+        bossNodeKey: phase.bossNodeKey || phaseNodes.find((node) => node.boss)?.nodeKey,
+        model: phase.model || meta.model || DISTRICT_MODEL_BY_ID[meta.id],
+        hubX: phase.hubX ?? phaseNodes[0]?.districtHubX ?? DISTRICT_CITY_LAYOUT[meta.id]?.hubX ?? meta.rect?.left,
+        hubY: phase.hubY ?? phaseNodes[0]?.districtHubY ?? DISTRICT_CITY_LAYOUT[meta.id]?.hubY ?? meta.rect?.top
+    };
+}
+
+function buildFallbackMap({ userId, skills = [], challenges = [], report, localProgress = {} }) {
     const skillByKey = new Map(skills.map((skill) => [skill.key, skill]));
     const challengeBySkill = new Map(challenges.map((challenge) => [challenge.skillKey, challenge]));
     const completedSet = new Set();
 
-    const nodes = ROADMAP.map(([skillKey, phaseId, order, x, y, requiredScore, boss]) => {
+    const nodes = ROADMAP.map(([skillKey, phaseId, order, x, y, requiredScore, boss], index) => {
         const skill = skillByKey.get(skillKey);
         const challenge = challengeBySkill.get(skillKey);
         const localStatus = localProgress[skillKey]?.status;
@@ -363,33 +491,18 @@ function buildFallbackMap({ userId, skills, challenges, report, localProgress })
             estimatedMinutes: challenge?.estimatedMinutes || skill?.estimatedMinutes || 10,
             lockReason: unlocked ? '' : `Najprej zgradi prejšnjo stavbo: ${fallbackTitle(previousKey)}.`,
             nextUnlockText: boss ? `${district.title} boss odklene naslednjo mestno četrt.` : 'Zaključi to stavbo, da odpreš naslednjo ulico.'
-        });
+        }, index);
     });
 
-    const phases = DISTRICTS.map((district, index) => {
-        const phaseNodes = nodes.filter((node) => node.phaseId === district.id);
-        const completedNodes = phaseNodes.filter((node) => node.completed).length;
-        const unlockedNodes = phaseNodes.filter((node) => node.unlocked).length;
-        return decoratePhase({
-            ...district,
-            order: index + 1,
-            totalNodes: phaseNodes.length,
-            completedNodes,
-            unlockedNodes,
-            progressPercent: phaseNodes.length ? Math.round((completedNodes / phaseNodes.length) * 100) : 0,
-            unlocked: unlockedNodes > 0,
-            bossNodeKey: phaseNodes.find((node) => node.boss)?.nodeKey
-        });
-    });
-
+    const phases = DISTRICTS.map((district) => decoratePhase(district, nodes));
     const completedNodes = nodes.filter((node) => node.completed).length;
     const currentNode = nodes.find((node) => node.unlocked && !node.completed) || nodes[nodes.length - 1];
     const nextBoss = nodes.find((node) => node.boss && !node.completed);
 
     return {
         userId,
-        roadmapTitle: 'SkillCity',
-        roadmapSubtitle: 'Odklepaj mesto po okrožjih. Vsaka zgrajena stavba je osvojena veščina, vsak boss pa odpre novo območje.',
+        roadmapTitle: 'SkillCity Roadmap',
+        roadmapSubtitle: 'City path roadmap: ena jasna pot, odprta naslednja misija in zaklenjena območja naprej.',
         nodes,
         phases,
         summary: {
@@ -397,484 +510,303 @@ function buildFallbackMap({ userId, skills, challenges, report, localProgress })
             completedNodes,
             unlockedNodes: nodes.filter((node) => node.unlocked).length,
             inProgressNodes: nodes.filter((node) => node.inProgress).length,
-            progressPercent: Math.round((completedNodes / nodes.length) * 100),
+            progressPercent: Math.round((completedNodes / Math.max(nodes.length, 1)) * 100),
             totalEarnedXp: nodes.filter((node) => node.completed).reduce((sum, node) => sum + node.rewardXp, 0),
             currentNodeKey: currentNode?.nodeKey,
             nextBossNodeKey: nextBoss?.nodeKey,
             currentPhaseId: currentNode?.phaseId || 'foundation'
         },
         focusRecommendations: [
-            currentNode ? `Najprej zgradi: ${currentNode.skillName}.` : 'Mesto je trenutno v celoti odklenjeno.',
-            nextBoss ? `Naslednji city boss: ${nextBoss.skillName}.` : 'Vsi boss checkpointi so zaključeni.',
-            'Najboljši flow: misija → simulator → score → odklenjena stavba.'
+            currentNode ? `Next best step: ${currentNode.skillName}.` : 'Mesto je trenutno v celoti odklenjeno.',
+            nextBoss ? `Naslednji boss gate: ${nextBoss.skillName}.` : 'Vsi boss checkpointi so zaključeni.',
+            'MVP flow: klik hiško → odpri misijo → trening → complete → naslednja hiška.'
         ]
     };
 }
 
-function districtStatus(phase, summary) {
+function normalizeQuestMap(rawMap, fallbackMap) {
+    if (!rawMap?.nodes?.length) return fallbackMap;
+    const nodes = rawMap.nodes.map((node, index) => decorateNode(node, index)).sort((a, b) => a.order - b.order);
+    const phases = (rawMap.phases?.length ? rawMap.phases : DISTRICTS).map((phase) => decoratePhase(phase, nodes));
+    const completedNodes = nodes.filter((node) => node.completed).length;
+    const nextNode = nodes.find((node) => node.unlocked && !node.completed) || nodes[nodes.length - 1];
+    const nextBoss = nodes.find((node) => node.boss && !node.completed);
+
+    return {
+        ...rawMap,
+        roadmapTitle: rawMap.roadmapTitle || 'SkillCity Roadmap',
+        roadmapSubtitle: rawMap.roadmapSubtitle || fallbackMap.roadmapSubtitle,
+        nodes,
+        phases,
+        summary: {
+            totalNodes: nodes.length,
+            completedNodes,
+            unlockedNodes: nodes.filter((node) => node.unlocked).length,
+            inProgressNodes: nodes.filter((node) => node.inProgress).length,
+            progressPercent: Math.round((completedNodes / Math.max(nodes.length, 1)) * 100),
+            totalEarnedXp: nodes.filter((node) => node.completed).reduce((sum, node) => sum + node.rewardXp, 0),
+            currentNodeKey: nextNode?.nodeKey,
+            nextBossNodeKey: nextBoss?.nodeKey,
+            currentPhaseId: nextNode?.phaseId || rawMap.summary?.currentPhaseId || 'foundation',
+            ...rawMap.summary
+        },
+        focusRecommendations: rawMap.focusRecommendations?.length ? rawMap.focusRecommendations : fallbackMap.focusRecommendations
+    };
+}
+
+function phaseStatus(phase, activePhaseId) {
     if (!phase.unlocked) return 'locked';
-    if (phase.completedNodes >= phase.totalNodes) return 'completed';
-    if (phase.id === summary.currentPhaseId) return 'active';
+    if (phase.totalNodes && phase.completedNodes >= phase.totalNodes) return 'completed';
+    if (phase.id === activePhaseId) return 'active';
     return 'open';
 }
 
-
-function cityLandmarkStatus(landmark, nodes = []) {
-    if (landmark.unlocksAtStart) return { unlocked: true, completed: true, unlockNode: null };
-    const unlockNode = nodes.find((node) => node.nodeKey === landmark.unlockNodeKey || node.skillKey === landmark.unlockNodeKey);
-    return {
-        unlocked: Boolean(unlockNode?.completed),
-        completed: Boolean(unlockNode?.completed),
-        unlockNode
-    };
+function routePoints(nodes = []) {
+    return nodes
+        .sort((a, b) => a.order - b.order)
+        .map((node) => `${node.x},${node.y}`)
+        .join(' ');
 }
 
-function nextCityLandmark(nodes = []) {
-    return CITY_LANDMARKS.find((landmark) => !cityLandmarkStatus(landmark, nodes).unlocked) || CITY_LANDMARKS[CITY_LANDMARKS.length - 1];
+function activeRoutePoints(nodes = [], currentNodeKey) {
+    const ordered = [...nodes].sort((a, b) => a.order - b.order);
+    const currentIndex = Math.max(0, ordered.findIndex((node) => node.nodeKey === currentNodeKey));
+    return ordered
+        .slice(0, currentIndex + 1)
+        .map((node) => `${node.x},${node.y}`)
+        .join(' ');
 }
 
-function roadmapMetrics(nodes = []) {
-    const total = nodes.length || 0;
-    const completed = nodes.filter((node) => node.completed).length;
-    const unlocked = nodes.filter((node) => node.unlocked).length;
-    const locked = nodes.filter((node) => !node.unlocked).length;
-    const claimable = nodes.filter((node) => node.claimable || node.status === 'READY_TO_CLAIM').length;
-
-    return {
-        total,
-        completed,
-        unlocked,
-        locked,
-        claimable,
-        openPercent: total ? Math.round((completed / total) * 100) : 0
-    };
+function nodeByKey(nodes = [], key = '') {
+    return nodes.find((node) => node.nodeKey === key) || null;
 }
 
-function buildCityLandmarkStates({ phases = [], nodes = [], selectedPhaseId = '', mapMode = 'city' }) {
-    const routeNodes = [...nodes].sort((a, b) => a.order - b.order);
+function orderedWalkNodes(nodes = [], fromKey = '', toKey = '') {
+    const ordered = [...nodes].sort((a, b) => a.order - b.order);
+    const fromIndex = Math.max(0, ordered.findIndex((node) => node.nodeKey === fromKey));
+    const toIndex = Math.max(0, ordered.findIndex((node) => node.nodeKey === toKey));
 
-    return CITY_LANDMARKS.map((landmark) => {
-        const phase = phases.find((item) => item.id === landmark.phaseId) || districtById(landmark.phaseId);
-        const { unlocked, completed, unlockNode } = cityLandmarkStatus(landmark, routeNodes);
-        return {
-            ...landmark,
-            phase,
-            unlocked,
-            completed,
-            unlockNode,
-            active: selectedPhaseId === landmark.phaseId,
-            muted: mapMode === 'focus' && selectedPhaseId && selectedPhaseId !== landmark.phaseId
-        };
-    });
+    if (!ordered.length) return [];
+    if (fromIndex === toIndex) return [ordered[toIndex]].filter(Boolean);
+
+    const start = Math.min(fromIndex, toIndex);
+    const end = Math.max(fromIndex, toIndex) + 1;
+    const path = ordered.slice(start, end);
+
+    return fromIndex <= toIndex ? path : path.reverse();
 }
 
-const CityLandmarkModel = memo(function CityLandmarkModel({ landmark, phase, unlocked, active, muted, modelReady, avatarConfig, performanceMode = false, onSelectPhase }) {
+function phaseClusterRoutes(nodes = [], phases = [], activePhaseId = '') {
+    return phases
+        .map((phase) => {
+            const phaseNodes = nodes
+                .filter((node) => node.phaseId === phase.id)
+                .sort((a, b) => a.order - b.order);
+
+            if (!phaseNodes.length) return null;
+
+            const xs = phaseNodes.map((node) => node.x);
+            const ys = phaseNodes.map((node) => node.y);
+            const minX = Math.min(...xs);
+            const maxX = Math.max(...xs);
+            const minY = Math.min(...ys);
+            const centerX = phase.hubX ?? DISTRICT_CITY_LAYOUT[phase.id]?.hubX ?? clamp((minX + maxX) / 2, 8, 92);
+            const centerY = phase.hubY ?? DISTRICT_CITY_LAYOUT[phase.id]?.hubY ?? clamp(minY - 9, 8, 86);
+
+            return {
+                id: phase.id,
+                phase,
+                theme: phase.theme,
+                status: phaseStatus(phase, activePhaseId),
+                active: phase.id === activePhaseId,
+                points: phaseNodes.map((node) => `${node.x},${node.y}`).join(' '),
+                centerX,
+                centerY,
+                nodeCount: phaseNodes.length,
+                completedNodes: phaseNodes.filter((node) => node.completed).length
+            };
+        })
+        .filter(Boolean);
+}
+
+const ModelHouse = memo(function ModelHouse({ node, modelReady, avatarConfig, performanceMode }) {
     const viewerRef = useRef(null);
-    const shouldRenderModel = modelReady;
-    const statusClass = unlocked ? 'unlocked' : 'locked';
-    const rotateModel = !performanceMode && active && unlocked;
-    const lazyPriority = active || landmark.unlocksAtStart ? 'eager' : 'lazy';
-    const palette = accentPalettes[avatarConfig?.accent] || accentPalettes.violet;
-    const energy = avatarConfig?.energy || 'balanced';
-    const landmarkMeta = landmarkPositionMeta(landmark);
+    const avatar = normalizeAvatar(avatarConfig);
+    const palette = accentPalettes[avatar.accent] || accentPalettes.violet;
+    const shouldShowModel = modelReady && !performanceMode;
 
     useEffect(() => {
         const viewer = viewerRef.current;
-        if (!viewer || !shouldRenderModel) return undefined;
+        if (!viewer || !shouldShowModel) return undefined;
 
-        const applyTint = () => applySkillBoostMaterialTint(viewer, palette, energy);
-        applyTint();
-        viewer.addEventListener?.('load', applyTint);
-        viewer.addEventListener?.('model-visibility', applyTint);
-
+        const tint = () => applySkillBoostMaterialTint(viewer, palette, avatar.energy || 'balanced');
+        tint();
+        viewer.addEventListener?.('load', tint);
+        viewer.addEventListener?.('model-visibility', tint);
         return () => {
-            viewer.removeEventListener?.('load', applyTint);
-            viewer.removeEventListener?.('model-visibility', applyTint);
+            viewer.removeEventListener?.('load', tint);
+            viewer.removeEventListener?.('model-visibility', tint);
         };
-    }, [shouldRenderModel, landmark.source, palette.main, palette.blue, palette.cyan, palette.purple, palette.materialBase, palette.materialMid, palette.materialAccent, palette.materialDark, energy]);
+    }, [avatar.energy, palette.blue, palette.cyan, palette.main, palette.materialAccent, palette.materialBase, palette.materialDark, palette.materialMid, palette.purple, shouldShowModel]);
+
+    if (!shouldShowModel) {
+        return (
+            <span className="skillcity-mvp-house__css" aria-hidden="true">
+                <span className="skillcity-mvp-house__roof" />
+                <span className="skillcity-mvp-house__body" />
+                <span className="skillcity-mvp-house__door" />
+            </span>
+        );
+    }
 
     return (
-        <button
-            type="button"
-            className={`skillcity-landmark-model skillquest-node--${phase?.theme || 'violet'} ${statusClass} ${active ? 'active' : ''} ${muted ? 'muted' : ''}`}
-            style={{
-                left: `${landmarkMeta.x}%`,
-                top: `${landmarkMeta.y}%`,
-                '--landmark-size': `${landmarkMeta.size}px`,
-                '--landmark-main': palette.main,
-                '--landmark-blue': palette.blue,
-                '--landmark-cyan': palette.cyan,
-                '--landmark-purple': palette.purple,
-                '--landmark-dark': palette.materialDark || '#07153f',
-                '--node-color': unlocked ? palette.main : 'color-mix(in srgb, var(--city-main, var(--primary)) 58%, #64748b)'
-            }}
-            onClick={(event) => {
-                event.stopPropagation();
-                onSelectPhase?.(landmark.phaseId);
-            }}
-            aria-label={`${landmark.title}: ${unlocked ? 'odklenjeno' : landmark.unlockCopy}`}
-        >
-            <span className="skillcity-landmark-model__level">{landmark.levelLabel}</span>
-            <span className="skillcity-landmark-model__stage" aria-hidden="true">
-                {shouldRenderModel ? (
-                    <model-viewer
-                        ref={viewerRef}
-                        src={landmark.source}
-                        camera-orbit={landmark.orbit}
-                        camera-target={landmark.cameraTarget || '0m 0m 0m'}
-                        exposure={String(landmark.exposure || 0.94)}
-                        shadow-intensity={performanceMode ? '0.16' : '0.28'}
-                        shadow-softness={performanceMode ? '0.55' : '0.82'}
-                        environment-image="legacy"
-                        interaction-prompt="none"
-                        loading={lazyPriority}
-                        reveal="auto"
-                        minimum-render-scale={performanceMode ? '0.82' : '1'}
-                        field-of-view="28deg"
-                        alt={`${landmark.title} 3D city unlock`}
-                        disable-zoom
-                        disable-pan
-                        touch-action="pan-y"
-                        {...(rotateModel ? { 'auto-rotate': true, 'rotation-per-second': active ? '6deg' : '3deg' } : {})}
-                    />
-                ) : (
-                    <span className="skillcity-landmark-model__fallback">
-                        <span>{unlocked ? landmark.fallbackIcon : '🔒'}</span>
-                    </span>
-                )}
-                {!unlocked && <span className="skillcity-landmark-model__lock">LOCKED</span>}
-            </span>
-            <span className={`skillcity-landmark-model__copy ${landmarkMeta.copyClassName}`}>
-                <strong>{landmark.title}</strong>
-                <small>{unlocked ? 'Barve sledijo tvojemu characterju' : `Zaklenjeno · ${landmark.unlockCopy}`}</small>
-            </span>
-        </button>
+        <model-viewer
+            ref={viewerRef}
+            src={node.modelSource}
+            alt={`${node.skillName} GLB building`}
+            camera-orbit="20deg 68deg 7.6m"
+            camera-target="0m 0.04m 0m"
+            field-of-view="21deg"
+            exposure={node.completed ? '0.98' : node.unlocked ? '0.9' : '0.58'}
+            shadow-intensity="0.75"
+            interaction-prompt="none"
+            disable-zoom
+            loading="lazy"
+        />
     );
 });
 
-function missionCtaText(node) {
-    if (!node?.unlocked) return 'Zaklenjeno';
-    if (node.completed) return 'Ponovi trening';
-    if (node.claimable || node.status === 'READY_TO_CLAIM') return 'Izboljšaj score';
-    if (node.inProgress) return 'Nadaljuj misijo';
-    return 'Začni misijo';
-}
+const DistrictLandmark = memo(function DistrictLandmark({ phase, modelReady, avatarConfig, performanceMode }) {
+    const viewerRef = useRef(null);
+    const avatar = normalizeAvatar(avatarConfig);
+    const palette = accentPalettes[avatar.accent] || accentPalettes.violet;
+    const shouldShowModel = modelReady && !performanceMode && phase?.model;
 
-function missingScoreFor(node) {
-    return Math.max(0, (node?.requiredScore || 0) - (node?.bestScore || 0));
-}
+    useEffect(() => {
+        const viewer = viewerRef.current;
+        if (!viewer || !shouldShowModel) return undefined;
 
-function phaseNodesFor(nodes, phaseId) {
-    return nodes.filter((node) => node.phaseId === phaseId).sort((a, b) => a.order - b.order);
-}
-
-function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-}
-
-function lerp(start, end, amount) {
-    return start + ((end - start) * amount);
-}
-
-function easeInOutCubic(value) {
-    return value < 0.5
-        ? 4 * value * value * value
-        : 1 - Math.pow(-2 * value + 2, 3) / 2;
-}
-
-function shardRewardForNode(node) {
-    const count = node?.rewardShardCount ?? (node?.boss ? 4 : Math.max(1, Math.ceil((node?.rewardStars || 2) / 2)));
-    const label = node?.rewardShardLabel || (node?.boss ? 'Boss shard' : 'Boost shard');
-    return { count, label };
-}
-
-function roadmapEntryPoint(orderedNodes = []) {
-    const firstNode = orderedNodes[0];
-    if (!firstNode) return { x: 8, y: 82, facing: 1 };
-
-    return {
-        x: clamp((firstNode.x || 12) - 9, 4, 96),
-        y: clamp((firstNode.y || 75) + 4, 6, 96),
-        facing: 1
-    };
-}
-
-function buildAvatarRoutePoints(orderedNodes = []) {
-    if (!orderedNodes.length) return [];
-    return [
-        roadmapEntryPoint(orderedNodes),
-        ...orderedNodes.map((node) => ({
-            x: clamp(node.x || 50, 0, 100),
-            y: clamp(node.y || 50, 0, 100),
-            nodeKey: node.nodeKey
-        }))
-    ];
-}
-
-function routeSegmentMetrics(points = []) {
-    const distances = [0];
-    for (let index = 1; index < points.length; index += 1) {
-        const previous = points[index - 1];
-        const next = points[index];
-        distances[index] = distances[index - 1] + Math.hypot((next.x || 0) - (previous.x || 0), (next.y || 0) - (previous.y || 0));
-    }
-    return {
-        distances,
-        total: distances[distances.length - 1] || 0
-    };
-}
-
-function pointAtRouteDistance(points = [], distance = 0) {
-    if (!points.length) return { x: 50, y: 84, facing: 1 };
-    if (points.length === 1) return { ...points[0], facing: 1 };
-
-    const { total } = routeSegmentMetrics(points);
-    const targetDistance = clamp(distance, 0, total);
-    let walked = 0;
-
-    for (let index = 1; index < points.length; index += 1) {
-        const start = points[index - 1];
-        const end = points[index];
-        const segmentLength = Math.hypot((end.x || 0) - (start.x || 0), (end.y || 0) - (start.y || 0));
-        if (walked + segmentLength >= targetDistance || index === points.length - 1) {
-            const amount = segmentLength ? (targetDistance - walked) / segmentLength : 0;
-            const x = lerp(start.x, end.x, clamp(amount, 0, 1));
-            const y = lerp(start.y, end.y, clamp(amount, 0, 1));
-            return {
-                x: clamp(x, 2, 98),
-                y: clamp(y, 2, 98),
-                facing: (end.x - start.x) >= 0 ? 1 : -1
-            };
-        }
-        walked += segmentLength;
-    }
-
-    const last = points[points.length - 1];
-    const previous = points[points.length - 2] || last;
-    return {
-        x: clamp(last.x, 2, 98),
-        y: clamp(last.y, 2, 98),
-        facing: (last.x - previous.x) >= 0 ? 1 : -1
-    };
-}
-
-function routeDistanceForNode(node, orderedNodes = []) {
-    if (!node || !orderedNodes.length) return 0;
-    const points = buildAvatarRoutePoints(orderedNodes);
-    const { distances, total } = routeSegmentMetrics(points);
-    const nodeIndex = orderedNodes.findIndex((item) => item.nodeKey === node.nodeKey);
-    const routePointIndex = nodeIndex >= 0 ? nodeIndex + 1 : 1;
-    const previousDistance = distances[Math.max(0, routePointIndex - 1)] || 0;
-    const nodeDistance = distances[routePointIndex] || total;
-    const incomingLength = Math.max(0, nodeDistance - previousDistance);
-    const stopBeforeNode = clamp(incomingLength * 0.18, 2.2, 4.8);
-
-    return clamp(nodeDistance - stopBeforeNode, 0, total);
-}
-
-function avatarStopPointForNode(node, orderedNodes = []) {
-    const points = buildAvatarRoutePoints(orderedNodes);
-    return pointAtRouteDistance(points, routeDistanceForNode(node, orderedNodes));
-}
-
-
-function previewCardStyle(node) {
-    if (!node) return {};
-    const x = clamp(node.x || 50, 8, 92);
-    const y = clamp(node.y || 50, 10, 90);
-    const translateX = x > 78 ? '-100%' : x < 22 ? '0%' : '-50%';
-    const translateY = y < 28 ? '14px' : '-116%';
-    return {
-        left: `${x}%`,
-        top: `${y}%`,
-        '--preview-shift-x': translateX,
-        '--preview-shift-y': translateY
-    };
-}
-
-
-function nodePositionMeta(node) {
-    const x = clamp(node?.x || 50, 10, 90);
-    const y = clamp(node?.y || 50, 16, 84);
-    const edgeLeft = x <= 18;
-    const edgeRight = x >= 82;
-    const edgeTop = y <= 23;
-    const edgeBottom = y >= 77;
-    const labelClassName = [
-        edgeLeft ? 'edge-left' : '',
-        edgeRight ? 'edge-right' : '',
-        edgeTop ? 'edge-top' : '',
-        edgeBottom ? 'edge-bottom' : ''
-    ].filter(Boolean).join(' ');
-    return { x, y, labelClassName };
-}
-
-function landmarkPositionMeta(landmark) {
-    const x = clamp(landmark?.x || 50, 13, 87);
-    const y = clamp(landmark?.y || 50, 24, 77);
-    const size = clamp((landmark?.size || 112) * 1.12, 110, 128);
-    const edgeLeft = x <= 20;
-    const edgeRight = x >= 80;
-    const edgeTop = y <= 30;
-    const copyClassName = [edgeLeft ? 'edge-left' : '', edgeRight ? 'edge-right' : '', edgeTop ? 'edge-top' : ''].filter(Boolean).join(' ');
-    return { x, y, size, copyClassName };
-}
-
-function nearestDistanceOnRoute(points = [], point = null) {
-    if (!points.length || !point) return 0;
-    let bestDistance = 0;
-    let bestScore = Number.POSITIVE_INFINITY;
-    let walked = 0;
-
-    for (let index = 1; index < points.length; index += 1) {
-        const start = points[index - 1];
-        const end = points[index];
-        const dx = (end.x || 0) - (start.x || 0);
-        const dy = (end.y || 0) - (start.y || 0);
-        const segmentLengthSquared = (dx * dx) + (dy * dy);
-        const amount = segmentLengthSquared
-            ? clamp((((point.x || 0) - (start.x || 0)) * dx + ((point.y || 0) - (start.y || 0)) * dy) / segmentLengthSquared, 0, 1)
-            : 0;
-        const projected = {
-            x: (start.x || 0) + (dx * amount),
-            y: (start.y || 0) + (dy * amount)
+        const tint = () => applySkillBoostMaterialTint(viewer, palette, avatar.energy || 'balanced');
+        tint();
+        viewer.addEventListener?.('load', tint);
+        viewer.addEventListener?.('model-visibility', tint);
+        return () => {
+            viewer.removeEventListener?.('load', tint);
+            viewer.removeEventListener?.('model-visibility', tint);
         };
-        const score = Math.hypot((point.x || 0) - projected.x, (point.y || 0) - projected.y);
-        const segmentLength = Math.sqrt(segmentLengthSquared);
+    }, [avatar.energy, palette.blue, palette.cyan, palette.main, palette.materialAccent, palette.materialBase, palette.materialDark, palette.materialMid, palette.purple, phase?.model, shouldShowModel]);
 
-        if (score < bestScore) {
-            bestScore = score;
-            bestDistance = walked + (segmentLength * amount);
-        }
-        walked += segmentLength;
-    }
+    if (!shouldShowModel) return null;
 
-    return bestDistance;
+    return (
+        <span className="skillcity-mvp-cluster-hub__model" aria-hidden="true">
+            <model-viewer
+                ref={viewerRef}
+                src={phase.model}
+                alt={`${phase.title} GLB hub`}
+                camera-orbit="18deg 72deg 13m"
+                camera-target="0m -0.04m 0m"
+                field-of-view="28deg"
+                exposure="0.94"
+                shadow-intensity="0.48"
+                interaction-prompt="none"
+                disable-zoom
+                loading="lazy"
+            />
+        </span>
+    );
+});
+
+function ProgressBar({ value = 0 }) {
+    return <span className="skillcity-mvp-progress"><em style={{ width: `${clampPercent(value)}%` }} /></span>;
 }
 
-function MapAvatarMarker({ config }) {
-    const palette = accentPalettes[config?.accent] || accentPalettes.violet;
+function RewardShards({ node, compact = false }) {
+    const reward = shardRewardForNode(node);
     return (
-        <span
-            className="skillcity-map-avatar-marker"
-            style={{
-                '--map-avatar-main': palette.main,
-                '--map-avatar-blue': palette.blue,
-                '--map-avatar-cyan': palette.cyan,
-                '--map-avatar-purple': palette.purple,
-                '--map-avatar-dark': palette.materialDark || '#07153f'
-            }}
-        >
-            <span className="skillcity-map-avatar-marker__shadow" />
-            <span className="skillcity-map-avatar-marker__head" />
-            <span className="skillcity-map-avatar-marker__body" />
-            <span className="skillcity-map-avatar-marker__core" />
-            <span className="skillcity-map-avatar-marker__shard skillcity-map-avatar-marker__shard--one" />
-            <span className="skillcity-map-avatar-marker__shard skillcity-map-avatar-marker__shard--two" />
+        <span className={`skillcity-mvp-shards ${compact ? 'compact' : ''}`} aria-label={`${reward.count} ${reward.label}`}>
+            {Array.from({ length: Math.min(4, reward.count) }, (_, index) => <i key={index} />)}
+            {!compact && <b>{reward.count}x</b>}
         </span>
     );
 }
 
-function SkillShardReward({ count = 1, label = 'Boost shard', compact = false }) {
-    const shards = Array.from({ length: Math.min(4, Math.max(1, count)) }, (_, index) => index);
+function CommandCenter({ map, nextNode, nextBoss, activePhase, questLoading, user, onStartNext, onShowBoss, onReset }) {
+    const summary = map.summary || {};
     return (
-        <div className={`skillcity-shard-reward ${compact ? 'compact' : ''}`} aria-label={`${count} ${label}${count > 1 ? 's' : ''}`}>
-            <div className="skillcity-shard-reward__cluster" aria-hidden="true">
-                {shards.map((index) => <span key={index} className={`skillcity-shard shard-${index + 1}`} />)}
+        <section className="skillcity-mvp-command skillcity-mvp-command--pathable">
+            <div className="skillcity-mvp-command__copy">
+                <span className="eyebrow">SkillCity route</span>
+                <h2>{nextNode?.skillName || 'Roadmap complete'}</h2>
+                <p>{activePhase?.title || 'SkillCity'} · sledi poti, odklepaj skupine in gradi mesto po vrsti.</p>
+                <ProgressBar value={nodeProgress(nextNode)} />
             </div>
-            <div className="skillcity-shard-reward__copy">
-                <small>{label}</small>
-                <strong>{count}x city shard</strong>
-            </div>
-        </div>
-    );
-}
 
-function CommandCenter({ title, subtitle, nextNode, nextBoss, summary, questLoading, user, currentPhase, recommendations = [], nodes = [], onStartNext, onShowBoss }) {
-    const cityOpenPercent = summary.progressPercent || 0;
-    const nextProgress = nodeProgress(nextNode);
-    const upcomingLandmark = nextCityLandmark(nodes);
-    const leadingTip = recommendations[0] || 'Sledi označeni cesti, zgradi eno stavbo naenkrat in ne preskakuj city journeyja.';
-
-    return (
-        <section className="skillcity-command">
-            <div className="skillcity-command__main">
-                <p className="eyebrow">SkillCity Campaign</p>
-                <h2>{title || 'SkillCity'}</h2>
-                <p>{subtitle || 'Odklepaj mesto po okrožjih in treniraj samo naslednji najbolj logičen korak.'}</p>
-
-                <div className="skillcity-next-mission">
-                    <div className="skillcity-next-mission__icon">{nextNode?.emoji || '🏁'}</div>
-                    <div className="skillcity-next-mission__copy">
-                        <span>Naslednja misija</span>
-                        <strong>{nextNode?.skillName || 'Mesto je odklenjeno'}</strong>
-                        <small>{nextNode?.phaseTitle || 'Vse trenutno odklenjene misije so zaključene.'}</small>
-                    </div>
-                    <div className="skillcity-next-mission__meter" aria-label="Napredek naslednje misije">
-                        <strong>{nextNode?.bestScore || 0}/{nextNode?.requiredScore || 100}</strong>
-                        <i><em style={{ width: `${nextProgress}%` }} /></i>
-                    </div>
+            <div className="skillcity-mvp-next-card skillcity-mvp-next-card--compact">
+                <div className="skillcity-mvp-next-card__icon">{nextNode?.emoji || '🏁'}</div>
+                <div>
+                    <span>Next best action</span>
+                    <strong>{nextNode?.skillName || 'Roadmap complete'}</strong>
+                    <small>{nextNode ? `${nextNode.bestScore || 0}/${nextNode.requiredScore || 0} score` : 'All nodes done'}</small>
                 </div>
-
-                <div className="skillcity-command__actions">
-                    <button type="button" className="primary" disabled={!nextNode || questLoading} onClick={onStartNext}>
-                        <Icon name="rocket" size={16} /> Nadaljuj mesto
+                <div className="skillcity-mvp-next-card__actions">
+                    <button type="button" disabled={!nextNode?.unlocked || questLoading} onClick={onStartNext}>
+                        <Icon name="bolt" size={15} /> Start
                     </button>
                     <button type="button" className="secondary" disabled={!nextBoss} onClick={onShowBoss}>
-                        <Icon name="trophy" size={16} /> Boss checkpoint
+                        Boss
                     </button>
                 </div>
             </div>
 
-            <div className="skillcity-command__guide">
-                <div className="skillcity-guide-model" aria-hidden="true">
-                    <AvatarPreview config={user?.avatarConfig} size="hero" />
+            <div className="skillcity-mvp-stats skillcity-mvp-stats--compact">
+                <article>
+                    <strong>{summary.progressPercent || 0}%</strong>
+                    <span>city built</span>
+                </article>
+                <article>
+                    <strong>{summary.completedNodes || 0}/{summary.totalNodes || 0}</strong>
+                    <span>nodes</span>
+                </article>
+                <article>
+                    <strong>{summary.totalEarnedXp || 0}</strong>
+                    <span>XP</span>
+                </article>
+                <button type="button" className="secondary" disabled={questLoading} onClick={onReset}>
+                    Reset
+                </button>
+            </div>
+
+            <div className="skillcity-mvp-hero-character" aria-label="Roadmap character preview">
+                <div className="skillcity-mvp-hero-character__copy">
+                    <span>Roadmap guide</span>
+                    <strong>{user?.displayName || user?.name || 'Your character'}</strong>
                 </div>
-                <div className="skillcity-command__hud">
-                    <div className="skillcity-ring" style={{ '--skillcity-progress': `${cityOpenPercent}%` }}>
-                        <strong>{cityOpenPercent}%</strong>
-                        <span>odprto</span>
-                    </div>
-                    <div>
-                        <strong>{summary.completedNodes || 0}/{summary.totalNodes || 0} stavb</strong>
-                        <span>{summary.unlockedNodes || 0} odprtih · +{summary.totalEarnedXp || 0} XP</span>
-                    </div>
-                </div>
-                <div className="skillcity-guide-tip">
-                    <span>{currentPhase?.emoji || '🧭'} {currentPhase?.title || 'Aktivno okrožje'} · {upcomingLandmark?.levelLabel}</span>
-                    <strong>{leadingTip}</strong>
-                    <small>Naslednji 3D unlock: {upcomingLandmark?.title}</small>
+                <div className="skillcity-mvp-hero-character__stage">
+                    <span className="skillcity-mvp-hero-character__glow" />
+                    <span className="avatar avatar--model avatar--roadmap-hero"><AvatarMini config={user?.avatarConfig} /></span>
                 </div>
             </div>
         </section>
     );
 }
 
-function DistrictRail({ phases, selectedPhaseId, summary, onSelectPhase }) {
+function DistrictRail({ phases, activePhaseId, onSelectPhase }) {
     return (
-        <aside className="skillcity-district-rail" aria-label="SkillCity okrožja">
-            <div className="skillcity-rail-title">
-                <span>🏙️</span>
-                <div>
-                    <strong>Okrožja</strong>
-                    <small>Odpri eno po eno</small>
-                </div>
-            </div>
+        <aside className="skillcity-mvp-districts" aria-label="SkillCity districts">
             {phases.map((phase) => {
-                const status = districtStatus(phase, summary);
+                const status = phaseStatus(phase, activePhaseId);
                 return (
                     <button
                         key={phase.id}
                         type="button"
-                        className={`skillcity-district-card skillquest-node--${phase.theme || 'violet'} ${selectedPhaseId === phase.id ? 'active' : ''} ${status}`}
+                        className={`skillcity-mvp-district skillquest-node--${phase.theme} ${status}`}
                         onClick={() => onSelectPhase(phase.id)}
                     >
-                        <span className="skillcity-district-card__emoji">{status === 'locked' ? '🔒' : phase.emoji}</span>
-                        <span className="skillcity-district-card__copy">
-                            <strong>{phase.title}</strong>
-                            <small>{phase.completedNodes}/{phase.totalNodes} zgrajeno</small>
-                        </span>
-                        <span className="skillcity-district-card__meter"><em style={{ width: `${phase.progressPercent || 0}%` }} /></span>
+                        <span>{status === 'locked' ? '🔒' : phase.emoji}</span>
+                        <strong>{phase.title}</strong>
+                        <small>{phase.completedNodes}/{phase.totalNodes} built</small>
+                        <ProgressBar value={phase.progressPercent} />
                     </button>
                 );
             })}
@@ -882,641 +814,316 @@ function DistrictRail({ phases, selectedPhaseId, summary, onSelectPhase }) {
     );
 }
 
+function DistrictChips({ phases, activePhaseId, onSelectPhase }) {
+    const chipsRef = useRef(null);
 
-function RoadmapToolbar({ phases, selectedPhaseId, summary, mapMode, performanceMode, onMapModeChange, onPerformanceModeChange, onSelectPhase }) {
+    const handleWheel = (event) => {
+        const nav = chipsRef.current;
+        if (!nav) return;
+
+        const canScroll = nav.scrollWidth > nav.clientWidth;
+        if (!canScroll) return;
+
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        if (!delta) return;
+
+        event.preventDefault();
+        nav.scrollLeft += delta;
+    };
+
     return (
-        <section className="skillcity-roadmap-toolbar" aria-label="SkillCity pogled in okrožja">
-            <div className="skillcity-view-switch" role="group" aria-label="Preklop pogleda mape">
-                <button type="button" className={mapMode === 'city' ? 'active' : ''} onClick={() => onMapModeChange('city')}>
-                    🏙️ Celotno mesto
-                </button>
-                <button type="button" className={mapMode === 'focus' ? 'active' : ''} onClick={() => onMapModeChange('focus')}>
-                    🎯 Fokus četrt
-                </button>
-            </div>
-
-            <div className="skillcity-district-chips">
+        <div className="skillcity-mvp-district-nav">
+            <nav
+                ref={chipsRef}
+                className="skillcity-mvp-district-chips"
+                aria-label="SkillCity districts"
+                tabIndex={0}
+                onWheel={handleWheel}
+            >
                 {phases.map((phase) => {
-                    const status = districtStatus(phase, summary);
+                    const status = phaseStatus(phase, activePhaseId);
                     return (
                         <button
                             key={phase.id}
                             type="button"
-                            className={`skillcity-district-chip skillquest-node--${phase.theme || 'violet'} ${selectedPhaseId === phase.id ? 'active' : ''} ${status}`}
+                            className={`skillcity-mvp-district-chip skillquest-node--${phase.theme} ${status}`}
                             onClick={() => onSelectPhase(phase.id)}
+                            title={`${phase.title}: ${phase.completedNodes}/${phase.totalNodes} built`}
                         >
                             <span>{status === 'locked' ? '🔒' : phase.emoji}</span>
                             <strong>{phase.title}</strong>
                             <small>{phase.completedNodes}/{phase.totalNodes}</small>
-                            <i><em style={{ width: `${phase.progressPercent || 0}%` }} /></i>
                         </button>
                     );
                 })}
-            </div>
-
-            <div className="skillcity-map-tools" aria-label="Optimizacija roadmapa">
-                <button
-                    type="button"
-                    className={performanceMode ? 'active' : ''}
-                    onClick={() => onPerformanceModeChange?.(!performanceMode)}
-                    title="Zmanjša 3D rotacijo, sence in animacije, če naprava začne štekati."
-                >
-                    ⚡ Smooth 3D
-                </button>
-            </div>
-        </section>
+            </nav>
+        </div>
     );
 }
 
-function JourneyStrip({ phase, nodes, activeNode, currentNodeKey, onSelectNode }) {
-    const phaseNodes = [...(nodes || [])].sort((a, b) => a.order - b.order);
-    if (!phaseNodes.length) return null;
+function RoadmapNode({ node, active, current, selected, modelReady, user, performanceMode, onSelect, onPreview, onPreviewEnd }) {
+    const missing = missingScoreFor(node);
+    const isLocked = !node.unlocked;
 
     return (
-        <section className="skillcity-journey-strip" aria-label="Trenutna pot po okrožju">
-            <div className="skillcity-journey-strip__head">
-                <div>
-                    <p className="eyebrow">Trenutna pot</p>
-                    <h3>{phase?.title || 'Aktivno okrožje'}</h3>
-                </div>
-                <span>{phase?.completedNodes || 0}/{phase?.totalNodes || phaseNodes.length} zgrajeno</span>
-            </div>
-            <div className="skillcity-journey-track">
-                {phaseNodes.map((node, index) => {
-                    const isActive = activeNode?.nodeKey === node.nodeKey;
-                    const isCurrent = currentNodeKey === node.nodeKey;
-                    return (
-                        <button
-                            key={node.nodeKey}
-                            type="button"
-                            className={`skillcity-journey-step skillquest-node--${node.theme || 'violet'} ${node.status?.toLowerCase().replaceAll('_', '-')} ${node.boss ? 'boss' : ''} ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''}`}
-                            onClick={() => onSelectNode(node.nodeKey)}
-                        >
-                            <span>{node.completed ? '✓' : node.unlocked ? node.emoji : '🔒'}</span>
-                            <strong>{node.skillName}</strong>
-                            <small>{node.boss ? 'Boss gate' : `Korak ${index + 1}`}</small>
-                        </button>
-                    );
-                })}
-            </div>
-        </section>
+        <button
+            type="button"
+            className={`skillcity-mvp-node skillquest-node--${node.theme} ${nodeStatusSlug(node)} ${node.boss ? 'boss' : ''} ${active ? 'active' : ''} ${current ? 'current' : ''} ${selected ? 'selected-skill' : ''}`}
+            style={{
+                left: `${node.x}%`,
+                top: `${node.y}%`,
+                '--node-progress': `${nodeProgress(node)}%`,
+                '--node-scale': node.boss ? 1.18 : 1
+            }}
+            onMouseEnter={() => node.unlocked && onPreview?.(node.nodeKey)}
+            onMouseLeave={() => onPreviewEnd?.()}
+            onFocus={() => node.unlocked && onPreview?.(node.nodeKey)}
+            onBlur={() => onPreviewEnd?.()}
+            onClick={(event) => {
+                event.stopPropagation();
+                onSelect(node.nodeKey);
+            }}
+            aria-label={`${node.skillName}. ${STATUS_COPY[node.status] || node.status}.`}
+        >
+            <span className="skillcity-mvp-node__glow" aria-hidden="true" />
+            <span className="skillcity-mvp-node__plot" aria-hidden="true">
+                <ModelHouse node={node} modelReady={modelReady} avatarConfig={user?.avatarConfig} performanceMode={performanceMode} />
+            </span>
+            <span className="skillcity-mvp-node__badge" aria-hidden="true">
+                {node.completed ? '✓' : isLocked ? '🔒' : node.emoji}
+            </span>
+            <span className="skillcity-mvp-node__label">
+                <strong>{node.skillName}</strong>
+                <small>{node.completed ? 'Zgrajeno' : isLocked ? 'Zaklenjeno' : missing ? `${missing} score manjka` : 'Pripravljeno'}</small>
+            </span>
+            <span className="skillcity-mvp-node__meter" aria-hidden="true"><em /></span>
+            {(node.completed || node.claimable) && <RewardShards node={node} compact />}
+            {node.boss && <span className="skillcity-mvp-node__boss">Boss</span>}
+            {current && <span className="skillcity-mvp-node__next">Next</span>}
+        </button>
     );
 }
 
-
-function RoadmapControlDeck({ activeNode, nextNode, nextBoss, nextLandmark, activePhase, metrics, performanceMode, questLoading, onStartNode, onSelectNode, onSelectPhase, onPerformanceModeChange }) {
-    const missing = missingScoreFor(activeNode);
-    const phaseProgress = activePhase?.progressPercent || 0;
-    const bossTarget = nextBoss || activeNode;
-
-    return (
-        <section className="skillcity-control-deck" aria-label="Roadmap hitri pregled">
-            <article className="skillcity-control-card skillcity-control-card--primary">
-                <span>Trenutni korak</span>
-                <strong>{activeNode?.skillName || nextNode?.skillName || 'Izberi stavbo'}</strong>
-                <small>{activeNode?.completed ? 'Že zgrajeno' : activeNode?.unlocked ? (missing ? `${missing} score do odklepa` : 'Pripravljeno za odklep') : 'Zaklenjeno'}</small>
-                <button type="button" className="primary" disabled={!activeNode?.unlocked || questLoading} onClick={() => onStartNode?.(activeNode)}>
-                    <Icon name="rocket" size={15} /> {missionCtaText(activeNode)}
-                </button>
-            </article>
-
-            <article className="skillcity-control-card">
-                <span>Aktivno okrožje</span>
-                <strong>{activePhase?.emoji || '🏙️'} {activePhase?.title || 'SkillCity'}</strong>
-                <small>{activePhase?.completedNodes || 0}/{activePhase?.totalNodes || 0} stavb · {phaseProgress}%</small>
-                <i><em style={{ width: `${phaseProgress}%` }} /></i>
-            </article>
-
-            <button type="button" className="skillcity-control-card skillcity-control-card--button" disabled={!bossTarget} onClick={() => bossTarget && onSelectNode?.(bossTarget.nodeKey)}>
-                <span>Boss gate</span>
-                <strong>{nextBoss?.skillName || 'Bossi zaključeni'}</strong>
-                <small>{nextBoss ? nextBoss.phaseTitle : `${metrics.completed}/${metrics.total} mesto`}</small>
-            </button>
-
-            <button type="button" className="skillcity-control-card skillcity-control-card--button" onClick={() => nextLandmark && onSelectPhase?.(nextLandmark.phaseId)}>
-                <span>Naslednji 3D unlock</span>
-                <strong>{nextLandmark?.levelLabel || 'CITY'} · {nextLandmark?.title || 'Landmark'}</strong>
-                <small>{nextLandmark?.unlocked ? 'Vidno v mestu' : (nextLandmark?.unlockNode ? `Potrebuje: ${nextLandmark.unlockNode.skillName}` : nextLandmark?.unlockCopy)}</small>
-            </button>
-
-            <article className="skillcity-control-card skillcity-control-card--metrics">
-                <span>Progress</span>
-                <strong>{metrics.completed}/{metrics.total}</strong>
-                <small>{metrics.unlocked} odprtih · {metrics.locked} zaklenjenih · {metrics.claimable} reward</small>
-            </article>
-
-            <button
-                type="button"
-                className={`skillcity-control-card skillcity-control-card--button skillcity-control-card--toggle ${performanceMode ? 'active' : ''}`}
-                onClick={() => onPerformanceModeChange?.(!performanceMode)}
-                title="Umiri animacije in sence za bolj smooth roadmap."
-            >
-                <span>Performance</span>
-                <strong>{performanceMode ? 'Smooth mode ON' : 'Rich mode'}</strong>
-                <small>{performanceMode ? 'Manj animacij, hitrejši UI' : 'Več detajlov in rotacije'}</small>
-            </button>
-        </section>
-    );
-}
-
-function LandmarkDock({ landmarks = [], onSelectPhase, onSelectNode }) {
-    if (!landmarks.length) return null;
-
-    return (
-        <section className="skillcity-landmark-dock" aria-label="3D landmark unlocki">
-            <div className="skillcity-landmark-dock__head">
-                <span>3D city unlocks</span>
-                <strong>Landmark pot</strong>
-            </div>
-            <div className="skillcity-landmark-dock__grid">
-                {landmarks.map((landmark) => {
-                    const progress = landmark.unlocked ? 100 : nodeProgress(landmark.unlockNode);
-                    const requirement = landmark.unlocked ? 'Odklenjeno' : (landmark.unlockNode ? landmark.unlockNode.skillName : landmark.unlockCopy);
-                    return (
-                        <button
-                            key={landmark.key}
-                            type="button"
-                            className={`skillcity-landmark-tile ${landmark.unlocked ? 'unlocked' : 'locked'} ${landmark.active ? 'active' : ''}`}
-                            onClick={() => {
-                                onSelectPhase?.(landmark.phaseId);
-                                if (landmark.unlockNode) onSelectNode?.(landmark.unlockNode.nodeKey);
-                            }}
-                        >
-                            <span className="skillcity-landmark-tile__icon">{landmark.unlocked ? landmark.fallbackIcon : '🔒'}</span>
-                            <span className="skillcity-landmark-tile__copy">
-                                <small>{landmark.levelLabel}</small>
-                                <strong>{landmark.title}</strong>
-                                <em>{requirement}</em>
-                            </span>
-                            <i><em style={{ width: `${progress}%` }} /></i>
-                        </button>
-                    );
-                })}
-            </div>
-        </section>
-    );
-}
-
-function CityRoadmapStage({ phases, nodes, activeNode, currentNodeKey, selectedPhaseId, selectedSkillKeys, user, mapMode, performanceMode, summary, avatarPosition, avatarMoving, onSelectNode, onSelectPhase, onStartActive }) {
-    const modelReady = useModelViewerReady();
+function CityWorld({ nodes, phases, activeNode, currentNodeKey, selectedSkillKeys, activePhaseId, user, modelReady, performanceMode, onSelectNode, onSelectPhase }) {
     const [previewNodeKey, setPreviewNodeKey] = useState('');
-    const previewTimerRef = useRef(null);
-    const routeNodes = useMemo(() => [...nodes].sort((a, b) => a.order - b.order), [nodes]);
-    const currentIndex = useMemo(() => Math.max(0, routeNodes.findIndex((node) => node.nodeKey === currentNodeKey)), [routeNodes, currentNodeKey]);
-    const previewNode = useMemo(() => routeNodes.find((node) => node.nodeKey === previewNodeKey), [routeNodes, previewNodeKey]);
-    const previewIndex = useMemo(() => (previewNode ? routeNodes.findIndex((node) => node.nodeKey === previewNode.nodeKey) : -1), [routeNodes, previewNode]);
-
-    const clearPreviewTimer = () => {
-        if (previewTimerRef.current) {
-            clearTimeout(previewTimerRef.current);
-            previewTimerRef.current = null;
-        }
-    };
-
-    const showPreview = (nodeKey) => {
-        clearPreviewTimer();
-        setPreviewNodeKey(nodeKey || '');
-    };
-
-    const hidePreview = () => {
-        clearPreviewTimer();
-        previewTimerRef.current = setTimeout(() => {
-            setPreviewNodeKey('');
-            previewTimerRef.current = null;
-        }, 90);
-    };
-
-    useEffect(() => () => clearPreviewTimer(), []);
+    const [avatarNodeKey, setAvatarNodeKey] = useState('');
+    const walkTimerRef = useRef(null);
+    const orderedNodes = useMemo(() => [...nodes].sort((a, b) => a.order - b.order), [nodes]);
     const selectedSkills = Array.isArray(selectedSkillKeys) ? selectedSkillKeys : [];
-    const currentPhase = phases.find((phase) => phase.id === selectedPhaseId) || phases.find((phase) => phase.id === summary.currentPhaseId) || phases[0];
-    const cityLandmarks = useMemo(() => buildCityLandmarkStates({ phases, nodes: routeNodes, selectedPhaseId, mapMode }), [phases, routeNodes, selectedPhaseId, mapMode]);
+    const walkTargetNodeKey = activeNode?.unlocked ? activeNode.nodeKey : currentNodeKey;
+    const targetNodeKey = previewNodeKey || walkTargetNodeKey || currentNodeKey;
+    const fullRoute = useMemo(() => routePoints(orderedNodes), [orderedNodes]);
+    const activeRoute = useMemo(() => activeRoutePoints(orderedNodes, targetNodeKey), [orderedNodes, targetNodeKey]);
+    const clusterRoutes = useMemo(() => phaseClusterRoutes(orderedNodes, phases, activePhaseId), [orderedNodes, phases, activePhaseId]);
+    const avatarNode = nodeByKey(orderedNodes, avatarNodeKey) || nodeByKey(orderedNodes, currentNodeKey) || orderedNodes[0];
 
-    const roadRoutePoints = useMemo(() => buildAvatarRoutePoints(routeNodes), [routeNodes]);
-    const activeRoadRoutePoints = useMemo(() => roadRoutePoints.slice(0, currentIndex + 2), [roadRoutePoints, currentIndex]);
-    const previewRoadRoutePoints = useMemo(() => (previewIndex >= 0 ? roadRoutePoints.slice(0, previewIndex + 2) : []), [roadRoutePoints, previewIndex]);
-    const routePoints = useMemo(() => roadRoutePoints.map((point) => `${point.x},${point.y}`).join(' '), [roadRoutePoints]);
-    const activeRoutePoints = useMemo(() => activeRoadRoutePoints.map((point) => `${point.x},${point.y}`).join(' '), [activeRoadRoutePoints]);
-    const previewRoutePoints = useMemo(() => previewRoadRoutePoints.map((point) => `${point.x},${point.y}`).join(' '), [previewRoadRoutePoints]);
-    const avatarRenderPosition = useMemo(() => {
-        if (!avatarPosition) return null;
-        const base = { ...avatarPosition };
-        if (!activeNode?.boss) return base;
-        const shiftX = (base.x || 0) > 56 ? -4.8 : 4.8;
-        return {
-            ...base,
-            x: clamp((base.x || 0) + shiftX, 6, 94),
-            y: clamp((base.y || 0) + 1.4, 8, 92),
-            facing: shiftX < 0 ? -1 : 1,
-            besideCity: true
-        };
-    }, [avatarPosition, activeNode?.boss]);
+    useEffect(() => {
+        if (!orderedNodes.length) return undefined;
+        if (!avatarNodeKey) {
+            setAvatarNodeKey(currentNodeKey || orderedNodes[0]?.nodeKey || '');
+            return undefined;
+        }
+        return undefined;
+    }, [avatarNodeKey, currentNodeKey, orderedNodes]);
+
+    useEffect(() => {
+        if (!walkTargetNodeKey || !orderedNodes.length) return undefined;
+
+        window.clearInterval(walkTimerRef.current);
+
+        const currentAvatarKey = avatarNodeKey || currentNodeKey || orderedNodes[0]?.nodeKey;
+        const route = orderedWalkNodes(orderedNodes, currentAvatarKey, walkTargetNodeKey)
+            .filter((node) => node?.unlocked || node?.nodeKey === currentAvatarKey);
+
+        if (route.length <= 1) {
+            setAvatarNodeKey(walkTargetNodeKey);
+            return undefined;
+        }
+
+        let index = 0;
+        setAvatarNodeKey(route[index].nodeKey);
+
+        walkTimerRef.current = window.setInterval(() => {
+            index += 1;
+            const next = route[index];
+
+            if (!next) {
+                window.clearInterval(walkTimerRef.current);
+                return;
+            }
+
+            setAvatarNodeKey(next.nodeKey);
+
+            if (index >= route.length - 1) {
+                window.clearInterval(walkTimerRef.current);
+            }
+        }, 300);
+
+        return () => window.clearInterval(walkTimerRef.current);
+    }, [walkTargetNodeKey, orderedNodes, currentNodeKey]);
 
     return (
-        <section className={`skillcity-roadmap-stage skillcity-real-stage ${mapMode === 'focus' ? 'focus-mode' : 'city-mode'} ${performanceMode ? 'eco-mode' : ''} ${previewNode ? 'preview-mode' : ''}`}>
-            <div className="skillcity-roadmap-stage__head skillcity-real-stage__head">
-                <div>
-                    <p className="eyebrow">Real city roadmap</p>
-                    <h3>SkillCity mestni načrt</h3>
-                    <p>Interface ostane čist: hover samo poudari zgradbo, klik izbere misijo, podrobnosti pa ostanejo v desnem panelu.</p>
-                </div>
-                <div className="skillcity-map-hud skillcity-real-hud">
-                    <span>{summary.completedNodes || 0}/{summary.totalNodes || 0}</span>
-                    <strong>zgrajenih</strong>
-                    <small>{currentPhase?.title || 'Aktivno okrožje'}</small>
-                </div>
-            </div>
+        <section className={`skillcity-mvp-world ${performanceMode ? 'eco-mode' : ''}`}>
+            <div className="skillcity-mvp-world__skyline" aria-hidden="true" />
+            <div className="skillcity-mvp-world__depth" aria-hidden="true" />
+            <div className="skillcity-mvp-world__surface" aria-hidden="true" />
+            <div className="skillcity-mvp-world__blocks" aria-hidden="true" />
+            <div className="skillcity-mvp-world__grid" aria-hidden="true" />
+            <div className="skillcity-mvp-world__water" aria-hidden="true" />
 
-            <div className="skillcity-real-map" aria-label="Interaktivni tloris SkillCity mesta" onPointerLeave={hidePreview}> 
-                <div className="skillcity-real-map__surface" aria-hidden="true" />
-                <div className="skillcity-real-map__water" aria-hidden="true" />
-                <div className="skillcity-real-map__fog" aria-hidden="true" />
-                <div className="skillcity-real-map__lights" aria-hidden="true" />
-                <div className="skillcity-real-map__skyline" aria-hidden="true"><span /><span /><span /><span /><span /><span /></div>
-                <div className="skillcity-real-map__park skillcity-real-map__park--north" aria-hidden="true" />
-                <div className="skillcity-real-map__park skillcity-real-map__park--south" aria-hidden="true" />
-                <div className="skillcity-real-map__artery skillcity-real-map__artery--h" aria-hidden="true" />
-                <div className="skillcity-real-map__artery skillcity-real-map__artery--v" aria-hidden="true" />
-                <div className="skillcity-real-map__artery skillcity-real-map__artery--diagonal" aria-hidden="true" />
-
-                {activeNode && (
-                    <div className={`skillcity-map-focus-card skillquest-node--${activeNode.theme || 'violet'}`}>
-                        <span>{currentPhase?.title || 'Aktivno okrožje'}</span>
-                        <strong>{activeNode.skillName}</strong>
-                        <small>{activeNode.completed ? 'Stavba je že zgrajena' : activeNode.unlocked ? `${Math.max(0, activeNode.requiredScore - (activeNode.bestScore || 0))} score do odklepa` : 'Najprej zaključi prejšnjo stavbo'}</small>
-                    </div>
-                )}
-
-                {false && previewNode && previewNode.nodeKey !== activeNode?.nodeKey && (
-                    <div className={`skillcity-map-preview-card skillquest-node--${previewNode.theme || 'violet'}`}>
-                        <span>{previewNode.completed ? 'Zgrajeno' : previewNode.unlocked ? 'Na voljo' : 'Zaklenjeno'}</span>
-                        <strong>{previewNode.skillName}</strong>
-                        <small>{previewNode.phaseTitle} · {previewNode.estimatedMinutes || 0} min · {previewNode.bestScore || 0}/{previewNode.requiredScore} score</small>
-                        <em>
-                            {previewNode.completed
-                                ? 'Ta stavba je že zaključena. Klikni za ponovni vstop v misijo.'
-                                : previewNode.unlocked
-                                    ? 'Klikni stavbo za odprtje misije.'
-                                    : (previewNode.lockReason || `Manjka še ${Math.max(0, (previewNode.requiredScore || 0) - (previewNode.bestScore || 0))} score za odklep.`)}
-                        </em>
-                    </div>
-                )}
-
-                {phases.map((phase) => {
-                    const rect = phase.rect || {};
-                    const status = districtStatus(phase, summary);
-                    const isFocused = selectedPhaseId === phase.id;
-                    const isMuted = mapMode === 'focus' && selectedPhaseId && !isFocused;
-                    return (
-                        <button
-                            key={phase.id}
-                            type="button"
-                            className={`skillcity-real-district skillquest-node--${phase.theme || 'violet'} ${isFocused ? 'active' : ''} ${status} ${isMuted ? 'muted' : ''}`}
-                            style={{
-                                left: `${rect.left || 0}%`,
-                                top: `${rect.top || 0}%`,
-                                width: `${rect.width || 22}%`,
-                                height: `${rect.height || 20}%`
-                            }}
-                            onClick={() => onSelectPhase(phase.id)}
-                            
-                        >
-                            <span className="skillcity-real-district__grid" aria-hidden="true" />
-                            <span className="skillcity-real-district__label">
-                                <span>{status === 'locked' ? '🔒' : phase.emoji}</span>
-                                <strong>{phase.title}</strong>
-                                <small>{phase.completedNodes}/{phase.totalNodes} · {phase.progressPercent || 0}%</small>
-                            </span>
-                            <span className="skillcity-real-district__landmark" aria-hidden="true">
-                                <span>{phase.landmark || phase.subtitle}</span>
-                            </span>
-                        </button>
-                    );
-                })}
-
-                {cityLandmarks.map((landmark) => (
-                    <CityLandmarkModel
-                        key={landmark.key}
-                        landmark={landmark}
-                        phase={landmark.phase}
-                        unlocked={landmark.unlocked}
-                        active={landmark.active}
-                        muted={landmark.muted}
-                        modelReady={modelReady}
-                        avatarConfig={user?.avatarConfig}
-                        performanceMode={performanceMode}
-                        onSelectPhase={onSelectPhase}
+            <svg className="skillcity-mvp-road" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                {clusterRoutes.map((cluster) => (
+                    <g key={cluster.id} className={`skillcity-mvp-road__cluster skillquest-node--${cluster.theme} ${cluster.status} ${cluster.active ? 'active' : ''}`}>
+                        <polyline className="skillcity-mvp-road__cluster-shadow" points={cluster.points} />
+                        <polyline className="skillcity-mvp-road__cluster-band" points={cluster.points} />
+                        <polyline className="skillcity-mvp-road__cluster-core" points={cluster.points} />
+                    </g>
+                ))}
+                <polyline className="skillcity-mvp-road__shadow" points={fullRoute} />
+                <polyline className="skillcity-mvp-road__base" points={fullRoute} />
+                <polyline className="skillcity-mvp-road__line" points={fullRoute} />
+                <polyline className="skillcity-mvp-road__active" points={activeRoute} />
+                {orderedNodes.map((node) => (
+                    <circle
+                        key={`stop-${node.nodeKey}`}
+                        className={`skillcity-mvp-road__stop ${nodeStatusSlug(node)} ${node.nodeKey === targetNodeKey ? 'target' : ''}`}
+                        cx={node.x}
+                        cy={node.y}
+                        r={node.boss ? 1.55 : 1.16}
                     />
                 ))}
+            </svg>
 
-                <svg className="skillcity-real-roads" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                    <polyline className="skillcity-real-road skillcity-real-road--shadow" points={routePoints} />
-                    <polyline className="skillcity-real-road skillcity-real-road--asphalt" points={routePoints} />
-                    <polyline className="skillcity-real-road skillcity-real-road--lane" points={routePoints} />
-                    {false && previewRoutePoints && <polyline className="skillcity-real-road skillcity-real-road--preview" points={previewRoutePoints} />}
-                    <polyline className="skillcity-real-road skillcity-real-road--active" points={activeRoutePoints} />
-                </svg>
+            {clusterRoutes.map((cluster) => (
+                <button
+                    key={`hub-${cluster.id}`}
+                    type="button"
+                    className={`skillcity-mvp-cluster-hub skillquest-node--${cluster.theme} ${cluster.status} ${cluster.active ? 'active' : ''}`}
+                    style={{ left: `${cluster.centerX}%`, top: `${cluster.centerY}%` }}
+                    onClick={() => onSelectPhase(cluster.id)}
+                    aria-label={`${cluster.phase.title}: ${cluster.completedNodes}/${cluster.nodeCount} zgrajenih stavb`}
+                    title={`${cluster.phase.title}: ${cluster.completedNodes}/${cluster.nodeCount} built`}
+                >
+                    <DistrictLandmark phase={cluster.phase} modelReady={modelReady} avatarConfig={user?.avatarConfig} performanceMode={performanceMode} />
+                    <span className="skillcity-mvp-cluster-hub__icon" aria-hidden="true">{cluster.status === 'locked' ? '🔒' : cluster.phase.emoji}</span>
+                </button>
+            ))}
 
-                {roadRoutePoints[0] && (
-                    <div
-                        className="skillcity-real-route-start"
-                        style={{ left: `${roadRoutePoints[0].x}%`, top: `${roadRoutePoints[0].y}%` }}
-                        aria-hidden="true"
-                    >
-                        <span>START</span>
-                    </div>
-                )}
+            {orderedNodes.map((node) => (
+                <RoadmapNode
+                    key={node.nodeKey}
+                    node={node}
+                    active={activeNode?.nodeKey === node.nodeKey}
+                    current={currentNodeKey === node.nodeKey}
+                    selected={selectedSkills.includes(node.skillKey)}
+                    modelReady={modelReady}
+                    user={user}
+                    performanceMode={performanceMode}
+                    onSelect={onSelectNode}
+                    onPreview={setPreviewNodeKey}
+                    onPreviewEnd={() => setPreviewNodeKey('')}
+                />
+            ))}
 
-                {routeNodes.map((node) => {
-                    const isActive = activeNode?.nodeKey === node.nodeKey;
-                    const isCurrent = currentNodeKey === node.nodeKey;
-                    const isSelectedSkill = selectedSkills.includes(node.skillKey);
-                    const isMutedByFocus = mapMode === 'focus' && selectedPhaseId && node.phaseId !== selectedPhaseId;
-                    const progress = nodeProgress(node);
-                    const missing = missingScoreFor(node);
-                    const nodeMeta = nodePositionMeta(node);
-                    const height = node.boss ? 118 : 80 + ((node.order % 4) * 12);
-                    return (
-                        <button
-                            key={node.nodeKey}
-                            type="button"
-                            className={`skillcity-real-node ${nodeMeta.labelClassName} skillquest-node--${node.theme || 'violet'} ${node.status?.toLowerCase().replaceAll('_', '-')} ${node.boss ? 'boss' : ''} ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''} ${isSelectedSkill ? 'selected-skill' : ''} ${previewNodeKey === node.nodeKey ? 'previewed' : ''} ${isMutedByFocus ? 'muted' : ''}`}
-                            style={{ left: `${nodeMeta.x}%`, top: `${nodeMeta.y}%`, '--tower-height': `${height}px`, '--node-progress': `${progress}%`, '--building-depth': `${node.boss ? 20 : 14 + (node.order % 3) * 3}px` }}
-                            onPointerEnter={undefined}
-                            onFocus={undefined}
-                            onPointerLeave={undefined}
-                            onBlur={undefined}
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                clearPreviewTimer();
-                                setPreviewNodeKey('');
-                                onSelectNode(node.nodeKey);
-                            }}
-                            aria-label={`${node.skillName}. ${STATUS_COPY[node.status] || node.status}. Score ${node.bestScore || 0} od ${node.requiredScore}.`}
-                        >
-                            <span className="skillcity-real-node__plot" aria-hidden="true">
-                                <span className="skillcity-real-node__halo" />
-                                <span className="skillcity-real-node__tower">
-                                    <span className="skillcity-real-node__roof" />
-                                    <span className="skillcity-real-node__antenna" />
-                                    <span className="skillcity-real-node__windows" />
-                                    <span className="skillcity-real-node__core" />
-                                    <span className="skillcity-real-node__door" />
-                                </span>
-                                <span className="skillcity-real-node__base" />
-                                <span className="skillcity-real-node__shadow" />
-                            </span>
-                            <span className="skillcity-real-node__badge">
-                                {node.completed ? '✓' : node.unlocked ? node.emoji : '🔒'}
-                            </span>
-                            <span className="skillcity-real-node__interaction" aria-hidden="true" />
-                            <span className="skillcity-real-node__progress" aria-hidden="true"><em /></span>
-                            {(node.claimable || node.completed) && (
-                                <span className="skillcity-real-node__shards" aria-hidden="true">
-                                    {Array.from({ length: Math.min(4, shardRewardForNode(node).count) }, (_, index) => (
-                                        <span key={index} className={`skillcity-node-shard shard-${index + 1}`} />
-                                    ))}
-                                </span>
-                            )}
-                            <span className="skillcity-real-node__label">
-                                <strong>{node.skillName}</strong>
-                                <small>{node.completed ? 'Zgrajeno' : node.unlocked ? (missing ? `${missing} score manjka` : 'Pripravljeno') : 'Zaklenjeno'}</small>
-                            </span>
-                            {node.boss && <b>Boss gate</b>}
-                            {isCurrent && <i>Next</i>}
-                        </button>
-                    );
-                })}
-
-                {activeNode && (
-                    <>
-                        {avatarRenderPosition && (
-                            <div
-                                className={`skillcity-real-avatar ${avatarMoving ? 'moving' : ''} ${avatarRenderPosition.besideCity ? 'beside-city' : ''}`}
-                                style={{ left: `${avatarRenderPosition.x}%`, top: `${avatarRenderPosition.y}%`, '--avatar-facing': avatarRenderPosition.facing || 1 }}
-                                aria-hidden="true"
-                            >
-                                <span className="skillcity-real-avatar__trail" />
-                                <span className="skillcity-real-avatar__mini avatar avatar--model avatar--roadmap"><AvatarMini config={user?.avatarConfig} /></span>
-                                <span className="skillcity-real-avatar__label">YOU</span>
-                            </div>
-                        )}
-                        <div
-                            className={`skillcity-map-callout skillquest-node--${activeNode.theme || 'violet'}`}
-                            style={{ left: `${activeNode.x}%`, top: `${Math.max(7, activeNode.y - 13)}%` }}
-                        >
-                            <span>{activeNode.claimable || activeNode.status === 'READY_TO_CLAIM' ? 'Reward ready' : activeNode.completed ? 'Built' : activeNode.unlocked ? 'Next mission' : 'Locked'}</span>
-                            <strong>{activeNode.skillName}</strong>
-                            <small>{activeNode.bestScore || 0}/{activeNode.requiredScore} score</small>
-                            <SkillShardReward count={shardRewardForNode(activeNode).count} label={shardRewardForNode(activeNode).label} compact />
-                            {activeNode.unlocked && !activeNode.completed && (
-                                <button type="button" onClick={(event) => { event.stopPropagation(); onStartActive?.(activeNode); }}>
-                                    Odpri trening
-                                </button>
-                            )}
-                        </div>
-                    </>
-                )}
-
-                <div className="skillcity-real-legend" aria-hidden="true">
-                    <span><i className="built" /> zgrajeno</span>
-                    <span><i className="open" /> odprto</span>
-                    <span><i className="locked" /> zaklenjeno</span>
-                    <span><i className="landmark" /> 3D landmark</span>
+            {avatarNode && (
+                <div
+                    className="skillcity-mvp-avatar"
+                    style={{ left: `${avatarNode.x}%`, top: `${avatarNode.y}%` }}
+                    aria-hidden="true"
+                >
+                    <span className="skillcity-mvp-avatar__trail" />
+                    <span className="skillcity-mvp-avatar__model avatar avatar--model avatar--roadmap"><AvatarMini config={user?.avatarConfig} /></span>
+                    <span className="skillcity-mvp-avatar__tag">YOU</span>
                 </div>
-            </div>
-        </section>
-    );
-}
-
-function DistrictStage({ phase, nodes, activeNode, currentNodeKey, selectedSkillKeys, user, onSelectNode }) {
-    const visibleNodes = nodes.length ? nodes : [];
-
-    return (
-        <section className="skillcity-stage-card">
-            <div className="skillcity-stage-head">
-                <div>
-                    <p className="eyebrow">Aktivno okrožje</p>
-                    <h3>{phase?.title || 'Okrožje'}</h3>
-                    <p>{phase?.description}</p>
-                </div>
-                <div className="skillcity-stage-badge">
-                    <span>{phase?.emoji || '🏙️'}</span>
-                    <strong>{phase?.progressPercent || 0}%</strong>
-                </div>
-            </div>
-
-            <div className="skillcity-stage" aria-label="Fokusirano okrožje">
-                <div className="skillcity-stage__skyline" aria-hidden="true">
-                    <span /><span /><span /><span /><span />
-                </div>
-                <div className="skillcity-stage__road" aria-hidden="true" />
-
-                {visibleNodes.map((node, index) => {
-                    const isActive = activeNode?.nodeKey === node.nodeKey;
-                    const isCurrent = currentNodeKey === node.nodeKey;
-                    const isSelectedSkill = selectedSkillKeys.includes(node.skillKey);
-                    const progress = nodeProgress(node);
-                    const missing = missingScoreFor(node);
-
-                    return (
-                        <button
-                            key={node.nodeKey}
-                            type="button"
-                            className={`skillcity-building-card skillquest-node--${node.theme || 'violet'} ${node.status?.toLowerCase().replaceAll('_', '-')} ${node.boss ? 'boss' : ''} ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''} ${isSelectedSkill ? 'selected-skill' : ''}`}
-                            style={{ '--building-index': index }}
-                            onClick={() => onSelectNode(node.nodeKey)}
-                        >
-                            <span className="skillcity-building-card__status">
-                                {node.completed ? '✓' : node.unlocked ? node.emoji : '🔒'}
-                            </span>
-                            <span className="skillcity-building-card__tower" aria-hidden="true">
-                                <span /><span /><span />
-                            </span>
-                            <span className="skillcity-building-card__copy">
-                                <strong>{node.skillName}</strong>
-                                <small>{node.completed ? 'Zgrajeno' : node.unlocked ? (missing ? `${missing} score manjka` : 'Pripravljeno') : 'Zaklenjeno'}</small>
-                            </span>
-                            <i><em style={{ width: `${progress}%` }} /></i>
-                            {node.boss && <b>Boss</b>}
-                        </button>
-                    );
-                })}
-
-                {activeNode && (
-                    <div className="skillcity-stage-avatar" aria-hidden="true">
-                        <MapAvatarMarker config={user?.avatarConfig} />
-                        <span className="skillcity-real-avatar__label">YOU</span>
-                    </div>
-                )}
-            </div>
+            )}
         </section>
     );
 }
 
 function MissionPanel({ node, questLoading, optimisticAction, onStart, onComplete }) {
     if (!node) {
-        return <aside className="skillcity-mission-panel"><div className="skillquest-empty-panel">Izberi stavbo v mestu.</div></aside>;
+        return (
+            <aside className="skillcity-mvp-panel">
+                <span className="eyebrow">Mission</span>
+                <h3>Izberi stavbo</h3>
+                <p>Klikni GLB hiško na mapi, da vidiš trening in akcije.</p>
+            </aside>
+        );
     }
 
-    const progress = nodeProgress(node);
-    const missing = missingScoreFor(node);
-    const canClaim = node.unlocked && !node.completed && (node.claimable || node.status === 'READY_TO_CLAIM' || node.bestScore >= node.requiredScore);
-    const criteria = [...(node.evaluationCriteria || []), ...(node.outcomes || [])].slice(0, 4);
-    const landmarkReward = CITY_LANDMARKS.find((landmark) => landmark.unlockNodeKey === node.nodeKey || landmark.unlockNodeKey === node.skillKey);
+    const reward = shardRewardForNode(node);
+    const startBusy = optimisticAction === `${node.nodeKey}:START`;
+    const completeBusy = optimisticAction === `${node.nodeKey}:COMPLETE`;
+    const isLocked = !node.unlocked;
 
     return (
-        <aside className="skillcity-mission-panel">
-            <div className="skillcity-mission-panel__status">
-                <span className={`skillquest-status skillquest-status--${node.status?.toLowerCase().replaceAll('_', '-')}`}>
-                    {STATUS_COPY[node.status] || node.status}
-                </span>
-                <small>{node.boss ? 'City boss' : `Building ${node.order}`}</small>
+        <aside className={`skillcity-mvp-panel skillquest-node--${node.theme}`}>
+            <div className="skillcity-mvp-panel__head">
+                <span className="eyebrow">Selected building</span>
+                <strong>{STATUS_COPY[node.status] || node.status}</strong>
             </div>
-
-            <div className="skillcity-mission-title">
-                <span className={`skillcity-mission-title__icon skillquest-node--${node.theme || 'violet'}`}>{node.emoji}</span>
+            <div className="skillcity-mvp-panel__title">
+                <span>{node.completed ? '✓' : isLocked ? '🔒' : node.emoji}</span>
                 <div>
                     <h3>{node.skillName}</h3>
-                    <p>{node.phaseTitle} · {node.estimatedMinutes} min</p>
+                    <p>{node.phaseTitle} · {node.challengeTitle}</p>
                 </div>
             </div>
-
-            <div className="skillcity-briefing-card">
-                <span>Mission briefing</span>
-                <strong>{node.challengeTitle}</strong>
-                <p>{node.expectedOutcome}</p>
+            <ProgressBar value={nodeProgress(node)} />
+            <div className="skillcity-mvp-panel__metrics">
+                <span><b>{node.bestScore || 0}</b>score</span>
+                <span><b>{node.requiredScore || 0}</b>target</span>
+                <span><b>{node.estimatedMinutes || 10}</b>min</span>
+                <span><b>{node.rewardXp || 0}</b>XP</span>
             </div>
-
-            <div className="skillcity-score-card">
-                <div>
-                    <strong>Score za odklep</strong>
-                    <span>{node.bestScore || 0}/{node.requiredScore}</span>
-                </div>
-                <i><em style={{ width: `${progress}%` }} /></i>
-                {!node.completed && missing > 0 && <small>Manjka še {missing} score točk.</small>}
-                {canClaim && <small className="skillcity-claim-ready">Dosežen score — stavba je pripravljena za odklep.</small>}
-            </div>
-
-            <div className="skillcity-mission-goal">
-                <span>Kaj treniraš</span>
+            <div className="skillcity-mvp-panel__body">
+                <h4>Scenario</h4>
                 <p>{node.scenario}</p>
+                <h4>Expected outcome</h4>
+                <p>{node.expectedOutcome}</p>
+                {isLocked && <p className="skillcity-mvp-lock-copy">{node.lockReason}</p>}
             </div>
-
-            <div className="skillcity-route-note">
-                <Icon name={node.boss ? 'trophy' : 'compass'} size={15} />
-                <span>{canClaim ? 'Prevzemi nagrado, da se stavba prižge in naslednja ulica odklene.' : (node.nextUnlockText || node.cityUnlockText || 'Zaključi misijo, da se pot nadaljuje.')}</span>
+            <div className="skillcity-mvp-panel__reward">
+                <RewardShards node={node} />
+                <span>{reward.label}</span>
             </div>
-
-            <div className="skillcity-reward-row">
-                <span><Icon name="bolt" size={14} /> +{node.rewardXp} XP</span>
-                <span><Icon name="star" size={14} /> {node.rewardStars} stars</span>
-                <span><Icon name="trophy" size={14} /> {node.boss ? 'Novo okrožje' : 'Nova ulica'}</span>
-                {landmarkReward && <span className="skillcity-landmark-unlock-chip"><Icon name="compass" size={14} /> {landmarkReward.levelLabel}: {landmarkReward.title}</span>}
-                <SkillShardReward count={shardRewardForNode(node).count} label={shardRewardForNode(node).label} />
-            </div>
-
-            {!!criteria.length && (
-                <div className="skillcity-checklist">
-                    {criteria.map((item) => <span key={item}><Icon name="check" size={13} /> {item}</span>)}
-                </div>
-            )}
-
-            <div className="skillcity-panel-actions">
-                <button type="button" className="primary" disabled={!node.unlocked || questLoading} onClick={() => onStart(node)}>
-                    <Icon name="rocket" size={16} /> {missionCtaText(node)}
+            <div className="skillcity-mvp-panel__actions">
+                <button type="button" disabled={isLocked || questLoading || startBusy} onClick={() => onStart(node)}>
+                    <Icon name="bolt" size={15} /> {startBusy ? 'Opening...' : 'Odpri trening'}
                 </button>
-                <button
-                    type="button"
-                    className="secondary"
-                    disabled={!canClaim || questLoading || optimisticAction === `${node.nodeKey}:COMPLETE`}
-                    onClick={() => onComplete(node)}
-                >
-                    <Icon name="checkCircle" size={16} /> Prižgi stavbo
+                <button type="button" className="secondary" disabled={isLocked || node.completed || questLoading || completeBusy} onClick={() => onComplete(node)}>
+                    {completeBusy ? 'Saving...' : 'Complete MVP'}
                 </button>
             </div>
-
-            {!node.unlocked && (
-                <div className="skillcity-lock-note"><Icon name="shield" size={16} /> {node.lockReason}</div>
-            )}
         </aside>
     );
 }
 
-function CityOverview({ phases, nodes, summary, selectedPhaseId, onSelectPhase, onSelectNode }) {
+function JourneyStrip({ nodes, activeNodeKey, currentNodeKey, onSelectNode }) {
     return (
-        <section className="skillcity-overview-card">
-            <div className="skillcity-overview-head">
-                <div>
-                    <p className="eyebrow">City overview</p>
-                    <h3>Celotno mesto</h3>
-                    <p>Pregled je namenjen orientaciji. Za trening ostani v aktivnem okrožju.</p>
-                </div>
-                <strong>{summary.progressPercent || 0}%</strong>
-            </div>
+        <section className="skillcity-mvp-journey" aria-label="Roadmap journey">
+            {nodes.map((node) => (
+                <button
+                    key={node.nodeKey}
+                    type="button"
+                    className={`skillcity-mvp-journey__step ${nodeStatusSlug(node)} ${activeNodeKey === node.nodeKey ? 'active' : ''} ${currentNodeKey === node.nodeKey ? 'current' : ''}`}
+                    onClick={() => onSelectNode(node.nodeKey)}
+                >
+                    <span>{node.completed ? '✓' : node.unlocked ? node.emoji : '🔒'}</span>
+                    <strong>{node.order}</strong>
+                </button>
+            ))}
+        </section>
+    );
+}
 
-            <div className="skillcity-overview-grid">
-                {phases.map((phase) => {
-                    const status = districtStatus(phase, summary);
-                    const bossNode = nodes.find((node) => node.nodeKey === phase.bossNodeKey);
-                    return (
-                        <button
-                            key={phase.id}
-                            type="button"
-                            className={`skillcity-overview-district skillquest-node--${phase.theme || 'violet'} ${selectedPhaseId === phase.id ? 'active' : ''} ${status}`}
-                            onClick={() => {
-                                onSelectPhase(phase.id);
-                                const firstNode = nodes.find((node) => node.phaseId === phase.id && (node.unlocked || node.completed)) || nodes.find((node) => node.phaseId === phase.id);
-                                if (firstNode) onSelectNode(firstNode.nodeKey);
-                            }}
-                        >
-                            <span>{status === 'locked' ? '🔒' : phase.emoji}</span>
-                            <strong>{phase.title}</strong>
-                            <small>{phase.completedNodes}/{phase.totalNodes} · boss: {bossNode?.skillName || '—'}</small>
-                            <i><em style={{ width: `${phase.progressPercent || 0}%` }} /></i>
-                        </button>
-                    );
-                })}
-            </div>
+function RecommendationCard({ recommendations = [] }) {
+    return (
+        <section className="skillcity-mvp-recommendations">
+            <span className="eyebrow">AI-ready guidance</span>
+            {(recommendations.length ? recommendations : ['Roadmap engine is ready for generated JSON.']).slice(0, 3).map((item, index) => (
+                <p key={`${index}-${item}`}><b>{index + 1}</b>{item}</p>
+            ))}
         </section>
     );
 }
@@ -1525,7 +1132,7 @@ export function SkillQuestMap({
     user,
     report,
     questMap,
-    questLoading,
+    questLoading = false,
     skills = [],
     challenges = [],
     selectedSkillKeys = [],
@@ -1536,142 +1143,54 @@ export function SkillQuestMap({
     onResetQuestMap,
     openSimulator
 }) {
-    const userId = user?.id || report?.userId || 'guest';
+    const userId = user?.id || user?.email || 'guest';
     const [localProgress, setLocalProgress] = useState(() => readLocalProgress(userId));
-    const [selectedPhaseId, setSelectedPhaseId] = useState('');
     const [activeNodeKey, setActiveNodeKey] = useState('');
-    const [mapMode, setMapMode] = useState('city');
-    const [performanceMode, setPerformanceMode] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-        const lowMemory = typeof navigator !== 'undefined' && Number(navigator.deviceMemory || 8) <= 4;
-        const lowCores = typeof navigator !== 'undefined' && Number(navigator.hardwareConcurrency || 8) <= 4;
-        return Boolean(reducedMotion || lowMemory || lowCores);
-    });
+    const [activePhaseId, setActivePhaseId] = useState('foundation');
+    const [performanceMode, setPerformanceMode] = useState(false);
     const [optimisticAction, setOptimisticAction] = useState('');
-    const [avatarPosition, setAvatarPosition] = useState(null);
-    const [avatarMoving, setAvatarMoving] = useState(false);
-    const avatarPositionRef = useRef(null);
-    const avatarAnimationRef = useRef(0);
+    const modelReady = useModelViewerReady();
 
     useEffect(() => {
-        setLocalProgress(readLocalProgress(userId));
+        const progress = readLocalProgress(userId);
+        setLocalProgress(progress);
     }, [userId]);
 
-    useEffect(() => () => {
-        if (avatarAnimationRef.current) {
-            cancelAnimationFrame(avatarAnimationRef.current);
-        }
-    }, []);
+    const fallbackMap = useMemo(
+        () => buildFallbackMap({ userId, skills, challenges, report, localProgress }),
+        [userId, skills, challenges, report, localProgress]
+    );
 
-    const effectiveMap = useMemo(() => (
-        questMap?.nodes?.length
-            ? {
-                ...questMap,
-                roadmapTitle: 'SkillCity',
-                roadmapSubtitle: 'Odklepaj mesto po okrožjih. Vsaka zgrajena stavba je osvojena veščina, vsak boss pa odpre novo območje.',
-                phases: (questMap.phases || []).map(decoratePhase),
-                nodes: (questMap.nodes || []).map(decorateNode)
-            }
-            : buildFallbackMap({ userId, skills, challenges, report, localProgress })
-    ), [questMap, userId, skills, challenges, report, localProgress]);
-
-    const nodes = useMemo(() => [...(effectiveMap.nodes || [])].sort((a, b) => a.order - b.order), [effectiveMap.nodes]);
-    const phases = useMemo(() => [...(effectiveMap.phases || [])].map(decoratePhase).sort((a, b) => a.order - b.order), [effectiveMap.phases]);
+    const effectiveMap = useMemo(() => normalizeQuestMap(questMap, fallbackMap), [questMap, fallbackMap]);
+    const nodes = effectiveMap.nodes || [];
+    const phases = effectiveMap.phases || [];
     const summary = effectiveMap.summary || {};
     const currentNodeKey = summary.currentNodeKey || nodes.find((node) => node.unlocked && !node.completed)?.nodeKey || nodes[0]?.nodeKey;
-    const nextNode = nodes.find((node) => node.nodeKey === currentNodeKey) || nodes.find((node) => node.unlocked && !node.completed) || nodes[0];
+    const nextNode = nodes.find((node) => node.nodeKey === currentNodeKey) || nodes.find((node) => node.unlocked && !node.completed) || nodes[nodes.length - 1];
     const nextBoss = nodes.find((node) => node.nodeKey === summary.nextBossNodeKey) || nodes.find((node) => node.boss && !node.completed);
 
     useEffect(() => {
-        const nextPhase = summary.currentPhaseId || nextNode?.phaseId || phases[0]?.id;
-        if (!selectedPhaseId && nextPhase) setSelectedPhaseId(nextPhase);
-    }, [selectedPhaseId, summary.currentPhaseId, nextNode?.phaseId, phases]);
-
-    useEffect(() => {
-        const activeNode = nodes.find((node) => node.nodeKey === activeNodeKey);
-        if (currentNodeKey && (!activeNodeKey || activeNode?.completed)) {
-            setActiveNodeKey(currentNodeKey);
+        if (!nodes.length) return;
+        const initialNode = activeNodeKey ? nodes.find((node) => node.nodeKey === activeNodeKey) : null;
+        const targetNode = initialNode || nextNode || nodes[0];
+        if (targetNode && targetNode.nodeKey !== activeNodeKey) {
+            setActiveNodeKey(targetNode.nodeKey);
         }
-    }, [activeNodeKey, currentNodeKey, nodes]);
-
-    const activeNode = nodes.find((node) => node.nodeKey === activeNodeKey)
-        || nodes.find((node) => node.nodeKey === currentNodeKey)
-        || nodes[0];
-    const activePhaseId = selectedPhaseId || activeNode?.phaseId || summary.currentPhaseId || phases[0]?.id;
-    const activePhase = phases.find((phase) => phase.id === activePhaseId) || phases[0];
-    const activePhaseNodes = useMemo(() => phaseNodesFor(nodes, activePhase?.id), [nodes, activePhase?.id]);
-    const selectedSkills = Array.isArray(selectedSkillKeys) ? selectedSkillKeys : [];
-    const cityMetrics = useMemo(() => roadmapMetrics(nodes), [nodes]);
-    const cityLandmarkStates = useMemo(() => buildCityLandmarkStates({ phases, nodes, selectedPhaseId: activePhase?.id, mapMode }), [phases, nodes, activePhase?.id, mapMode]);
-    const upcomingLandmark = cityLandmarkStates.find((landmark) => !landmark.unlocked) || cityLandmarkStates[cityLandmarkStates.length - 1];
-
-    useEffect(() => {
-        if (!activeNode) return undefined;
-        const routePoints = buildAvatarRoutePoints(nodes);
-        const targetDistance = routeDistanceForNode(activeNode, nodes);
-        const currentPoint = avatarPositionRef.current || pointAtRouteDistance(routePoints, 0);
-        const currentDistance = nearestDistanceOnRoute(routePoints, currentPoint);
-        const target = pointAtRouteDistance(routePoints, targetDistance);
-
-        if (avatarAnimationRef.current) {
-            cancelAnimationFrame(avatarAnimationRef.current);
+        if (targetNode?.phaseId && targetNode.phaseId !== activePhaseId) {
+            setActivePhaseId(targetNode.phaseId);
         }
+    }, [activeNodeKey, activePhaseId, nextNode, nodes]);
 
-        const travelDistance = Math.abs(targetDistance - currentDistance);
-
-        if (travelDistance < 0.32) {
-            avatarPositionRef.current = target;
-            setAvatarPosition(target);
-            setAvatarMoving(false);
-            return undefined;
-        }
-
-        if (!avatarPositionRef.current) {
-            avatarPositionRef.current = currentPoint;
-            setAvatarPosition(currentPoint);
-        }
-
-        const duration = clamp(460 + (travelDistance * 38), 540, 1680);
-        let cancelled = false;
-        let startedAt = null;
-        setAvatarMoving(true);
-
-        const step = (timestamp) => {
-            if (cancelled) return;
-            if (startedAt === null) startedAt = timestamp;
-            const progress = Math.min(1, (timestamp - startedAt) / duration);
-            const eased = easeInOutCubic(progress);
-            const distance = lerp(currentDistance, targetDistance, eased);
-            const next = pointAtRouteDistance(routePoints, distance);
-
-            avatarPositionRef.current = next;
-            setAvatarPosition(next);
-
-            if (progress < 1) {
-                avatarAnimationRef.current = requestAnimationFrame(step);
-            } else {
-                avatarPositionRef.current = target;
-                setAvatarPosition(target);
-                setAvatarMoving(false);
-            }
-        };
-
-        avatarAnimationRef.current = requestAnimationFrame(step);
-        return () => {
-            cancelled = true;
-            if (avatarAnimationRef.current) {
-                cancelAnimationFrame(avatarAnimationRef.current);
-            }
-        };
-    }, [activeNode, nodes]);
+    const activeNode = nodes.find((node) => node.nodeKey === activeNodeKey) || nextNode || nodes[0];
+    const activePhase = phases.find((phase) => phase.id === activePhaseId) || phases.find((phase) => phase.id === activeNode?.phaseId) || phases[0];
+    const activePhaseNodes = nodes.filter((node) => node.phaseId === activePhase?.id).sort((a, b) => a.order - b.order);
+    const cityPaletteStyle = avatarCityPaletteVars(user?.avatarConfig);
 
     const handleSelectNode = (nodeKey) => {
         const node = nodes.find((item) => item.nodeKey === nodeKey);
-        setActiveNodeKey(nodeKey);
-        if (node?.phaseId) {
-            setSelectedPhaseId(node.phaseId);
-        }
+        if (!node) return;
+        setActiveNodeKey(node.nodeKey);
+        setActivePhaseId(node.phaseId);
     };
 
     const persistLocalAction = (node, action) => {
@@ -1692,9 +1211,7 @@ export function SkillQuestMap({
         try {
             if (onQuestNodeAction) {
                 const result = await onQuestNodeAction(node.nodeKey, action);
-                if (!result?.nodes?.length) {
-                    persistLocalAction(node, action);
-                }
+                if (!result?.nodes?.length) persistLocalAction(node, action);
             } else {
                 persistLocalAction(node, action);
             }
@@ -1718,27 +1235,24 @@ export function SkillQuestMap({
     const handleCompleteNode = (node) => handleNodeAction(node, 'COMPLETE');
 
     const handleSelectPhase = (phaseId) => {
-        setSelectedPhaseId(phaseId);
-        const firstUsefulNode = nodes.find((node) => node.phaseId === phaseId && node.nodeKey === currentNodeKey)
+        setActivePhaseId(phaseId);
+        const candidate = nodes.find((node) => node.phaseId === phaseId && node.nodeKey === currentNodeKey)
             || nodes.find((node) => node.phaseId === phaseId && node.unlocked && !node.completed)
             || nodes.find((node) => node.phaseId === phaseId && node.unlocked)
             || nodes.find((node) => node.phaseId === phaseId);
-        if (firstUsefulNode) setActiveNodeKey(firstUsefulNode.nodeKey);
+        if (candidate) setActiveNodeKey(candidate.nodeKey);
     };
 
     const handleShowBoss = () => {
         if (!nextBoss) return;
-        setSelectedPhaseId(nextBoss.phaseId);
         setActiveNodeKey(nextBoss.nodeKey);
-        setMapMode('city');
+        setActivePhaseId(nextBoss.phaseId);
     };
 
     const handleReset = async () => {
         if (onResetQuestMap) {
             const result = await onResetQuestMap();
-            if (result?.nodes?.length) {
-                return;
-            }
+            if (result?.nodes?.length) return;
         }
         setLocalProgress({});
         writeLocalProgress(userId, {});
@@ -1748,87 +1262,60 @@ export function SkillQuestMap({
         return <div className="loading-card">SkillCity se naloži, ko so veščine pripravljene.</div>;
     }
 
-    const cityPaletteStyle = avatarCityPaletteVars(user?.avatarConfig);
-
     return (
-        <section className="skillquest-shell skillcity-shell skillcity-shell--avatar-tinted skillcity-shell--layout-v9 skillcity-shell--product-v10 skillcity-shell--product-v11 skillcity-shell--product-v12 skillcity-shell--product-v13 skillcity-shell--product-v14 skillcity-shell--hoverclean-v21 skillcity-shell--buildingonly-v24 skillcity-shell--buildingfix-v25 skillcity-shell--fit-v26" style={cityPaletteStyle}>
+        <section className="skillquest-shell skillcity-mvp-shell" style={cityPaletteStyle}>
             <CommandCenter
-                title={effectiveMap.roadmapTitle}
-                subtitle={effectiveMap.roadmapSubtitle}
+                map={effectiveMap}
                 nextNode={nextNode}
                 nextBoss={nextBoss}
-                summary={summary}
-                user={user}
-                currentPhase={activePhase}
-                recommendations={effectiveMap.focusRecommendations}
-                nodes={nodes}
+                activePhase={activePhase}
                 questLoading={questLoading}
+                user={user}
                 onStartNext={() => handleStartNode(nextNode)}
                 onShowBoss={handleShowBoss}
+                onReset={handleReset}
             />
 
-            <RoadmapToolbar
-                phases={phases}
-                selectedPhaseId={activePhase?.id}
-                summary={summary}
-                mapMode={mapMode}
-                performanceMode={performanceMode}
-                onMapModeChange={setMapMode}
-                onPerformanceModeChange={setPerformanceMode}
-                onSelectPhase={handleSelectPhase}
-            />
-
-            <div className="skillcity-roadmap-layout">
-                <div className="skillcity-map-column">
-                    <CityRoadmapStage
-                        phases={phases}
-                        nodes={nodes}
-                        activeNode={activeNode}
-                        currentNodeKey={currentNodeKey}
-                        selectedPhaseId={activePhase?.id}
-                        selectedSkillKeys={selectedSkills}
-                        user={user}
-                        mapMode={mapMode}
-                        performanceMode={performanceMode}
-                        summary={summary}
-                        avatarPosition={avatarPosition}
-                        avatarMoving={avatarMoving}
-                        onSelectNode={handleSelectNode}
-                        onSelectPhase={handleSelectPhase}
-                        onStartActive={handleStartNode}
-                    />
-
-                    <JourneyStrip
-                        phase={activePhase}
-                        nodes={activePhaseNodes}
-                        activeNode={activeNode}
-                        currentNodeKey={currentNodeKey}
-                        onSelectNode={handleSelectNode}
-                    />
-
-                    <LandmarkDock
-                        landmarks={cityLandmarkStates}
-                        onSelectPhase={handleSelectPhase}
-                        onSelectNode={handleSelectNode}
-                    />
+            <div className="skillcity-mvp-toolbar">
+                <div>
+                    <span className="eyebrow">Renderer</span>
+                    <strong>{performanceMode ? 'Eco CSS fallback' : modelReady ? 'Grouped GLB roadmap' : 'Loading GLB viewer'}</strong>
                 </div>
+                <div className="skillcity-mvp-toolbar__actions">
+                    <button type="button" className={!performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(false)}>
+                        Grouped GLB
+                    </button>
+                    <button type="button" className={performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(true)}>
+                        Eco mode
+                    </button>
+                </div>
+            </div>
 
-                <aside className="skillcity-side-column" aria-label="Roadmap akcije in izbrana misija">
-                    <RoadmapControlDeck
+            <div className="skillcity-mvp-layout">
+                <main className="skillcity-mvp-main">
+                    <DistrictChips phases={phases} activePhaseId={activePhase?.id} onSelectPhase={handleSelectPhase} />
+                    <CityWorld
+                        nodes={nodes}
+                        phases={phases}
                         activeNode={activeNode}
-                        nextNode={nextNode}
-                        nextBoss={nextBoss}
-                        nextLandmark={upcomingLandmark}
-                        activePhase={activePhase}
-                        metrics={cityMetrics}
+                        currentNodeKey={currentNodeKey}
+                        selectedSkillKeys={selectedSkillKeys}
+                        activePhaseId={activePhase?.id}
+                        user={user}
+                        modelReady={modelReady}
                         performanceMode={performanceMode}
-                        questLoading={questLoading}
-                        onStartNode={handleStartNode}
                         onSelectNode={handleSelectNode}
                         onSelectPhase={handleSelectPhase}
-                        onPerformanceModeChange={setPerformanceMode}
                     />
+                    <JourneyStrip
+                        nodes={activePhaseNodes.length ? activePhaseNodes : nodes}
+                        activeNodeKey={activeNode?.nodeKey}
+                        currentNodeKey={currentNodeKey}
+                        onSelectNode={handleSelectNode}
+                    />
+                </main>
 
+                <div className="skillcity-mvp-side">
                     <MissionPanel
                         node={activeNode}
                         questLoading={questLoading}
@@ -1836,29 +1323,9 @@ export function SkillQuestMap({
                         onStart={handleStartNode}
                         onComplete={handleCompleteNode}
                     />
-                </aside>
+                    <RecommendationCard recommendations={effectiveMap.focusRecommendations} />
+                </div>
             </div>
-
-            <section className="skillcity-guide-strip skillcity-guide-strip--compact">
-                <div>
-                    <span>1</span>
-                    <strong>Klikni stavbo</strong>
-                    <small>V mapi vidiš celotno pot, brez odpiranja dodatnega pregleda.</small>
-                </div>
-                <div>
-                    <span>2</span>
-                    <strong>Začni trening</strong>
-                    <small>Simulator sam dobi pravi skill in challenge.</small>
-                </div>
-                <div>
-                    <span>3</span>
-                    <strong>Odkleni naprej</strong>
-                    <small>Boss stavbe odpirajo nove dele mesta.</small>
-                </div>
-                <button type="button" className="secondary skillcity-reset-button" disabled={questLoading} onClick={handleReset}>
-                    <Icon name="x" size={15} /> Reset progress
-                </button>
-            </section>
         </section>
     );
 }
