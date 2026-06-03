@@ -69,7 +69,7 @@ export const defaultAvatarConfig = {
 const levelModels = Array.from({ length: 10 }, (_, level) => ({
     key: `level-${String(level).padStart(2, '0')}`,
     level,
-    label: level === 0 ? 'Level 0 — Origin Shard' : `Level ${level} — Skill Shard ${level}`,
+    label: level === 0 ? 'Stopnja 0 — Origin Shard' : `Stopnja ${level} — Skill Shard ${level}`,
     shortLabel: `LVL ${level}`,
     title: [
         'Origin',
@@ -117,9 +117,9 @@ const outfits = [
 ];
 
 const energies = [
-    { key: 'minimal', label: 'Minimal' },
-    { key: 'balanced', label: 'Balanced' },
-    { key: 'radiant', label: 'Radiant' }
+    { key: 'minimal', label: 'Minimalno' },
+    { key: 'balanced', label: 'Uravnoteženo' },
+    { key: 'radiant', label: 'Radiantno' }
 ];
 
 export const accentPalettes = {
@@ -497,7 +497,7 @@ function LevelModelViewer({ config, modelKey, size = 'large', interactive = fals
                     shadow-softness="0.94"
                     environment-image="legacy"
                     interaction-prompt="none"
-                    loading={size === 'large' ? 'eager' : 'lazy'}
+                    loading={size === 'large' || size === 'hero' || size === 'mini' ? 'eager' : 'lazy'}
                     reveal="auto"
                     auto-rotate={size === 'large'}
                     rotation-per-second={interactive ? '9deg' : '4deg'}
@@ -547,7 +547,7 @@ function ProgressCard({ report, selectedUser, selectedModel }) {
             <div className="shard-progress-card__head">
                 <div>
                     <span>Your Progress</span>
-                    <strong>Level {level}</strong>
+                    <strong>Stopnja {level}</strong>
                     <small>{selectedModel.title}</small>
                 </div>
                 <ShardLogo />
@@ -557,9 +557,9 @@ function ProgressCard({ report, selectedUser, selectedModel }) {
                 <footer><span>{Number(xp).toLocaleString()} / {Number(max).toLocaleString()} XP</span><span>{progress}%</span></footer>
             </div>
             <div className="shard-progress-card__stats">
-                <div><Icon name="users" size={16} /><span>Skills</span><strong>{skillsMastered}</strong></div>
-                <div><Icon name="flame" size={16} /><span>Streak</span><strong>{streak}d</strong></div>
-                <div><Icon name="trophy" size={16} /><span>Wins</span><strong>{challengesWon}</strong></div>
+                <div><Icon name="users" size={16} /><span>Veščine</span><strong>{skillsMastered}</strong></div>
+                <div><Icon name="flame" size={16} /><span>Niz</span><strong>{streak}d</strong></div>
+                <div><Icon name="trophy" size={16} /><span>Zmage</span><strong>{challengesWon}</strong></div>
             </div>
         </aside>
     );
@@ -627,7 +627,7 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
                     <ProgressCard report={report} selectedUser={selectedUser} selectedModel={selectedModel} />
                     <div className="avatar-studio__quick-controls">
                         <div className="avatar-studio__customizer-group avatar-studio__customizer-group--energy">
-                            <span>Energy</span>
+                            <span>Energija</span>
                             <div>
                                 {energies.map((energy) => (
                                     <button
@@ -642,7 +642,7 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
                             </div>
                         </div>
                         <div className="avatar-studio__customizer-group avatar-studio__customizer-group--colors avatar-studio__customizer-group--dropdown">
-                            <span>Color palette</span>
+                            <span>Barvna paleta</span>
                             <label className="avatar-color-dropdown">
                                 <i
                                     aria-hidden="true"
@@ -686,7 +686,7 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
             <div className="avatar-studio__evolution">
                 <div className="avatar-studio__evolution-head">
                     <div>
-                        <p className="eyebrow">Level 0–9</p>
+                        <p className="eyebrow">Stopnja 0–9</p>
                         <h4>Player modeli za progression</h4>
                     </div>
                     <span className="avatar-studio__model-count">{levelModels.length} GLB modelov</span>
@@ -711,7 +711,7 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
                                 </div>
                                 <p>{model.description}</p>
                                 <footer>
-                                    {selected ? <><Icon name="circle" size={14} /> Current</> : <><Icon name="checkCircle" size={14} /> Available</>}
+                                    {selected ? <><Icon name="circle" size={14} /> Trenutni</> : <><Icon name="checkCircle" size={14} /> Na voljo</>}
                                 </footer>
                             </button>
                         );

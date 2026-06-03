@@ -142,7 +142,7 @@ export function useAppData() {
             const dashboard = await api.getMentorDashboard();
             setMentorDashboard(dashboard);
         } catch (err) {
-            console.warn('Mentor dashboard ni dosegljiv:', err.message);
+            console.warn('Mentorska nadzorna plošča ni dosegljiv:', err.message);
         }
     }, [demoMode]);
 
@@ -732,10 +732,10 @@ function buildDemoReward(session, selectedSkillKeys, dailyChallengeActive = fals
     const level = totalPoints >= 250 ? 3 : totalPoints >= 100 ? 2 : 1;
     const levelStart = level === 3 ? 250 : level === 2 ? 100 : 0;
     const nextLevelTarget = level === 3 ? 450 : level === 2 ? 250 : 100;
-    const newBadges = ['First star'];
-    if (session.score >= 80) newBadges.push('Strong answer');
-    if (session.score >= 90) newBadges.push('AI-ready communicator');
-    if (selectedSkillKeys.length >= 3) newBadges.push('Multi-skill learner');
+    const newBadges = ['Prva zvezdica'];
+    if (session.score >= 80) newBadges.push('Močan odgovor');
+    if (session.score >= 90) newBadges.push('Komunikator pripravljen na AI');
+    if (selectedSkillKeys.length >= 3) newBadges.push('Učenec z več veščinami');
 
     return {
         earnedXp,
@@ -757,8 +757,8 @@ function buildDemoDailyQuests(strongAnswerCompleted, selectedSkillCount, dailyDo
     const multiSkillCompleted = selectedSkillCount >= 2;
     return [
         { id: 'practice-once', label: 'Reši 1 simulacijo danes', completed: true, current: 1, target: 1, rewardText: '+20 XP disciplina' },
-        { id: 'daily-double-xp', label: 'Personaliziran dnevni izziv', completed: dailyDoubleXpCompleted, current: dailyDoubleXpCompleted ? 1 : 0, target: 1, rewardText: '2x XP' },
-        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: strongAnswerCompleted, current: strongAnswerCompleted ? 1 : 0, target: 1, rewardText: 'močnejši score' },
+        { id: 'daily-double-xp', label: 'Osebno prilagojen dnevni izziv', completed: dailyDoubleXpCompleted, current: dailyDoubleXpCompleted ? 1 : 0, target: 1, rewardText: '2x XP' },
+        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: strongAnswerCompleted, current: strongAnswerCompleted ? 1 : 0, target: 1, rewardText: 'močnejši rezultat' },
         { id: 'multi-skill', label: 'Vadi vsaj 2 veščini hkrati', completed: multiSkillCompleted, current: Math.min(selectedSkillCount, 2), target: 2, rewardText: '+5 XP bonus' }
     ];
 }
@@ -816,14 +816,14 @@ function buildDemoReport(session, selectedSkillKeys, reward, user) {
         })),
         metricProgress: Object.entries(session.structuredScores || {}).map(([metricKey, value]) => ({
             metricKey,
-            label: metricKey === 'empathy' ? 'Empatija' : metricKey === 'clarity' ? 'Jasnost' : metricKey === 'structure' ? 'Struktura odgovora' : metricKey === 'impact' ? 'Reševanje problema' : metricKey === 'confidence' ? 'Samozavest' : metricKey,
+            label: metricKey === 'empatija' ? 'Empatija' : metricKey === 'jasnost' ? 'Jasnost' : metricKey === 'structure' ? 'Struktura odgovora' : metricKey === 'impact' ? 'Reševanje problema' : metricKey === 'confidence' ? 'Samozavest' : metricKey,
             averageScore: value,
             sessions: 1,
             status: value >= 80 ? 'močno področje' : value >= 60 ? 'dobro, ampak še izboljšljivo' : 'fokus za izboljšavo',
             advice: value >= 80 ? 'To področje ti gre dobro. Ohrani ta pristop tudi pri naslednjih vajah.' : 'Pri naslednji vaji dodaj bolj konkreten primer, jasen predlog in naslednji korak.'
         })),
         recommendations: [
-            reward.leveledUp ? `Nov level: ${reward.newLevel}. Nadaljuj z dnevno rutino.` : 'Odgovor popravi po AI povratni informaciji in ga oddaj ponovno.',
+            reward.leveledUp ? `Nova stopnja: ${reward.newLevel}. Nadaljuj z dnevno rutino.` : 'Odgovor popravi po AI povratni informaciji in ga oddaj ponovno.',
             'Dodaj mentorjevo opombo, če želiš človeški vpogled v napredek.',
             'Naslednjič izberi še eno povezano veščino za širši učni načrt.'
         ]
@@ -862,7 +862,7 @@ function buildCompetitionResult({ mode, session, selectedUser, opponent, challen
 
         return {
             mode,
-            title: 'Daily Duel rezultat',
+            title: 'Dnevni dvoboj rezultat',
             challengeTitle: challenge?.title || 'Današnji skupni izziv',
             userScore: session.score,
             userRank: current?.rank || 1,
@@ -880,21 +880,21 @@ function buildCompetitionResult({ mode, session, selectedUser, opponent, challen
 
     return {
         mode,
-        title: 'Skill Battle rezultat',
-        challengeTitle: challenge?.title || 'Battle izziv',
+        title: 'Bitka veščin rezultat',
+        challengeTitle: challenge?.title || 'Izziv bitke',
         userName,
-        opponentName: resolvedOpponent?.name || 'SkillBot Rival',
+        opponentName: resolvedOpponent?.name || 'SkillBot tekmec',
         userScore: session.score,
         opponentScore,
         result: diff > 0 ? 'win' : diff < 0 ? 'loss' : 'draw',
         message: diff > 0
-            ? `Zmagal/a si za ${diff} točk in dobiš mentalni momentum za naslednjo vajo.`
+            ? `Zmagal/a si za ${diff} točk in dobiš miselni zagon za naslednjo vajo.`
             : diff < 0
-                ? `Rival je bil boljši za ${Math.abs(diff)} točk. Poskusi rematch z bolj konkretnim primerom.`
-                : 'Izenačeno. Rematch je idealen naslednji korak.',
+                ? `Rival je bil boljši za ${Math.abs(diff)} točk. Poskusi ponovni dvoboj z bolj konkretnim primerom.`
+                : 'Izenačeno. Ponovni dvoboj je idealen naslednji korak.',
         leaderboard: [
             { userId: selectedUser?.id || 'me', name: userName, score: session.score, rank: diff >= 0 ? 1 : 2, avatar: initials(userName), avatarConfig: selectedUser?.avatarConfig },
-            { userId: resolvedOpponent?.id || 'opponent', name: resolvedOpponent?.name || 'SkillBot Rival', score: opponentScore, rank: diff >= 0 ? 2 : 1, avatar: initials(resolvedOpponent?.name || 'SkillBot Rival'), avatarConfig: resolvedOpponent?.avatarConfig }
+            { userId: resolvedOpponent?.id || 'opponent', name: resolvedOpponent?.name || 'SkillBot tekmec', score: opponentScore, rank: diff >= 0 ? 2 : 1, avatar: initials(resolvedOpponent?.name || 'SkillBot tekmec'), avatarConfig: resolvedOpponent?.avatarConfig }
         ].sort((a, b) => b.score - a.score).map((entry, index) => ({ ...entry, rank: index + 1 }))
     };
 }

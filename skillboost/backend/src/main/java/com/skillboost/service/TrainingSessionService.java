@@ -101,10 +101,10 @@ public class TrainingSessionService {
 
     public SessionSubmissionResponse submit(SubmitSessionRequest request) {
         UserProfile user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ni najden."));
 
         TrainingChallenge challenge = challengeRepository.findById(request.challengeId())
-                .orElseThrow(() -> new IllegalArgumentException("Challenge not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Izziv ni najden."));
 
         List<String> skillKeys = normalizeSkillKeys(request, challenge);
         String storedSkillKey = String.join(",", skillKeys);
@@ -207,7 +207,7 @@ public class TrainingSessionService {
                     skillKeys,
                     challenge,
                     score,
-                    "GEMINI_API_KEY is missing."
+                    "Manjka GEMINI_API_KEY."
             );
         }
 
@@ -245,7 +245,7 @@ public class TrainingSessionService {
 
             String systemPrompt = promptTemplate != null
                     ? promptTemplate.getSystemPrompt()
-                    : "Si slovenski AI coach za mehke veščine. Ocenjuj logično glede na vprašanje, kontekst in kakovost odgovora.";
+                    : "Si slovenski AI trener za mehke veščine. Ocenjuj logično glede na vprašanje, kontekst in kakovost odgovora.";
 
             String criteria = challenge.getEvaluationCriteria() == null
                     ? ""
@@ -351,10 +351,10 @@ public class TrainingSessionService {
                 return text.trim();
             }
 
-            return handleAiFailure(skillKeys, challenge, score, "Empty response from Gemini.");
+            return handleAiFailure(skillKeys, challenge, score, "Prazen odgovor iz Gemini.");
         } catch (Exception e) {
-            log.warn("Gemini API call failed: {}", e.getMessage());
-            return handleAiFailure(skillKeys, challenge, score, "Gemini API call failed: " + e.getMessage());
+            log.warn("Klic Gemini API ni uspel: {}", e.getMessage());
+            return handleAiFailure(skillKeys, challenge, score, "Klic Gemini API ni uspel: " + e.getMessage());
         }
     }
 
@@ -629,7 +629,7 @@ public class TrainingSessionService {
 
     public TrainingSession updateMentorNote(String sessionId, MentorNoteRequest request) {
         TrainingSession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Training session not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Trening seja ni najdena."));
 
         session.setMentorNote(request.mentorNote());
 
@@ -669,10 +669,10 @@ public class TrainingSessionService {
 
     private String stripMockPrefix(String value) {
         if (value == null || value.isBlank()) {
-            return "AI coach je pripravil lokalno oceno.";
+            return "AI trener je pripravil lokalno oceno.";
         }
 
-        return value.replaceFirst("(?i)^\\s*Mock AI:\\s*", "");
+        return value.replaceFirst("(?i)^\\s*(Mock AI|Lokalni AI):\\s*", "");
     }
 
     private String buildMockAiFeedback(List<String> skillKeys, TrainingChallenge challenge, int score) {
@@ -682,7 +682,7 @@ public class TrainingSessionService {
                 .orElse(null);
 
         String base = prompt == null
-                ? "AI coach je odgovor ocenil glede na jasnost, strukturo, empatijo, relevantnost za scenarij in izvedljiv naslednji korak."
+                ? "AI trener je odgovor ocenil glede na jasnost, strukturo, empatijo, relevantnost za scenarij in izvedljiv naslednji korak."
                 : prompt.getSimulatedAiResponse();
 
         base = stripMockPrefix(base);
