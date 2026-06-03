@@ -48,7 +48,7 @@ public class UserService {
         //iscemo po mailu
         return userRepository.findByEmailIgnoreCase(email).orElseGet(() -> {
             UserProfile newUser = new UserProfile();
-            newUser.setName(defaultName != null ? defaultName : "Nov Uporabnik");
+            newUser.setName(defaultName != null ? defaultName : "New User");
             newUser.setEmail(email);
             newUser.setRole("STUDENT");
             newUser.setCreatedAt(LocalDateTime.now());
@@ -59,7 +59,7 @@ public class UserService {
 
     public UserProfile updateProfile(String email, UpdateProfileRequest request) {
         UserProfile user = userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ne obstaja."));
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist."));
 
         user.setName(request.name());
         user.setGoals(request.goals());

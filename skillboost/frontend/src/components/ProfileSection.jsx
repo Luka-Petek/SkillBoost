@@ -91,7 +91,7 @@ export function ProfileSection({ profile, selectedUser, report, skills = [], sel
                     <div className="profile-meta-row">
                         <span><Icon name="users" size={15} /> {fallbackProfile.role || 'STUDENT'}</span>
                         {fallbackProfile.email && <span><Icon name="message" size={15} /> {fallbackProfile.email}</span>}
-                        <span><Icon name="flame" size={15} /> {report?.streakDays || selectedUser?.streakDays || 0} dni streak</span>
+                        <span><Icon name="flame" size={15} /> {report?.streakDays || selectedUser?.streakDays || 0} dni niza</span>
                     </div>
                 </div>
                 <div className="profile-hero-actions">
@@ -184,7 +184,7 @@ export function ProfileSection({ profile, selectedUser, report, skills = [], sel
                                 <div className="profile-tag-list">
                                     {(fallbackProfile.goals || []).length
                                         ? fallbackProfile.goals.map((goal) => <span key={goal}>{goal}</span>)
-                                        : <small>Dodaj cilje, da bo AI coach bolj personaliziran.</small>}
+                                        : <small>Dodaj cilje, da bo AI trener bolj personaliziran.</small>}
                                 </div>
                             </div>
                             <div>
@@ -202,7 +202,7 @@ export function ProfileSection({ profile, selectedUser, report, skills = [], sel
                 <section className="profile-card profile-card--coach">
                     <div className="profile-card-head">
                         <div>
-                            <p className="eyebrow">Coach insight</p>
+                            <p className="eyebrow">Trenerski vpogled</p>
                             <h3>Tvoj trening profil</h3>
                         </div>
                         <Icon name="brain" size={20} />

@@ -32,39 +32,39 @@ public class QuestMapService {
     private static final String STATUS_COMPLETED = "COMPLETED";
 
     private static final List<RoadmapPhaseDefinition> PHASES = List.of(
-            new RoadmapPhaseDefinition("foundation", "Harbor Gate", "Vstop v mesto", "Prva četrt odklene osnovno komunikacijo: jasno povej, dobro poslušaj in napiši odgovor brez zmede.", "violet", "🌉", 1),
-            new RoadmapPhaseDefinition("social-core", "Social Plaza", "Ljudje in odnosi", "Trg odnosov odklene pomoč, empatijo, meje in networking brez nepotrebne drame.", "green", "🤝", 2),
-            new RoadmapPhaseDefinition("work-arena", "Office District", "Delo in sestanki", "Delovna četrt vodi skozi sestanke, feedback, prioritete in upravljanje časa.", "amber", "🏢", 3),
-            new RoadmapPhaseDefinition("focus-engine", "Focus Park", "Mir, fokus, odločitve", "Park fokusa gradi disciplino, stresno odpornost, čustveno regulacijo in odločanje pod pritiskom.", "blue", "🌿", 4),
-            new RoadmapPhaseDefinition("career-league", "Career Heights", "Karierni vzpon", "Stolpnice kariere odklenejo intervjuje, samozavest, pogajanja in osnovno vodenje.", "pink", "🚀", 5),
-            new RoadmapPhaseDefinition("boss-tower", "Citadel Tower", "Finalni izzivi", "Citadela je finalna četrt: konflikti, težki pogovori, odpornost in finančni pogovori.", "teal", "🏰", 6)
+            new RoadmapPhaseDefinition("foundation", "Pristaniška vrata", "Vstop v mesto", "Prva četrt odklene osnovno komunikacijo: jasno povej, dobro poslušaj in napiši odgovor brez zmede.", "violet", "🌉", 1),
+            new RoadmapPhaseDefinition("social-core", "Trg odnosov", "Ljudje in odnosi", "Trg odnosov odklene pomoč, empatijo, meje in grajenje poznanstev brez nepotrebne drame.", "green", "🤝", 2),
+            new RoadmapPhaseDefinition("work-arena", "Delovna četrt", "Delo in sestanki", "Delovna četrt vodi skozi sestanke, povratno informacijo, prioritete in upravljanje časa.", "amber", "🏢", 3),
+            new RoadmapPhaseDefinition("focus-engine", "Park fokusa", "Mir, fokus, odločitve", "Park fokusa gradi disciplino, stresno odpornost, čustveno regulacijo in odločanje pod pritiskom.", "blue", "🌿", 4),
+            new RoadmapPhaseDefinition("career-league", "Karierne višave", "Karierni vzpon", "Stolpnice kariere odklenejo intervjuje, samozavest, pogajanja in osnovno vodenje.", "pink", "🚀", 5),
+            new RoadmapPhaseDefinition("boss-tower", "Citadelni stolp", "Finalni izzivi", "Citadela je finalna četrt: konflikti, težki pogovori, odpornost in finančni pogovori.", "teal", "🏰", 6)
     );
 
     private static final List<RoadmapNodeDefinition> ROADMAP = List.of(
             node("public-speaking", "foundation", 1, 12, 75, 58, false, "Zgradi prvo komunikacijsko stavbo in odpri aktivno poslušanje."),
             node("active-listening", "foundation", 2, 24, 68, 58, false, "Odklene pisni studio in bolj jasne odgovore."),
             node("clear-writing", "foundation", 3, 36, 76, 60, false, "Odklene digitalni komunikacijski checkpoint."),
-            node("digital-communication", "foundation", 4, 50, 68, 65, true, "Harbor Gate boss odklene Social Plaza."),
+            node("digital-communication", "foundation", 4, 50, 68, 65, true, "Pristaniška vrata boss odklene Trg odnosov."),
 
             node("asking-for-help", "social-core", 5, 50, 39, 60, false, "Odklene Empathy Hall."),
             node("empathy", "social-core", 6, 36, 31, 62, false, "Odklene Boundary Gate."),
             node("boundaries", "social-core", 7, 22, 40, 66, false, "Odklene Networking Hub."),
-            node("networking", "social-core", 8, 10, 32, 68, true, "Social Plaza boss odklene Office District."),
+            node("networking", "social-core", 8, 10, 32, 68, true, "Trg odnosov boss odklene Delovna četrt."),
 
             node("meeting-facilitation", "work-arena", 9, 27, 54, 62, false, "Odklene Feedback Studio."),
-            node("feedback-giving", "work-arena", 10, 42, 48, 68, false, "Odklene Priorities Center."),
+            node("feedback-giving", "work-arena", 10, 42, 48, 68, false, "Odklene Središče prioritet."),
             node("prioritization", "work-arena", 11, 58, 55, 66, false, "Odklene Time Control Tower."),
-            node("time-management", "work-arena", 12, 73, 48, 70, true, "Office District boss odklene Focus Park."),
+            node("time-management", "work-arena", 12, 73, 48, 70, true, "Delovna četrt boss odklene Park fokusa."),
 
             node("focus-discipline", "focus-engine", 13, 78, 29, 64, false, "Odklene Stress Garden."),
             node("stress-management", "focus-engine", 14, 65, 19, 66, false, "Odklene Emotion Lab."),
             node("emotional-regulation", "focus-engine", 15, 53, 28, 70, false, "Odklene Decision Bridge."),
-            node("decision-making", "focus-engine", 16, 42, 20, 72, true, "Focus Park boss odklene Career Heights."),
+            node("decision-making", "focus-engine", 16, 42, 20, 72, true, "Park fokusa boss odklene Karierne višave."),
 
             node("job-interview", "career-league", 17, 64, 72, 70, false, "Odklene Confidence Tower."),
             node("self-confidence", "career-league", 18, 75, 82, 68, false, "Odklene Negotiation Exchange."),
             node("negotiation", "career-league", 19, 86, 73, 74, false, "Odklene Leadership HQ."),
-            node("leadership-basics", "career-league", 20, 94, 83, 76, true, "Career Heights boss odklene Citadel Tower."),
+            node("leadership-basics", "career-league", 20, 94, 83, 76, true, "Karierne višave boss odklene Citadelni stolp."),
 
             node("conflict-resolution", "boss-tower", 21, 90, 47, 76, false, "Odklene Difficult Conversation Gate."),
             node("difficult-conversations", "boss-tower", 22, 80, 38, 78, false, "Odklene Resilience Armory."),
@@ -94,7 +94,7 @@ public class QuestMapService {
 
     public QuestMapResponse buildForUser(String userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ni najden."));
 
         List<Skill> skills = skillRepository.findAll();
         List<TrainingChallenge> challenges = challengeRepository.findAll();
@@ -227,7 +227,7 @@ public class QuestMapService {
         QuestMapResponse.QuestNode currentNode = currentMap.nodes().stream()
                 .filter(node -> node.nodeKey().equalsIgnoreCase(normalizedNodeKey))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Quest node not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Vozlišče misije ni najdeno."));
 
         if (!currentNode.unlocked() && !"RESET".equals(action)) {
             throw new IllegalArgumentException(currentNode.lockReason().isBlank()
@@ -253,7 +253,7 @@ public class QuestMapService {
             int earnedScore = Math.max(currentNode.bestScore(), progress.getBestScore());
             if (earnedScore < currentNode.requiredScore()) {
                 throw new IllegalArgumentException("Za prevzem nagrade najprej dosezi vsaj "
-                        + currentNode.requiredScore() + "/100 v simulatorju. Trenutni best score je " + earnedScore + ".");
+                        + currentNode.requiredScore() + "/100 v simulatorju. Trenutni najboljši rezultat je " + earnedScore + ".");
             }
             progress.setStatus(STATUS_COMPLETED);
             progress.setManualCompletion(true);
@@ -326,7 +326,7 @@ public class QuestMapService {
 
     public void resetUserProgress(String userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ni najden."));
         questProgressRepository.deleteByUserId(userId);
     }
 
@@ -401,12 +401,12 @@ public class QuestMapService {
         nodes.stream()
                 .filter(QuestMapResponse.QuestNode::claimable)
                 .findFirst()
-                .ifPresent(node -> recommendations.add("Prevzemi nagrado za " + node.skillName() + ": score je dosežen, stavba samo še čaka na odklep."));
+                .ifPresent(node -> recommendations.add("Prevzemi nagrado za " + node.skillName() + ": rezultat je dosežen, stavba samo še čaka na odklep."));
 
         nodes.stream()
                 .filter(node -> node.inProgress() && !node.completed() && !node.claimable() && node.bestScore() > 0)
                 .findFirst()
-                .ifPresent(node -> recommendations.add("Ponovi " + node.skillName() + ": manjka ti še " + Math.max(0, node.requiredScore() - node.bestScore()) + " score točk, da se stavba prižge."));
+                .ifPresent(node -> recommendations.add("Ponovi " + node.skillName() + ": manjka ti še " + Math.max(0, node.requiredScore() - node.bestScore()) + " rezultatnih točk, da se stavba prižge."));
 
         nodes.stream()
                 .filter(node -> node.boss() && node.unlocked() && !node.completed())
@@ -414,7 +414,7 @@ public class QuestMapService {
                 .ifPresent(node -> recommendations.add("City boss je pripravljen: " + node.skillName() + " zahteva vsaj " + node.requiredScore() + "/100."));
 
         if (sessions.isEmpty()) {
-            recommendations.add("Začni s prvo stavbo v Harbor Gate in oddaj kratek, realen odgovor v simulatorju.");
+            recommendations.add("Začni s prvo stavbo v Pristaniška vrata in oddaj kratek, realen odgovor v simulatorju.");
         }
 
         return recommendations.stream().distinct().limit(4).toList();

@@ -40,7 +40,7 @@ public class ReportService {
 
     public ReportResponse buildReport(String userId) {
         UserProfile user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .orElseThrow(() -> new IllegalArgumentException("Uporabnik ni najden."));
         gamificationService.syncLevel(user);
 
         List<TrainingSession> sessions = sessionRepository.findByUserId(userId);

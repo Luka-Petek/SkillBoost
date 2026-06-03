@@ -72,7 +72,7 @@ export function EngagementDashboard({
                         </button>
                         <button type="button" className="secondary" onClick={onStartDailyDuel}>
                             <Icon name="trophy" size={17} />
-                            Daily Duel
+                            Dnevni dvoboj
                         </button>
                         <button type="button" className="secondary" onClick={onOpenSkills}>
                             <Icon name="target" size={17} />
@@ -84,11 +84,11 @@ export function EngagementDashboard({
                 <div className="engagement-score-card">
                     <div className="engagement-score-ring" style={{ '--score': `${retentionScore}%` }}>
                         <span>{retentionScore}</span>
-                        <small>focus</small>
+                        <small>fokus</small>
                     </div>
                     <div>
                         <strong>{user?.name || 'Gost'}</strong>
-                        <p>Level {level} · {streakDays} dni streak · {totalStars} zvezdic</p>
+                        <p>Stopnja {level} · {streakDays} dni niza · {totalStars} zvezdic</p>
                     </div>
                 </div>
             </section>
@@ -129,7 +129,7 @@ export function EngagementDashboard({
                         <span className="engagement-icon"><Icon name="flame" /></span>
                         <div>
                             <p className="eyebrow">Dnevni loop</p>
-                            <h3>{completedQuests}/{dailyQuests.length || 3} questov</h3>
+                            <h3>{completedQuests}/{dailyQuests.length || 3} nalog</h3>
                         </div>
                     </div>
                     <div className="engagement-progress">
@@ -143,7 +143,7 @@ export function EngagementDashboard({
                 <article className="engagement-panel">
                     <div className="engagement-panel__title">
                         <div>
-                            <p className="eyebrow">Skill momentum</p>
+                            <p className="eyebrow">Zagon veščin</p>
                             <h3>Fokus za danes</h3>
                         </div>
                         <button type="button" onClick={onOpenSkills}>Uredi</button>
@@ -194,14 +194,14 @@ export function EngagementDashboard({
                     <div className="engagement-panel__title">
                         <div>
                             <p className="eyebrow">Tekmovanje</p>
-                            <h3>Daily Duel</h3>
+                            <h3>Dnevni dvoboj</h3>
                         </div>
                         <button type="button" onClick={onOpenCompetition}>Odpri</button>
                     </div>
                     <div className="arena-preview">
                         <div>
                             <span><Icon name="swords" /></span>
-                            <strong>{quickChallenge?.title || 'Skill Battle'}</strong>
+                            <strong>{quickChallenge?.title || 'Bitka veščin'}</strong>
                             <small>Odpri kratek duel in primerjaj rezultat.</small>
                         </div>
                         <button type="button" className="primary" onClick={onOpenCompetition}>Tekmuj</button>
@@ -211,7 +211,7 @@ export function EngagementDashboard({
                 <article className="engagement-panel">
                     <div className="engagement-panel__title">
                         <div>
-                            <p className="eyebrow">Coach insight</p>
+                            <p className="eyebrow">Trenerski vpogled</p>
                             <h3>Kaj trenirati</h3>
                         </div>
                     </div>
@@ -241,8 +241,8 @@ function AdvancedSkillMatrix({ report, skills = [] }) {
         <article className="engagement-panel advanced-skill-matrix">
             <div className="engagement-panel__title">
                 <div>
-                    <p className="eyebrow">Advanced dashboard</p>
-                    <h3>Skill health matrix</h3>
+                    <p className="eyebrow">Napredna nadzorna plošča</p>
+                    <h3>Matrika stanja veščin</h3>
                 </div>
             </div>
             {rows.length ? rows.map((row) => (
@@ -281,8 +281,8 @@ export function PlayerStatus({ user, report }) {
     return (
         <section className="player-status" aria-label="Igralčev napredek">
             <div>
-                <p className="eyebrow">SkillBoost profile</p>
-                <h2>{user?.name || report?.userName || 'Gost'} · Level {level}</h2>
+                <p className="eyebrow">SkillBoost profil</p>
+                <h2>{user?.name || report?.userName || 'Gost'} · Stopnja {level}</h2>
                 <p>Napreduj z dnevno vajo, zberi zvezdice in odklepaj značke kot v učni igri.</p>
             </div>
             <div className="level-progress">
@@ -333,14 +333,14 @@ export function SelectedSkillsDock({ skills = [], selectedSkillKeys = [], toggle
 export function DailyQuests({ quests }) {
     const safeQuests = quests?.length ? quests : [
         { id: 'practice-once', label: 'Reši 1 simulacijo danes', completed: false, current: 0, target: 1, rewardText: '+20 XP disciplina' },
-        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: false, current: 0, target: 1, rewardText: 'močnejši score' },
+        { id: 'strong-answer', label: 'Dosezi vsaj 70/100', completed: false, current: 0, target: 1, rewardText: 'močnejši rezultat' },
         { id: 'multi-skill', label: 'Vadi vsaj 2 veščini hkrati', completed: false, current: 0, target: 2, rewardText: '+5 XP bonus' }
     ];
 
     return (
         <div className="daily-quests">
             <p className="eyebrow">Dnevni cilji</p>
-            <h2>Quest board</h2>
+            <h2>Tabla dnevnih nalog</h2>
             <div className="quest-list">
                 {safeQuests.map((quest) => (
                     <div key={quest.id} className={`quest-item ${quest.completed ? 'done' : ''}`}>
@@ -459,7 +459,7 @@ export function GrowthFocusPanel({ skills = [], report, preferredSkillKeys = [],
 
             <div className={`daily-double-card ${dailyChallengeActive ? 'active' : ''}`}>
                 <span className="double-xp-badge">2x XP</span>
-                <strong>{personalizedDailyChallenge?.title || 'Personaliziran dnevni izziv'}</strong>
+                <strong>{personalizedDailyChallenge?.title || 'Osebno prilagojen dnevni izziv'}</strong>
                 <p>{personalizedDailyChallenge?.scenario || 'AI ti izbere izziv glede na izbrane veščine in najšibkejše rezultate.'}</p>
                 <button type="button" className="secondary" onClick={onStartDailyChallenge}>
                     {dailyChallengeActive ? 'Dnevni izziv je aktiven' : 'Začni za 2x XP'}
@@ -649,7 +649,7 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                         onChange={(e) => setCustomSituation(e.target.value)}
                         placeholder="Npr. Šef mi je zavrnil idejo na sestanku in želim vaditi, kako mirno odgovoriti. Če pustiš prazno, AI uporabi izbran scenarij."
                     />
-                    <small>AI bo feedback prilagodil tvoji realni situaciji, izziv pa še vedno uporabi za merila ocenjevanja.</small>
+                    <small>AI bo povratno informacijo prilagodil tvoji realni situaciji, izziv pa še vedno uporabi za merila ocenjevanja.</small>
                 </label>
 
                 <div className="coach-box">
@@ -733,7 +733,7 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                     {saving ? (
                         <>
                             <span className="button-spinner" aria-hidden="true" />
-                            AI coach pripravlja odgovor...
+                            AI trener pripravlja odgovor...
                         </>
                     ) : authenticated || demoMode ? 'Oddaj in prejmi AI povratno informacijo' : 'Za ocenjevanje se moraš prijaviti'}
                 </button>
@@ -752,12 +752,12 @@ function CompetitionModeBanner({ mode, challenge, opponent, onCancel }) {
         <article className={`competition-mode-banner ${isDaily ? 'daily' : 'battle'}`}>
             <div className="competition-mode-icon" aria-hidden="true"><Icon name={isDaily ? 'trophy' : 'swords'} /></div>
             <div>
-                <p className="eyebrow">{isDaily ? 'Daily Duel aktiven' : 'Skill Battle aktiven'}</p>
+                <p className="eyebrow">{isDaily ? 'Dnevni dvoboj je aktiven' : 'Bitka veščin je aktivna'}</p>
                 <h3>{challenge?.title || 'Tekmovalni izziv'}</h3>
                 <p>
                     {isDaily
                         ? 'Vsi uporabniki danes rešujejo isti izziv. Po oddaji vidiš svojo pozicijo na dnevni lestvici.'
-                        : `Tekmuješ proti ${opponent?.name || 'SkillBot rivalu'}. Po oddaji primerjamo score in razglasimo rezultat.`}
+                        : `Tekmuješ proti ${opponent?.name || 'SkillBot tekmecu'}. Po oddaji primerjamo score in razglasimo rezultat.`}
                 </p>
             </div>
             <button type="button" className="secondary" onClick={onCancel}>Prekliči tekmovanje</button>
@@ -768,8 +768,8 @@ function CompetitionModeBanner({ mode, challenge, opponent, onCancel }) {
 function CompetitionResultCard({ result }) {
     if (!result) return null;
     const resultLabel = result.mode === 'daily-duel'
-        ? `Tvoj rank: #${result.userRank}`
-        : result.result === 'win' ? 'Zmaga' : result.result === 'loss' ? 'Rematch priložnost' : 'Izenačeno';
+        ? `Tvoje mesto: #${result.userRank}`
+        : result.result === 'win' ? 'Zmaga' : result.result === 'loss' ? 'Ponovni dvoboj priložnost' : 'Izenačeno';
 
     return (
         <article className={`competition-result-card ${result.result || 'daily'}`}>
@@ -787,7 +787,7 @@ function CompetitionResultCard({ result }) {
                         <small>{result.userName}</small>
                         <strong>{result.userScore}</strong>
                     </div>
-                    <span>VS</span>
+                    <span>PROTI</span>
                     <div>
                         <small>{result.opponentName}</small>
                         <strong>{result.opponentScore}</strong>
@@ -803,10 +803,11 @@ function CompetitionLeaderboard({ entries = [], highlightName }) {
     return (
         <div className="competition-leaderboard-list">
             {entries.map((entry) => {
-                const avatarConfig = entry.avatarConfig || fallbackAvatarConfig(entry.rank || 0);
+                const displayRank = entry.mesto ?? entry.rank;
+                const avatarConfig = entry.avatarConfig || fallbackAvatarConfig(displayRank || 0);
                 return (
-                    <div key={`${entry.userId}-${entry.rank}`} className={`competition-leaderboard-row ${entry.name === highlightName || entry.userId === 'demo-user' ? 'me' : ''}`}>
-                        <span className="rank">#{entry.rank}</span>
+                    <div key={`${entry.userId}-${displayRank}`} className={`competition-leaderboard-row ${entry.name === highlightName || entry.userId === 'demo-user' ? 'me' : ''}`}>
+                        <span className="rank">#{displayRank}</span>
                         <span className="avatar avatar--model avatar--leaderboard"><AvatarMini config={avatarConfig} /></span>
                         <strong>{entry.name}</strong>
                         <span>{entry.score}/100</span>
@@ -824,7 +825,7 @@ function DailyPersonalizedChallengeCard({ challenge, active, onStart, onCancel, 
             <div>
                 <p className="eyebrow">Dnevni personaliziran izziv</p>
                 <h3>{challenge?.title || 'AI izbere najboljši trening za danes'}</h3>
-                <p>{challenge?.scenario || 'Izberi fokus veščine na levi strani in začni dnevni izziv za double XP.'}</p>
+                <p>{challenge?.scenario || 'Izberi fokus veščine na levi strani in začni dnevni izziv za dvojni XP.'}</p>
                 <div className="mini-list">
                     <span>2x XP danes</span>
                     <span>{selectedSkillNames.length ? selectedSkillNames.join(' + ') : 'personaliziran fokus'}</span>
@@ -833,7 +834,7 @@ function DailyPersonalizedChallengeCard({ challenge, active, onStart, onCancel, 
             </div>
             <div className="personalized-actions">
                 <button type="button" className="primary" onClick={onStart}>
-                    {active ? 'Ponovno izberi' : 'Začni daily challenge'}
+                    {active ? 'Ponovno izberi' : 'Začni dnevni izziv'}
                 </button>
                 {active && <button type="button" className="secondary" onClick={onCancel}>Izklopi 2x XP</button>}
             </div>
@@ -884,7 +885,7 @@ function AiThinkingCard({ answerStats, selectedSkillNames, selectedChallenge }) 
             <div className="ai-thinking-main">
                 <div className="ai-thinking-head">
                     <div>
-                        <strong>AI coach analizira odgovor</strong>
+                        <strong>AI trener analizira odgovor</strong>
                         <p>{steps[activeStep]} · {seconds}s</p>
                     </div>
                     <span>{Math.max(20, answerStats.percent)}%</span>
@@ -936,7 +937,7 @@ function FeedbackCard({ lastSession, reward, mentorNote, setMentorNote, authenti
                         <div className="stars" aria-label={`${stars} zvezdice`}>{renderStars(stars)}</div>
                         <strong>+{reward.earnedXp} XP</strong>
                         <span><Icon name="flame" size={15} /> {reward.streakDays} dni</span>
-                        {reward.leveledUp && <span>Level up: {reward.oldLevel} <Icon name="arrowRight" size={15} /> {reward.newLevel}</span>}
+                        {reward.leveledUp && <span>Nova stopnja: {reward.oldLevel} <Icon name="arrowRight" size={15} /> {reward.newLevel}</span>}
                     </div>
                 )}
                 <div className="section-title compact-title">
@@ -1007,7 +1008,7 @@ function FeedbackInsightSummary({ text, score, dailyDoubleXp }) {
             {dailyDoubleXp && (
                 <div className="insight-tile bonus">
                     <span>Bonus</span>
-                    <strong>Personaliziran dnevni izziv je podvojil XP.</strong>
+                    <strong>Osebno prilagojen dnevni izziv je podvojil XP.</strong>
                 </div>
             )}
         </div>
@@ -1035,16 +1036,16 @@ function FeedbackSections({ text, score }) {
 export function SkillsSection({ skills = [], challenges = [], selectedSkillKeys, toggleSkillKey, setSelectedSkillKey, setSelectedSkillKeys, setSelectedChallengeId, openSimulator }) {
     const [query, setQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('Vse');
-    const [activeLevel, setActiveLevel] = useState('ALL');
+    const [activeLevel, setActiveLevel] = useState('VSE');
     const [expandedSkillKey, setExpandedSkillKey] = useState(selectedSkillKeys[0] || skills[0]?.key || '');
 
     const categories = useMemo(() => ['Vse', ...Array.from(new Set((skills || []).map((skill) => skill.category).filter(Boolean)))], [skills]);
-    const levels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+    const levels = ['VSE', 'ZAČETNIK', 'SREDNJI', 'NAPREDNI'];
     const groupedSkills = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
         return (skills || [])
             .filter((skill) => activeCategory === 'Vse' || skill.category === activeCategory)
-            .filter((skill) => activeLevel === 'ALL' || skill.level === activeLevel)
+            .filter((skill) => activeLevel === 'VSE' || skill.level === activeLevel)
             .filter((skill) => {
                 if (!normalizedQuery) return true;
                 const haystack = [skill.name, skill.category, skill.description, ...(skill.outcomes || [])].join(' ').toLowerCase();
@@ -1094,7 +1095,7 @@ export function SkillsSection({ skills = [], challenges = [], selectedSkillKeys,
                 <div>
                     <p className="eyebrow">Interaktivni izbor</p>
                     <h3>Sestavi svoj trening kot playlisto.</h3>
-                    <p>Filtriraj področja, izberi veščine, odpri konkretne izzive in skoči direktno v simulator. Izbrane veščine vplivajo tudi na personaliziran daily challenge.</p>
+                    <p>Filtriraj področja, izberi veščine, odpri konkretne izzive in skoči direktno v simulator. Izbrane veščine vplivajo tudi na personaliziran dnevni izziv.</p>
                 </div>
                 <div className="catalog-stats">
                     <span><strong>{categories.length - 1}</strong> sekcij</span>
@@ -1117,7 +1118,7 @@ export function SkillsSection({ skills = [], challenges = [], selectedSkillKeys,
                 </label>
                 <label>Težavnost
                     <select value={activeLevel} onChange={(event) => setActiveLevel(event.target.value)}>
-                        {levels.map((level) => <option key={level} value={level}>{level === 'ALL' ? 'Vse težavnosti' : level}</option>)}
+                        {levels.map((level) => <option key={level} value={level}>{level === 'VSE' ? 'Vse težavnosti' : level}</option>)}
                     </select>
                 </label>
             </div>
@@ -1239,7 +1240,7 @@ function SkillPlaylistBar({ selectedSkills = [], totalMinutes = 0, toggleSkillKe
             <div className="playlist-copy">
                 <span aria-hidden="true"><Icon name="gamepad" /></span>
                 <div>
-                    <strong>{selectedSkills.length ? 'Aktivna skill playlist' : 'Playlist je prazna'}</strong>
+                    <strong>{selectedSkills.length ? 'Aktiven seznam veščin' : 'Playlist je prazna'}</strong>
                     <p>{selectedSkills.length ? `${selectedSkills.length} veščin · ${totalMinutes || 0} min treninga` : 'Klikni Dodaj v fokus pri veščinah spodaj.'}</p>
                 </div>
             </div>
@@ -1262,7 +1263,7 @@ function SkillPlaylistBar({ selectedSkills = [], totalMinutes = 0, toggleSkillKe
 
 const catalogPresets = [
     { icon: 'briefcase', label: 'Karierni boost', helper: 'razgovor, pogajanje, nastop', keys: ['job-interview', 'negotiation', 'public-speaking'] },
-    { icon: 'handshake', label: 'Boljši odnosi', helper: 'empatija, meje, konflikti', keys: ['empathy', 'boundaries', 'conflict-resolution'] },
+    { icon: 'handshake', label: 'Boljši odnosi', helper: 'empatija, meje, konflikti', keys: ['empatija', 'boundaries', 'conflict-resolution'] },
     { icon: 'target', label: 'Fokus in disciplina', helper: 'čas, prioritete, fokus', keys: ['time-management', 'prioritization', 'focus-discipline'] },
     { icon: 'brain', label: 'Mir pod pritiskom', helper: 'stres, čustva, odpornost', keys: ['stress-management', 'emotional-regulation', 'resilience'] }
 ];
@@ -1465,27 +1466,27 @@ function buildDuelRounds(challenge) {
     return [
         {
             id: 'opening',
-            label: 'Round 1',
-            title: 'Opening move',
-            focus: 'Clarity & tone',
+            label: 'Runda 1',
+            title: 'Uvodna poteza',
+            focus: 'Jasnost in ton',
             prompt: `${scenario}
 
 Napiši uvodni odgovor, ki hitro postavi miren in profesionalen ton.`
         },
         {
             id: 'pressure',
-            label: 'Round 2',
-            title: 'Pressure round',
-            focus: 'Empathy & composure',
+            label: 'Runda 2',
+            title: 'Runda pod pritiskom',
+            focus: 'Empatija in zbranost',
             prompt: `${scenario}
 
 Druga oseba se brani. Odgovori tako, da pokažeš empatijo, a vseeno ohraniš smer pogovora.`
         },
         {
             id: 'closing',
-            label: 'Round 3',
-            title: 'Finish strong',
-            focus: 'Actionability',
+            label: 'Runda 3',
+            title: 'Močan zaključek',
+            focus: 'Uporabnost',
             prompt: `${scenario}
 
 Zaključi z jasnim naslednjim korakom in kratkim povzetkom dogovora.`
@@ -1529,7 +1530,7 @@ function evaluateDuelRound({ answer, round, challenge, opponent, timeRemaining =
         : 'Rival je to rundo dobil zaradi bolj konkretne strukture in hitrejšega zaključka.';
     const coachTip = actionHit
         ? 'Dober zaključek. V naslednji rundi samo še bolj skrajšaj uvod.'
-        : 'Dodaj jasen naslednji korak, ker to najbolj dvigne duel score.';
+        : 'Dodaj jasen naslednji korak, ker to najbolj dvigne rezultat dvoboja.';
 
     return {
         playerScore,
@@ -1582,18 +1583,18 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
         <article className="competition-duel-arena">
             <div className="competition-duel-arena__head">
                 <div>
-                    <span className="eyebrow">Best of 3 duel</span>
-                    <h3>{selectedBattleChallenge?.title || 'Skill Duel'}</h3>
-                    <small>{selectedBattleChallenge?.scenario || 'Isti prompt, isti pogoji. Boljši odgovor vzame rundo.'}</small>
+                    <span className="eyebrow">Dvoboj na dve dobljeni rundi</span>
+                    <h3>{selectedBattleChallenge?.title || 'Dvoboj veščin'}</h3>
+                    <small>{selectedBattleChallenge?.scenario || 'Isti naloga, isti pogoji. Boljši odgovor vzame rundo.'}</small>
                 </div>
-                <div className="duel-round-tracker" aria-label="Round tracker">
+                <div className="duel-round-tracker" aria-label="Sledilnik rund">
                     {roundHistory.map((item, index) => (
                         <span key={index} className={item ? (item.winner === 'player' ? 'win' : 'loss') : (duelState.round === index + 1 ? 'active' : '')}>
                             R{index + 1}
                         </span>
                     ))}
                 </div>
-                <button type="button" className="secondary" onClick={onReset}>Nazaj v lobby</button>
+                <button type="button" className="secondary" onClick={onReset}>Nazaj v preddverje</button>
             </div>
 
             <div className="duel-stage-board">
@@ -1601,25 +1602,25 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                     <DuelAnimatedModel action={actions.player} name={playerName} side="player" avatarConfig={selectedUser?.avatarConfig || fallbackAvatarConfig(selectedUser?.level || 0)} />
                     <div className="duel-fighter__meta">
                         <strong>{playerName}</strong>
-                        <span>{duelState.playerWins} round wins</span>
+                        <span>{duelState.playerWins} dobljenih rund</span>
                     </div>
                 </div>
 
                 <div className="duel-versus-card">
-                    <span className="pill">Round {duelState.round}</span>
+                    <span className="pill">Runda {duelState.round}</span>
                     <strong>{duelState.playerWins} : {duelState.opponentWins}</strong>
                     <small>
-                        {duelState.phase === 'waiting' && 'Waiting room'}
-                        {duelState.phase === 'intro' && 'Round intro'}
-                        {duelState.phase === 'prompt' && `${roundData?.title || 'Round'} · ${roundData?.focus || 'Skill focus'}`}
-                        {duelState.phase === 'judging' && 'AI judging'}
-                        {duelState.phase === 'result' && 'Round result'}
-                        {duelState.phase === 'finished' && 'Match finished'}
+                        {duelState.phase === 'waiting' && 'Čakalnica'}
+                        {duelState.phase === 'intro' && 'Uvod v rundo'}
+                        {duelState.phase === 'prompt' && `${roundData?.title || 'Runda'} · ${roundData?.focus || 'Fokus veščine'}`}
+                        {duelState.phase === 'judging' && 'AI ocenjuje'}
+                        {duelState.phase === 'result' && 'Rezultat runde'}
+                        {duelState.phase === 'finished' && 'Dvoboj zaključen'}
                     </small>
                     {duelState.phase === 'prompt' && (
                         <div className="duel-timer" style={{ '--timer': `${timerPercent}%` }}>
                             <span>{duelState.timeLeft}s</span>
-                            <small>time left</small>
+                            <small>preostali čas</small>
                         </div>
                     )}
                     {duelState.phase === 'judging' && (
@@ -1634,7 +1635,7 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                     <DuelAnimatedModel action={actions.opponent} name={opponentName} side="opponent" avatarConfig={battleOpponent?.avatarConfig || fallbackAvatarConfig(battleOpponent?.level || 2)} />
                     <div className="duel-fighter__meta">
                         <strong>{opponentName}</strong>
-                        <span>{duelState.opponentWins} round wins</span>
+                        <span>{duelState.opponentWins} dobljenih rund</span>
                     </div>
                 </div>
             </div>
@@ -1642,7 +1643,7 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
             <div className="duel-round-card">
                 {duelState.phase === 'waiting' && (
                     <div className="duel-state duel-state--waiting">
-                        <h4>Waiting room</h4>
+                        <h4>Čakalnica</h4>
                         <p>Oba playerja hodita v lobbyju, medtem ko sistem pripravi match.</p>
                     </div>
                 )}
@@ -1702,7 +1703,7 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                                 <small>{playerName}</small>
                                 <strong>{duelState.lastPlayerScore}</strong>
                             </div>
-                            <span>VS</span>
+                            <span>PROTI</span>
                             <div>
                                 <small>{opponentName}</small>
                                 <strong>{duelState.lastOpponentScore}</strong>
@@ -1721,7 +1722,7 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                         <p>{duelState.lastReason}</p>
                         <small>{duelState.lastCoachTip}</small>
                         <button type="button" className="primary" onClick={onNextRound}>
-                            {duelState.playerWins === 2 || duelState.opponentWins === 2 || duelState.round >= 3 ? 'Pokaži rezultat matcha' : 'Naslednja runda'}
+                            {duelState.playerWins === 2 || duelState.opponentWins === 2 || duelState.round >= 3 ? 'Pokaži rezultat dvoboja' : 'Naslednja runda'}
                         </button>
                     </div>
                 )}
@@ -1729,13 +1730,13 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                 {isFinished && (
                     <div className="duel-state duel-state--finished">
                         <div className={`duel-result-pill ${duelState.matchWinner === 'player' ? 'win' : 'loss'}`}>
-                            {duelState.matchWinner === 'player' ? 'Match won' : 'Rematch?'}
+                            {duelState.matchWinner === 'player' ? 'Zmaga v dvoboju' : 'Ponovni dvoboj?'}
                         </div>
-                        <h4>{duelState.matchWinner === 'player' ? `${playerName} wins the best of 3` : `${opponentName} takes the duel`}</h4>
+                        <h4>{duelState.matchWinner === 'player' ? `${playerName} zmaga v dvoboju na dve dobljeni rundi` : `${opponentName} zmaga v dvoboju`}</h4>
                         <p>
                             {duelState.matchWinner === 'player'
                                 ? 'Končna zmaga sproži funny dance animacijo in XP reward.'
-                                : 'Rival je bil tokrat boljši. Naslednji korak je rematch ali novi challenge.'}
+                                : 'Rival je bil tokrat boljši. Naslednji korak je ponovni dvoboj ali novi challenge.'}
                         </p>
                         <div className="duel-round-history">
                             {duelState.history.map((item) => (
@@ -1746,8 +1747,8 @@ function DuelArena({ duelState, selectedUser, battleOpponent, selectedBattleChal
                             ))}
                         </div>
                         <div className="duel-actions">
-                            <button type="button" className="primary" onClick={onReset}>Nazaj v lobby</button>
-                            <button type="button" className="secondary" onClick={onNextRound}>Rematch</button>
+                            <button type="button" className="primary" onClick={onReset}>Nazaj v preddverje</button>
+                            <button type="button" className="secondary" onClick={onNextRound}>Ponovni dvoboj</button>
                         </div>
                     </div>
                 )}
@@ -1958,24 +1959,24 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
         <div className="content-section competition-section">
             <div className="section-title">
                 <div>
-                    <span>Tekmovalni hub</span>
-                    <small>Najprej izbereš rivala, potem ostaneš v istem tabu in igraš celoten best-of-3 duel</small>
+                    <span>Tekmovalno središče</span>
+                    <small>Najprej izbereš tekmeca, nato ostaneš v istem zavihku in odigraš celoten dvoboj na dve dobljeni rundi</small>
                 </div>
-                <span className="pill">live challenge</span>
+                <span className="pill">izziv v živo</span>
             </div>
 
             <div className="competition-hero-card competition-hero-card--duel">
                 <div>
                     <p className="eyebrow">Tvoj naslednji cilj</p>
-                    <h2>Skill Duel: isti prompt, tri rounde, en zmagovalec.</h2>
+                    <h2>Dvoboj veščin: isti poziv, tri runde, en zmagovalec.</h2>
                     <p>
-                        To ni več preusmeritev v navaden simulator. Competition tab zdaj sam vodi celoten flow: lobby → round intro → answer → AI judging → round result → final winner. Daily Duel in Challenge Lobby uporabljata isti duel screen.
+                        To ni več preusmeritev v navaden simulator. Zavihek Tekmovanje zdaj sam vodi celoten potek: preddverje → uvod v rundo → odgovor → AI ocenjuje → rezultat runde → končni zmagovalec. Dnevni dvoboj in preddverje izzivov uporabljata isti zaslon dvoboja.
                     </p>
                 </div>
                 <div className="competition-stat-strip">
-                    <span><Icon name="bolt" size={16} /> 90s timer</span>
-                    <span><Icon name="trophy" size={16} /> best of 3</span>
-                    <span><Icon name="swords" size={16} /> animated duel</span>
+                    <span><Icon name="bolt" size={16} /> 90 s časovnik</span>
+                    <span><Icon name="trophy" size={16} /> na dve dobljeni</span>
+                    <span><Icon name="swords" size={16} /> animiran dvoboj</span>
                 </div>
             </div>
 
@@ -1986,11 +1987,11 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                         <span className="competition-icon"><Icon name="trophy" /></span>
                         <div>
                             <p className="eyebrow">Točka 1</p>
-                            <h3>Daily Duel</h3>
+                            <h3>Dnevni dvoboj</h3>
                         </div>
                     </div>
                     <h4>{dailyDuelChallenge?.title || 'Današnji izziv še ni na voljo'}</h4>
-                    <p>{dailyDuelChallenge?.scenario || 'Ko se naložijo izzivi, aplikacija vsak dan izbere en skupen challenge za vse uporabnike.'}</p>
+                    <p>{dailyDuelChallenge?.scenario || 'Ko se naložijo izzivi, aplikacija vsak dan izbere en skupen izziv za vse uporabnike.'}</p>
                     <div className="mini-list">
                         <span>isti izziv za vse</span>
                         <span>dnevna lestvica</span>
@@ -1998,7 +1999,7 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                     </div>
                     <CompetitionLeaderboard entries={dailyLeaderboard} highlightName={selectedUser?.name || 'Demo uporabnik'} />
                     <button type="button" className="primary full-width" disabled={!dailyDuelChallenge} onClick={() => startDuel(dailyDuelChallenge)}>
-                        Začni Daily Duel kot 1v1
+                        Začni Dnevni dvoboj kot 1v1
                     </button>
                 </article>
 
@@ -2007,10 +2008,10 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                         <span className="competition-icon"><Icon name="swords" /></span>
                         <div>
                             <p className="eyebrow">Točka 2</p>
-                            <h3>Challenge Lobby</h3>
+                            <h3>Preddverje izzivov</h3>
                         </div>
                     </div>
-                    <p>Nastavi rivala, fokus in challenge. Ko klikneš start, se odpre duel screen z best-of-3 rundami.</p>
+                    <p>Nastavi tekmeca, fokus in izziv. Ko klikneš začetek, se odpre zaslon dvoboja z rundami na dve dobljeni.</p>
                     <div className="battle-form-grid">
                         <label>Rival
                             <select value={opponentId} onChange={(e) => setOpponentId(e.target.value)}>
@@ -2023,7 +2024,7 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                                 {skills.map((skill) => <option key={skill.key} value={skill.key}>{skill.name}</option>)}
                             </select>
                         </label>
-                        <label className="wide">Battle challenge
+                        <label className="wide">Izziv bitke
                             <select value={selectedBattleChallenge?.id || ''} onChange={(e) => setBattleChallengeId(e.target.value)}>
                                 {(battleChallenges.length ? battleChallenges : challenges).map((challenge) => (
                                     <option key={challenge.id} value={challenge.id}>{challenge.title}</option>
@@ -2034,19 +2035,19 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                     <div className="battle-preview-card battle-preview-card--duel">
                         <span className="avatar avatar--model avatar--leaderboard"><AvatarMini config={battleOpponent?.avatarConfig || fallbackAvatarConfig(2)} /></span>
                         <div>
-                            <strong>{battleOpponent?.name || 'SkillBot Rival'}</strong>
-                            <p>Predviden rival score danes: {battlePreviewScore}/100</p>
+                            <strong>{battleOpponent?.name || 'SkillBot tekmec'}</strong>
+                            <p>Predviden rezultat tekmeca danes: {battlePreviewScore}/100</p>
                         </div>
                         <div className="battle-preview-card__meta">
                             <span>format</span>
-                            <strong>Best of 3</strong>
+                            <strong>Na dve dobljeni</strong>
                         </div>
                     </div>
                     <div className="challenge-lobby-features mini-list">
-                        <span>walking while waiting</span>
-                        <span>running while loading</span>
-                        <span>boxing outcome per round</span>
-                        <span>victory dance on win</span>
+                        <span>hoja med čakanjem</span>
+                        <span>tek med nalaganjem</span>
+                        <span>boksarski izid po rundi</span>
+                        <span>zmagovalni ples ob zmagi</span>
                     </div>
                     <button
                         type="button"
@@ -2054,7 +2055,7 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                         disabled={!selectedBattleChallenge}
                         onClick={() => startDuel()}
                     >
-                        Odpri duel screen
+                        Odpri zaslon dvoboja
                     </button>
                 </article>
                 </div>
@@ -2088,8 +2089,8 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
         <div className="content-section">
             <div className="section-title">
                 <div>
-                    <span>Prompt studio</span>
-                    <small>bolj strukturirani prompti za AI coacha</small>
+                    <span>Studio promptov</span>
+                    <small>bolj strukturirani prompti za AI trenera</small>
                 </div>
                 <span className="pill">{(filteredPrompts || []).length} aktivnih</span>
             </div>
@@ -2120,9 +2121,9 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
                     </label>
                     <label>Težavnost
                         <select value={newPrompt.difficulty} onChange={(e) => setNewPrompt({ ...newPrompt, difficulty: e.target.value })}>
-                            <option value="BEGINNER">BEGINNER</option>
-                            <option value="INTERMEDIATE">INTERMEDIATE</option>
-                            <option value="ADVANCED">ADVANCED</option>
+                            <option value="ZAČETNIK">ZAČETNIK</option>
+                            <option value="SREDNJI">SREDNJI</option>
+                            <option value="NAPREDNI">NAPREDNI</option>
                         </select>
                     </label>
                     <label>Sistemski prompt
@@ -2153,7 +2154,7 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
     if (!isMentor) {
         return (
             <div className="content-section empty-state">
-                Mentor dashboard je dostopen samo uporabnikom z vlogo MENTOR ali ADMIN.
+                Mentorska nadzorna plošča je dostopna samo uporabnikom z vlogo MENTOR ali ADMIN.
                 <small>Trenutne vloge: {roles?.join(', ') || 'brez prijave'}</small>
             </div>
         );
@@ -2166,7 +2167,7 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
         sessionsNeedingReview: 0,
         learners: users.map((user) => ({
             userId: user.id, name: user.name, email: user.email, level: user.level || 1, points: user.points || 0,
-            streakDays: user.streakDays || 0, sessions: 0, averageScore: 0, weakestSkill: 'še ni podatkov', mentorStatus: 'Naloži dashboard'
+            streakDays: user.streakDays || 0, sessions: 0, averageScore: 0, weakestSkill: 'še ni podatkov', mentorStatus: 'Naloži nadzorno ploščo'
         })),
         recentSessions: []
     };
@@ -2175,7 +2176,7 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
         <div className="content-section mentor-dashboard-section">
             <div className="section-title">
                 <div>
-                    <span>Mentor dashboard</span>
+                    <span>Mentorska nadzorna plošča</span>
                     <small>Pregled napredka, šibkih področij in simulacij za ročni komentar</small>
                 </div>
                 <button type="button" className="secondary" onClick={onRefresh}>Osveži</button>
@@ -2185,7 +2186,7 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
                 <MetricCard label="Uporabniki" value={safeDashboard.totalUsers} helper="v sistemu" />
                 <MetricCard label="Simulacije" value={safeDashboard.totalSessions} helper="skupno oddanih" />
                 <MetricCard label="Povprečje" value={`${safeDashboard.averageScore}/100`} helper="vseh uporabnikov" />
-                <MetricCard label="Za pregled" value={safeDashboard.sessionsNeedingReview} helper="brez mentor note" />
+                <MetricCard label="Za pregled" value={safeDashboard.sessionsNeedingReview} helper="brez mentorskega komentarja" />
             </div>
 
             <div className="mentor-layout">
@@ -2199,7 +2200,7 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
                                     <small>{learner.email || 'brez e-maila'}</small>
                                 </div>
                                 <div className="mentor-metrics">
-                                    <span>Level {learner.level}</span>
+                                    <span>Stopnja {learner.level}</span>
                                     <span>{learner.sessions} vaj</span>
                                     <span>{learner.averageScore}/100</span>
                                 </div>
@@ -2285,11 +2286,11 @@ export function ReportSection({ report, skills = [] }) {
                     <span>Napredno poročilo</span>
                     <small>{report.userName}</small>
                 </div>
-                <span className="pill">mentor ready</span>
+                <span className="pill">pripravljeno za mentorja</span>
             </div>
             <div className="report-grid">
                 <MetricCard label="Simulacije" value={report.totalSessions} helper="Zaključene vaje" />
-                <MetricCard label="Level" value={report.level || 1} helper={`${report.currentLevelXp || 0}/${report.nextLevelXp || 100} XP`} />
+                <MetricCard label="Stopnja" value={report.level || 1} helper={`${report.currentLevelXp || 0}/${report.nextLevelXp || 100} XP`} />
                 <MetricCard label="Zvezdice" value={report.totalStars || 0} helper="Skupno zbranih" />
                 <MetricCard label="Povprečje" value={`${report.averageScore}/100`} helper="Čez vse veščine" />
             </div>
@@ -2418,11 +2419,11 @@ function buildCompetitionPreviewLeaderboard(rivals, selectedUser, challenge, mod
             avatarConfig: user.avatarConfig || fallbackAvatarConfig(index + 1)
         }))
         .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
-        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+        .map((entry, index) => ({ ...entry, mesto: index + 1 }));
 
     const meEntry = entries.find((entry) => entry.userId === me.id);
     if (meEntry) {
-        meEntry.rank = 'po oddaji';
+        meEntry.mesto = 'po oddaji';
     }
     return entries;
 }
@@ -2483,7 +2484,7 @@ function getGrowthInsights(report, skills = []) {
 }
 
 function parseFeedbackSections(text, score) {
-    const fallback = (text || '').trim() || 'AI coach ni vrnil besedila, ocena pa je shranjena.';
+    const fallback = (text || '').trim() || 'AI trener ni vrnil besedila, ocena pa je shranjena.';
     const sectionMeta = {
         score: { title: 'Ocena', icon: 'target' },
         good: { title: 'Dobro', icon: 'checkCircle' },

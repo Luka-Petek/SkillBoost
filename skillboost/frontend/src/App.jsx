@@ -24,7 +24,7 @@ import {
 const LOGIN_INTRO_PENDING_KEY = 'skillboost_login_intro_pending';
 
 const navItems = [
-    { key: 'dashboard', label: 'Dashboard', icon: 'chart' },
+    { key: 'dashboard', label: 'Pregledna plošča', icon: 'chart' },
     { key: 'simulator', label: 'Simulator', icon: 'message' },
     { key: 'skills', label: 'Veščine', icon: 'target' },
     { key: 'quest', label: 'SkillCity', icon: 'compass' },
@@ -37,34 +37,34 @@ const navItems = [
 
 const sectionMeta = {
     dashboard: {
-        eyebrow: 'Tvoj growth cockpit',
-        title: 'Dashboard',
+        eyebrow: 'Tvoj razvojni nadzorni center',
+        title: 'Pregledna plošča',
         helper: 'Najhitrejša pot do naslednje vaje, XP-ja in izboljšave.'
     },
     simulator: {
         eyebrow: 'Današnji trening',
         title: 'AI simulator',
-        helper: 'Vadi odgovor, oddaj in dobi takojšen feedback.'
+        helper: 'Vadi odgovor, ga oddaj in takoj prejmi povratno informacijo.'
     },
     skills: {
         eyebrow: 'Tvoj fokus',
         title: 'Katalog veščin',
-        helper: 'Izberi veščine brez odpiranja dolge landing strani.'
+        helper: 'Izberi veščine brez odpiranja dolge uvodne strani.'
     },
     quest: {
-        eyebrow: 'Campaign roadmap',
+        eyebrow: 'Zemljevid kampanje',
         title: 'SkillCity',
         helper: 'Odpiraj mesto po okrožjih: ena misija, ena stavba, en jasen naslednji korak.'
     },
     competition: {
         eyebrow: 'Igraj proti drugim',
-        title: 'Competition hub',
-        helper: 'Daily duel in skill battle v bolj kompaktnem pogledu.'
+        title: 'Tekmovalno središče',
+        helper: 'Dnevni dvoboj in bitka veščin v bolj kompaktnem pogledu.'
     },
     prompts: {
         eyebrow: 'AI nastavitve',
         title: 'Prompti',
-        helper: 'Pripravi in testiraj AI coach navodila.'
+        helper: 'Pripravi in testiraj navodila za AI trenerja.'
     },
     report: {
         eyebrow: 'Napredek',
@@ -78,7 +78,7 @@ const sectionMeta = {
     },
     mentor: {
         eyebrow: 'Mentorski vpogled',
-        title: 'Mentor dashboard',
+        title: 'Mentorska nadzorna plošča',
         helper: 'Preglej uporabnike, šibke veščine in simulacije, ki čakajo na komentar.'
     }
 };
@@ -143,13 +143,13 @@ export default function App() {
             <LogoIntro playKey={introPlayKey} />
             <div className="app-shell app-shell--dashboard">
                 <aside className="app-sidebar" aria-label="Glavna navigacija">
-                    <a className="app-sidebar__brand" href="#top" aria-label="SkillBoost home" onClick={() => handleNavigate('simulator')}>
+                    <a className="app-sidebar__brand" href="#top" aria-label="Domov SkillBoost" onClick={() => handleNavigate('simulator')}>
                         <span className="app-sidebar__mark" aria-hidden="true">
                             <img src="/brand/skillboost-mark.png" alt="" />
                         </span>
                         <span>
                             <strong>SkillBoost</strong>
-                            <small>AI coach</small>
+                            <small>AI trener</small>
                         </span>
                     </a>
 
@@ -381,8 +381,8 @@ export default function App() {
                                         </div>
                                     </div>
                                     <div className="compact-metrics">
-                                        <MetricCard label="Level" value={level} helper={`${player.currentLevelXp ?? data.report?.currentLevelXp ?? 0}/${player.nextLevelXp ?? data.report?.nextLevelXp ?? 100} XP`} />
-                                        <MetricCard label="Streak" value={<span className="metric-inline"><Icon name="flame" size={17} />{streakDays}</span>} helper="dni" />
+                                        <MetricCard label="Stopnja" value={level} helper={`${player.currentLevelXp ?? data.report?.currentLevelXp ?? 0}/${player.nextLevelXp ?? data.report?.nextLevelXp ?? 100} XP`} />
+                                        <MetricCard label="Niz" value={<span className="metric-inline"><Icon name="flame" size={17} />{streakDays}</span>} helper="dni" />
                                         <MetricCard label="Zvezdice" value={totalStars} helper="skupno" />
                                     </div>
                                 </section>

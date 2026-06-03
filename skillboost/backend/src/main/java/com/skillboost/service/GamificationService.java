@@ -98,7 +98,7 @@ public class GamificationService {
         return List.of(
                 new DailyQuest("practice-once", "Reši 1 simulacijo danes", totalToday >= 1, Math.min(totalToday, 1), 1, "+20 XP disciplina"),
                 new DailyQuest("daily-double-xp", "Personaliziran dnevni izziv", dailyDoubleXpDone, dailyDoubleXpDone ? 1 : 0, 1, "2x XP"),
-                new DailyQuest("strong-answer", "Dosezi vsaj 70/100", strongAnswerToday, strongAnswerToday ? 1 : 0, 1, "močnejši score"),
+                new DailyQuest("strong-answer", "Dosezi vsaj 70/100", strongAnswerToday, strongAnswerToday ? 1 : 0, 1, "močnejši rezultat"),
                 new DailyQuest("multi-skill", "Vadi vsaj 2 veščini hkrati", multiSkillToday, Math.min(maxSkillCountToday, 2), 2, "+5 XP bonus")
         );
     }
@@ -129,18 +129,18 @@ public class GamificationService {
         Set<String> newBadges = new LinkedHashSet<>();
         List<String> skillKeys = sessionSkillKeys(session);
 
-        addBadgeIfMissing(badges, newBadges, "First simulation");
-        if (session.getEarnedStars() >= 1) addBadgeIfMissing(badges, newBadges, "First star");
-        if (session.getScore() >= 80) addBadgeIfMissing(badges, newBadges, "Strong answer");
-        if (session.getScore() >= 90) addBadgeIfMissing(badges, newBadges, "AI-ready communicator");
-        if (skillKeys.size() >= 3) addBadgeIfMissing(badges, newBadges, "Multi-skill learner");
-        if (user.getPoints() >= 300) addBadgeIfMissing(badges, newBadges, "Consistent learner");
-        if (user.getTotalStars() >= 10) addBadgeIfMissing(badges, newBadges, "Star collector");
-        if (user.getLevel() >= 5) addBadgeIfMissing(badges, newBadges, "Level 5 learner");
-        if (user.getStreakDays() >= 3) addBadgeIfMissing(badges, newBadges, "3-day streak");
-        if (session.isDailyDoubleXp()) addBadgeIfMissing(badges, newBadges, "Daily double XP");
+        addBadgeIfMissing(badges, newBadges, "Prva simulacija");
+        if (session.getEarnedStars() >= 1) addBadgeIfMissing(badges, newBadges, "Prva zvezdica");
+        if (session.getScore() >= 80) addBadgeIfMissing(badges, newBadges, "Močan odgovor");
+        if (session.getScore() >= 90) addBadgeIfMissing(badges, newBadges, "Komunikator pripravljen na AI");
+        if (skillKeys.size() >= 3) addBadgeIfMissing(badges, newBadges, "Učenec z več veščinami");
+        if (user.getPoints() >= 300) addBadgeIfMissing(badges, newBadges, "Vztrajen učenec");
+        if (user.getTotalStars() >= 10) addBadgeIfMissing(badges, newBadges, "Zbiralec zvezdic");
+        if (user.getLevel() >= 5) addBadgeIfMissing(badges, newBadges, "Učenec 5. stopnje");
+        if (user.getStreakDays() >= 3) addBadgeIfMissing(badges, newBadges, "3-dnevni niz");
+        if (session.isDailyDoubleXp()) addBadgeIfMissing(badges, newBadges, "Dnevni dvojni XP");
         if (skillKeys.stream().anyMatch("conflict-resolution"::equalsIgnoreCase)) {
-            addBadgeIfMissing(badges, newBadges, "Calm resolver");
+            addBadgeIfMissing(badges, newBadges, "Miren reševalec");
         }
 
         user.setBadges(badges);

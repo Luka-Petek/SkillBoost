@@ -1,18 +1,18 @@
 export const emptyPrompt = {
     skillKey: 'public-speaking',
     title: '',
-    difficulty: 'BEGINNER',
-    systemPrompt: 'You are an interactive soft-skills coach. Ask one clarifying question when the answer is vague, evaluate structure, empathy, clarity and actionability, then return concrete next steps.',
-    userPromptTemplate: 'Scenario: {{scenario}}\nCriteria: {{criteria}}\nUser answer: {{answer}}\nGive a score, short praise, improvement points and one follow-up question.',
+    difficulty: 'ZAČETNIK',
+    systemPrompt: 'Si interaktivni trener mehkih veščin. Ko je odgovor nejasen, postavi eno dodatno vprašanje, oceni strukturo, empatijo, jasnost in izvedljivost, nato vrni konkretne naslednje korake.',
+    userPromptTemplate: 'Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nPodaj oceno, kratko pohvalo, točke za izboljšavo in eno vprašanje za nadaljevanje.',
     simulatedAiResponse: 'Strukturirana povratna informacija: ocena, kaj deluje, kaj izboljšati, predlagan popravek in eno nadaljnje vprašanje za uporabnika.',
     tags: []
 };
 
-export const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['First simulation', 'Multi-skill learner'], avatarConfig: { presentation: 'neutral', bodyStyle: 'balanced', skinTone: 'warm-medium', hairStyle: 'short-wave', hairColor: 'midnight', outfit: 'coach-hoodie', accent: 'violet', accessory: 'round-glasses' } };
+export const demoUser = { id: 'demo-user', name: 'Demo uporabnik', role: 'STUDENT', points: 120, totalStars: 4, level: 2, currentLevelXp: 20, nextLevelXp: 150, streakDays: 1, badges: ['Prva simulacija', 'Učenec z več veščinami'], avatarConfig: { presentation: 'neutral', bodyStyle: 'balanced', skinTone: 'warm-medium', hairStyle: 'short-wave', hairColor: 'midnight', outfit: 'coach-hoodie', accent: 'violet', accessory: 'round-glasses' } };
 export const demoRivals = [
-    { id: 'demo-rival-ana', name: 'Ana Novak', role: 'STUDENT', points: 340, totalStars: 11, level: 3, currentLevelXp: 90, nextLevelXp: 200, streakDays: 4, badges: ['Strong answer', '3-day streak'] },
-    { id: 'demo-rival-luka', name: 'Luka Kovač', role: 'STUDENT', points: 275, totalStars: 8, level: 3, currentLevelXp: 25, nextLevelXp: 200, streakDays: 2, badges: ['First star', 'Calm resolver'] },
-    { id: 'demo-rival-eva', name: 'Eva Medved', role: 'STUDENT', points: 205, totalStars: 6, level: 2, currentLevelXp: 105, nextLevelXp: 150, streakDays: 1, badges: ['AI-ready communicator'] }
+    { id: 'demo-rival-ana', name: 'Ana Novak', role: 'STUDENT', points: 340, totalStars: 11, level: 3, currentLevelXp: 90, nextLevelXp: 200, streakDays: 4, badges: ['Močan odgovor', '3-dnevni niz'] },
+    { id: 'demo-rival-luka', name: 'Luka Kovač', role: 'STUDENT', points: 275, totalStars: 8, level: 3, currentLevelXp: 25, nextLevelXp: 200, streakDays: 2, badges: ['Prva zvezdica', 'Miren reševalec'] },
+    { id: 'demo-rival-eva', name: 'Eva Medved', role: 'STUDENT', points: 205, totalStars: 6, level: 2, currentLevelXp: 105, nextLevelXp: 150, streakDays: 1, badges: ['Komunikator pripravljen na AI'] }
 ];
 export const demoSkills = [
     {
@@ -20,7 +20,7 @@ export const demoSkills = [
         "name": "Javno nastopanje",
         "category": "Komunikacija",
         "description": "Zgradi jasen nastop, prepričljivo strukturo in samozavesten zaključek.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 12,
         "outcomes": [
             "jasen uvod",
@@ -34,7 +34,7 @@ export const demoSkills = [
         "name": "Aktivno poslušanje",
         "category": "Komunikacija",
         "description": "Vadi poslušanje brez prekinjanja, povzemanje in boljša vprašanja.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 10,
         "outcomes": [
             "povzetek",
@@ -48,12 +48,12 @@ export const demoSkills = [
         "name": "Jasno pisno izražanje",
         "category": "Komunikacija",
         "description": "Piši sporočila, ki so kratka, spoštljiva in imajo jasen naslednji korak.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 9,
         "outcomes": [
             "kratkost",
             "jasnost",
-            "CTA"
+            "poziv k dejanju"
         ],
         "id": "s3"
     },
@@ -61,8 +61,8 @@ export const demoSkills = [
         "key": "feedback-giving",
         "name": "Dajanje povratne informacije",
         "category": "Komunikacija",
-        "description": "Podaj feedback brez napada: opazovanje, vpliv, predlog in dogovor.",
-        "level": "INTERMEDIATE",
+        "description": "Podaj povratno informacijo brez napada: opazovanje, vpliv, predlog in dogovor.",
+        "level": "SREDNJI",
         "estimatedMinutes": 14,
         "outcomes": [
             "opazovanje",
@@ -76,7 +76,7 @@ export const demoSkills = [
         "name": "Reševanje konfliktov",
         "category": "Odnosi",
         "description": "Umiri napet pogovor, prepoznaj potrebe in vodi pogovor do dogovora.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 15,
         "outcomes": [
             "miren ton",
@@ -86,11 +86,11 @@ export const demoSkills = [
         "id": "s5"
     },
     {
-        "key": "empathy",
+        "key": "empatija",
         "name": "Empatija",
         "category": "Odnosi",
         "description": "Prepoznaj čustva druge osebe in odgovori tako, da se počuti slišano.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 10,
         "outcomes": [
             "validacija",
@@ -104,7 +104,7 @@ export const demoSkills = [
         "name": "Postavljanje mej",
         "category": "Odnosi",
         "description": "Reci ne ali postavi mejo brez občutka krivde in brez nepotrebnega konflikta.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 12,
         "outcomes": [
             "jasna meja",
@@ -118,12 +118,12 @@ export const demoSkills = [
         "name": "Grajenje poznanstev",
         "category": "Odnosi",
         "description": "Začni naraven pogovor, predstavi se in ohrani stik brez vsiljivosti.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 11,
         "outcomes": [
             "uvod",
             "interes",
-            "follow-up"
+            "nadaljnji stik"
         ],
         "id": "s8"
     },
@@ -132,7 +132,7 @@ export const demoSkills = [
         "name": "Zaposlitveni razgovor",
         "category": "Kariera in delo",
         "description": "Odgovarjaj na zahtevna vprašanja s konkretnimi primeri in mirno samozavestjo.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 14,
         "outcomes": [
             "STAR odgovor",
@@ -145,8 +145,8 @@ export const demoSkills = [
         "key": "negotiation",
         "name": "Pogajanje",
         "category": "Kariera in delo",
-        "description": "Predstavi svoje interese, poslušaj drugo stran in poišči win-win dogovor.",
-        "level": "INTERMEDIATE",
+        "description": "Predstavi svoje interese, poslušaj drugo stran in poišči obojestransko koristen dogovor.",
+        "level": "SREDNJI",
         "estimatedMinutes": 16,
         "outcomes": [
             "interesi",
@@ -160,7 +160,7 @@ export const demoSkills = [
         "name": "Osnove vodenja",
         "category": "Kariera in delo",
         "description": "Vodi pogovor z ekipo, razjasni odgovornosti in motiviraj brez mikromanagementa.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 16,
         "outcomes": [
             "smer",
@@ -174,7 +174,7 @@ export const demoSkills = [
         "name": "Vodenje sestankov",
         "category": "Kariera in delo",
         "description": "Naredi sestanke krajše, bolj jasne in usmerjene v odločitve.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 10,
         "outcomes": [
             "agenda",
@@ -188,7 +188,7 @@ export const demoSkills = [
         "name": "Upravljanje časa",
         "category": "Osebna učinkovitost",
         "description": "Razporedi čas, zaščiti fokus in pravočasno sporoči prioritete.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 10,
         "outcomes": [
             "prioritete",
@@ -202,7 +202,7 @@ export const demoSkills = [
         "name": "Prioritizacija",
         "category": "Osebna učinkovitost",
         "description": "Odloči, kaj je pomembno, kaj lahko počaka in kaj je treba delegirati.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 12,
         "outcomes": [
             "pomembnost",
@@ -216,7 +216,7 @@ export const demoSkills = [
         "name": "Sprejemanje odločitev",
         "category": "Osebna učinkovitost",
         "description": "Sprejemaj odločitve z manj odlašanja, jasnimi kriteriji in boljšim tveganjem.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 14,
         "outcomes": [
             "kriteriji",
@@ -230,7 +230,7 @@ export const demoSkills = [
         "name": "Fokus in disciplina",
         "category": "Osebna učinkovitost",
         "description": "Zmanjšaj motnje, začni nalogo in vztrajaj tudi, ko motivacija pade.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 9,
         "outcomes": [
             "začetek",
@@ -244,7 +244,7 @@ export const demoSkills = [
         "name": "Obvladovanje stresa",
         "category": "Čustvena inteligenca",
         "description": "Prepoznaj pritisk, umiri odziv in izberi naslednji korak namesto panike.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 11,
         "outcomes": [
             "umiritev",
@@ -258,7 +258,7 @@ export const demoSkills = [
         "name": "Uravnavanje čustev",
         "category": "Čustvena inteligenca",
         "description": "Odgovori premišljeno tudi takrat, ko si jezen, razočaran ali pod pritiskom.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 13,
         "outcomes": [
             "premor",
@@ -272,7 +272,7 @@ export const demoSkills = [
         "name": "Samozavest",
         "category": "Čustvena inteligenca",
         "description": "Predstavi svoje mnenje brez opravičevanja in z zdravim spoštovanjem do sebe.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 12,
         "outcomes": [
             "samozavesten ton",
@@ -286,7 +286,7 @@ export const demoSkills = [
         "name": "Odpornost po neuspehu",
         "category": "Čustvena inteligenca",
         "description": "Po napaki ali zavrnitvi se hitro uči, popravi smer in nadaljuje.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 13,
         "outcomes": [
             "učenje",
@@ -300,7 +300,7 @@ export const demoSkills = [
         "name": "Denarni pogovori",
         "category": "Vsakdanje življenje",
         "description": "Mirno govori o ceni, proračunu, stroških in pričakovanjih brez nelagodja.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 10,
         "outcomes": [
             "jasnost",
@@ -314,7 +314,7 @@ export const demoSkills = [
         "name": "Prošnja za pomoč",
         "category": "Vsakdanje življenje",
         "description": "Jasno povej, kje si zataknjen, kaj si že poskusil in kakšno pomoč potrebuješ.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 8,
         "outcomes": [
             "kontekst",
@@ -328,7 +328,7 @@ export const demoSkills = [
         "name": "Težki pogovori",
         "category": "Vsakdanje življenje",
         "description": "Odpri občutljivo temo spoštljivo, neposredno in z namenom rešitve.",
-        "level": "INTERMEDIATE",
+        "level": "SREDNJI",
         "estimatedMinutes": 15,
         "outcomes": [
             "spoštljiv uvod",
@@ -342,7 +342,7 @@ export const demoSkills = [
         "name": "Digitalna komunikacija",
         "category": "Vsakdanje življenje",
         "description": "Piši sporočila v chatu/mailu tako, da ni nesporazumov in nepotrebnega pritiska.",
-        "level": "BEGINNER",
+        "level": "ZAČETNIK",
         "estimatedMinutes": 9,
         "outcomes": [
             "ton",
@@ -358,7 +358,7 @@ export const demoChallenges = [
         "title": "Predstavitev ideje v 2 minutah",
         "scenario": "Ekipo moraš prepričati, da podpre tvojo idejo za izboljšavo procesa.",
         "expectedOutcome": "Jasen problem, rešitev in poziv k akciji.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "jasnost",
@@ -373,7 +373,7 @@ export const demoChallenges = [
         "title": "Sogovornik je razočaran",
         "scenario": "Prijatelj ali sodelavec ti razlaga, da se počuti preslišanega. Tvoja naloga je odgovoriti brez prekinjanja in svetovanja.",
         "expectedOutcome": "Povzetek občutka, validacija in eno odprto vprašanje.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "povzemanje",
@@ -387,21 +387,21 @@ export const demoChallenges = [
         "title": "Kratek mail z jasnim dogovorom",
         "scenario": "Napisati moraš sporočilo, kjer prosiš za potrditev roka in odgovornosti.",
         "expectedOutcome": "Kratko sporočilo z jasnim kontekstom in naslednjim korakom.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "kratkost",
             "kontekst",
-            "jasen CTA"
+            "jasen poziv k dejanju"
         ],
         "id": "c3"
     },
     {
         "skillKey": "feedback-giving",
-        "title": "Feedback brez napada",
+        "title": "Povratna informacija brez napada",
         "scenario": "Sodelavec je oddal površno delo. Povej mu, kaj naj popravi, brez da zveniš napadalno.",
-        "expectedOutcome": "Specifičen feedback z učinkom in predlogom izboljšave.",
-        "difficulty": "INTERMEDIATE",
+        "expectedOutcome": "Specifična povratna informacija z učinkom in predlogom izboljšave.",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 9,
         "evaluationCriteria": [
             "specifičnost",
@@ -415,7 +415,7 @@ export const demoChallenges = [
         "title": "Napet pogovor zaradi zamude",
         "scenario": "Sodelavec zamuja z nalogo, ti pa potrebuješ njegov del za svoj rok.",
         "expectedOutcome": "Mirno izražena potreba in konkreten dogovor.",
-        "difficulty": "INTERMEDIATE",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 10,
         "evaluationCriteria": [
             "empatija",
@@ -425,11 +425,11 @@ export const demoChallenges = [
         "id": "c5"
     },
     {
-        "skillKey": "empathy",
+        "skillKey": "empatija",
         "title": "Oseba je pod stresom",
         "scenario": "Nekdo ti pove, da ne zmore več zaradi pritiska. Odgovori empatično in ne minimaliziraj problema.",
         "expectedOutcome": "Topel odziv, validacija in ponudba podpore.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "validacija",
@@ -443,7 +443,7 @@ export const demoChallenges = [
         "title": "Reci ne dodatni nalogi",
         "scenario": "Nekdo te prosi za dodatno nalogo, ti pa si že preobremenjen. Postavi mejo.",
         "expectedOutcome": "Spoštljiv ne z razlogom in možno alternativo.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "jasna meja",
@@ -455,14 +455,14 @@ export const demoChallenges = [
     {
         "skillKey": "networking",
         "title": "Prvi stik po dogodku",
-        "scenario": "Po dogodku želiš osebi poslati LinkedIn/Email follow-up, da ohraniš stik.",
+        "scenario": "Po dogodku želiš osebi poslati LinkedIn/Email nadaljnji stik, da ohraniš stik.",
         "expectedOutcome": "Naraven uvod, konkreten razlog in lahek naslednji korak.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "osebni kontekst",
             "vrednost",
-            "follow-up"
+            "nadaljnji stik"
         ],
         "id": "c8"
     },
@@ -471,7 +471,7 @@ export const demoChallenges = [
         "title": "Vprašanje o slabosti",
         "scenario": "Na razgovoru te vprašajo, katero slabost trenutno izboljšuješ.",
         "expectedOutcome": "Iskren odgovor s primerom učenja in napredka.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "iskrenost",
@@ -485,7 +485,7 @@ export const demoChallenges = [
         "title": "Dogovor o višji ceni",
         "scenario": "Stranka želi nižjo ceno, ti pa moraš zaščititi vrednost svojega dela.",
         "expectedOutcome": "Mirna razlaga vrednosti in predlog kompromisa.",
-        "difficulty": "INTERMEDIATE",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 10,
         "evaluationCriteria": [
             "vrednost",
@@ -499,7 +499,7 @@ export const demoChallenges = [
         "title": "Ekipa izgublja motivacijo",
         "scenario": "V ekipi pada energija, rok pa se bliža. Kot vodja moraš dati smer brez pritiska.",
         "expectedOutcome": "Jasna smer, priznanje stanja in konkreten plan.",
-        "difficulty": "INTERMEDIATE",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 11,
         "evaluationCriteria": [
             "smer",
@@ -513,7 +513,7 @@ export const demoChallenges = [
         "title": "Sestanek brez fokusa",
         "scenario": "Sestanek se oddaljuje od teme. Prevzemi vodenje in vrni skupino k odločitvi.",
         "expectedOutcome": "Vljuden prehod nazaj na agendo in zaključek z akcijami.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "agenda",
@@ -527,7 +527,7 @@ export const demoChallenges = [
         "title": "Preveč nalog v enem dnevu",
         "scenario": "Imaš preveč nalog in moraš realno sporočiti, kaj bo narejeno danes.",
         "expectedOutcome": "Prioritete, realen rok in proaktivna komunikacija.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "prioritete",
@@ -541,7 +541,7 @@ export const demoChallenges = [
         "title": "Kaj naj naredim najprej?",
         "scenario": "Dobiš tri nujne naloge hkrati. Razloži, kako boš izbral vrstni red.",
         "expectedOutcome": "Kriteriji za izbor in jasen plan izvedbe.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "kriteriji",
@@ -555,7 +555,7 @@ export const demoChallenges = [
         "title": "Odločitev z nepopolnimi podatki",
         "scenario": "Nimaš vseh informacij, a moraš predlagati odločitev do konca dneva.",
         "expectedOutcome": "Odločitev z razlogi, tveganji in načinom preverjanja.",
-        "difficulty": "INTERMEDIATE",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 9,
         "evaluationCriteria": [
             "kriteriji",
@@ -569,7 +569,7 @@ export const demoChallenges = [
         "title": "Telefon te stalno moti",
         "scenario": "Želiš zaključiti pomembno nalogo, a te ves čas zmoti telefon in chat.",
         "expectedOutcome": "Konkreten plan za okolje, časovni blok in začetek.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "okolje",
@@ -583,7 +583,7 @@ export const demoChallenges = [
         "title": "Mirno pod pritiskom",
         "scenario": "Rok se bliža in čutiš paniko. Napiši, kako se boš umiril in organiziral naslednji korak.",
         "expectedOutcome": "Umiritev, razbitje naloge in prva akcija.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "umiritev",
@@ -597,7 +597,7 @@ export const demoChallenges = [
         "title": "Jezen odgovor v chatu",
         "scenario": "Prejel si provokativno sporočilo. Odgovori tako, da ne eskaliraš konflikta.",
         "expectedOutcome": "Premor, miren ton in usmeritev v rešitev.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "premor",
@@ -611,7 +611,7 @@ export const demoChallenges = [
         "title": "Predlagaj svoje mnenje",
         "scenario": "Na sestanku imaš drugačno mnenje, ampak te skrbi, da bo izpadlo neumno. Povej ga samozavestno.",
         "expectedOutcome": "Jasno mnenje, razlog in odprtost za odziv.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "mnenje",
@@ -624,8 +624,8 @@ export const demoChallenges = [
         "skillKey": "resilience",
         "title": "Po zavrnitvi nadaljuj",
         "scenario": "Tvoja ideja je bila zavrnjena. Odgovori tako, da pokažeš zrelost in pripravljenost na izboljšavo.",
-        "expectedOutcome": "Sprejem feedbacka, učenje in naslednji korak.",
-        "difficulty": "BEGINNER",
+        "expectedOutcome": "Sprejem povratne informacije, učenje in naslednji korak.",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 8,
         "evaluationCriteria": [
             "sprejemanje",
@@ -639,7 +639,7 @@ export const demoChallenges = [
         "title": "Pogovor o strošku",
         "scenario": "S prijateljem ali partnerjem se moraš pogovoriti o delitvi stroškov brez napetosti.",
         "expectedOutcome": "Jasen okvir, spoštljiv ton in dogovor.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "jasnost",
@@ -653,7 +653,7 @@ export const demoChallenges = [
         "title": "Prosi za pomoč brez panike",
         "scenario": "Zataknil si se pri nalogi. Prosi za pomoč tako, da pokažeš, kaj si že poskusil.",
         "expectedOutcome": "Kontekst, poskusi in konkretno vprašanje.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 6,
         "evaluationCriteria": [
             "kontekst",
@@ -667,7 +667,7 @@ export const demoChallenges = [
         "title": "Odpri občutljivo temo",
         "scenario": "Nekoga moraš opozoriti na navado, ki ti povzroča težavo.",
         "expectedOutcome": "Spoštljiv uvod, dejstvo, vpliv in predlog rešitve.",
-        "difficulty": "INTERMEDIATE",
+        "difficulty": "SREDNJI",
         "estimatedMinutes": 10,
         "evaluationCriteria": [
             "uvod",
@@ -682,7 +682,7 @@ export const demoChallenges = [
         "title": "Sporočilo brez napačnega tona",
         "scenario": "V chatu moraš opozoriti na napako, brez da zveniš pasivno agresivno.",
         "expectedOutcome": "Kratek, jasen in spoštljiv digitalni odziv.",
-        "difficulty": "BEGINNER",
+        "difficulty": "ZAČETNIK",
         "estimatedMinutes": 7,
         "evaluationCriteria": [
             "ton",
@@ -695,10 +695,10 @@ export const demoChallenges = [
 export const demoPrompts = [
     {
         "skillKey": "public-speaking",
-        "title": "Coach za jasen nastop",
-        "difficulty": "BEGINNER",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za jasen nastop",
+        "difficulty": "ZAČETNIK",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "struktura",
@@ -708,10 +708,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "active-listening",
-        "title": "Coach za poslušanje",
-        "difficulty": "BEGINNER",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za poslušanje",
+        "difficulty": "ZAČETNIK",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "empatija",
@@ -721,10 +721,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "conflict-resolution",
-        "title": "Coach za konflikt",
-        "difficulty": "INTERMEDIATE",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za konflikt",
+        "difficulty": "SREDNJI",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "meje",
@@ -734,23 +734,23 @@ export const demoPrompts = [
     },
     {
         "skillKey": "feedback-giving",
-        "title": "Coach za feedback",
-        "difficulty": "INTERMEDIATE",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za povratne informacije",
+        "difficulty": "SREDNJI",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
-            "feedback",
+            "povratna-informacija",
             "spoštovanje"
         ],
         "id": "p4"
     },
     {
         "skillKey": "job-interview",
-        "title": "Coach za razgovor",
-        "difficulty": "INTERMEDIATE",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za razgovor",
+        "difficulty": "SREDNJI",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "STAR",
@@ -760,10 +760,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "time-management",
-        "title": "Coach za čas",
-        "difficulty": "BEGINNER",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za čas",
+        "difficulty": "ZAČETNIK",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "prioritete",
@@ -773,10 +773,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "stress-management",
-        "title": "Coach za stres",
-        "difficulty": "BEGINNER",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za stres",
+        "difficulty": "ZAČETNIK",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "umiritev",
@@ -786,10 +786,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "boundaries",
-        "title": "Coach za meje",
-        "difficulty": "INTERMEDIATE",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za meje",
+        "difficulty": "SREDNJI",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "meje",
@@ -799,10 +799,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "digital-communication",
-        "title": "Coach za digitalni ton",
-        "difficulty": "BEGINNER",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za digitalni ton",
+        "difficulty": "ZAČETNIK",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "chat",
@@ -812,10 +812,10 @@ export const demoPrompts = [
     },
     {
         "skillKey": "negotiation",
-        "title": "Coach za pogajanje",
-        "difficulty": "INTERMEDIATE",
-        "systemPrompt": "Si praktičen AI coach za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
-        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturiran feedback z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
+        "title": "Trener za pogajanje",
+        "difficulty": "SREDNJI",
+        "systemPrompt": "Si praktičen AI trener za življenjske in mehke veščine. Odgovarjaj v slovenščini, konkretno, spodbudno in kratko. Vedno pokaži: oceno, v čem je uporabnik dober, kaj izboljšati, boljšo verzijo in en mini izziv.",
+        "userPromptTemplate": "Scenarij: {{scenario}}\nMerila: {{criteria}}\nOdgovor uporabnika: {{answer}}\nVrni strukturirano povratno informacijo z naslovnimi vrsticami Ocena, Dobro, Izboljšaj, Boljša verzija, Naslednji mini izziv.",
         "simulatedAiResponse": "Ocena: 78/100\nDobro: odgovor ima jasen namen.\nIzboljšaj: dodaj konkreten naslednji korak.\nBoljša verzija: predlagaj dogovor in preveri razumevanje.\nNaslednji mini izziv: povej isto v 30 sekundah.",
         "tags": [
             "vrednost",
