@@ -750,7 +750,7 @@ function CommandCenter({ map, nextNode, nextBoss, activePhase, questLoading, use
                     <small>{nextNode ? `${nextNode.bestScore || 0}/${nextNode.requiredScore || 0} score` : 'All nodes done'}</small>
                 </div>
                 <div className="skillcity-mvp-next-card__actions">
-                    <button type="button" disabled={!nextNode?.unlocked || questLoading} onClick={onStartNext}>
+                    <button type="button" className="primary" disabled={!nextNode?.unlocked || questLoading} onClick={onStartNext}>
                         <Icon name="bolt" size={15} /> Start
                     </button>
                     <button type="button" className="secondary" disabled={!nextBoss} onClick={onShowBoss}>
