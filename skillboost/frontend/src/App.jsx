@@ -29,7 +29,7 @@ const navItems = [
     { key: 'skills', label: 'Veščine', icon: 'target' },
     { key: 'quest', label: 'SkillCity', icon: 'compass' },
     { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
-    { key: 'prompts', label: 'Prompti', icon: 'sparkles' },
+    //{ key: 'prompts', label: 'Prompti', icon: 'sparkles' },
     { key: 'report', label: 'Poročilo', icon: 'chart' },
     { key: 'mentor', label: 'Mentor', icon: 'userTie', mentorOnly: true },
     { key: 'profile', label: 'Profil', icon: 'users', protected: true }
@@ -61,11 +61,13 @@ const sectionMeta = {
         title: 'Tekmovalno središče',
         helper: 'Dnevni dvoboj in bitka veščin v bolj kompaktnem pogledu.'
     },
+    /*
     prompts: {
         eyebrow: 'AI nastavitve',
         title: 'Prompti',
         helper: 'Pripravi in testiraj navodila za AI trenerja.'
     },
+     */
     report: {
         eyebrow: 'Napredek',
         title: 'Poročilo',
@@ -332,7 +334,7 @@ export default function App() {
                                     />
                                 )}
 
-                                {activeSection === 'prompts' && (
+                                {/* {activeSection === 'prompts' && (
                                     <PromptsSection
                                         skills={data.skills}
                                         filteredPrompts={data.filteredPrompts}
@@ -343,7 +345,7 @@ export default function App() {
                                         saving={data.saving}
                                         authenticated={authenticated}
                                     />
-                                )}
+                                )} */}
 
                                 {activeSection === 'report' && <ReportSection report={data.report} skills={data.skills} />}
                                 {activeSection === 'mentor' && (
