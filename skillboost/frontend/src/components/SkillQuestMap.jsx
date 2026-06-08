@@ -1279,11 +1279,11 @@ export function SkillQuestMap({
             <div className="skillcity-mvp-toolbar">
                 <div>
                     <span className="eyebrow">Upodabljalnik</span>
-                    <strong>{performanceMode ? 'Nadomestni Eco CSS' : modelReady ? 'Združen GLB načrt poti' : 'Nalaganje GLB gledalca'}</strong>
+                    <strong>{performanceMode ? 'Nadomestni Eco CSS' : modelReady ? 'Grupiran GLB načrt poti' : 'Nalaganje GLB gledalca'}</strong>
                 </div>
                 <div className="skillcity-mvp-toolbar__actions">
                     <button type="button" className={!performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(false)}>
-                        Zgružen GLB
+                        Grupiran GLB
                     </button>
                     <button type="button" className={performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(true)}>
                         Eco način

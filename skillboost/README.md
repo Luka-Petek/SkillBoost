@@ -1,219 +1,546 @@
-# SkillBoost
+ # SkillBoost
+SkillBoost je moderna spletna aplikacija za razvijanje mehkih veščin skozi interaktivne izzive, AI povratne informacije in sistem napredovanja.
 
-Osnovni full-stack projekt za prvo verzijo aplikacije **SkillBoost**.
+Projekt je bil razvit v okviru predmeta Praktikum 2 z uporabo React, Spring Boot in MongoDB tehnologij. Aplikacija uporabnikom omogoča izboljševanje komunikacije, sodelovanja in profesionalnih kompetenc preko gamifikacije, mentorstva in praktičnih simulacij.
 
-Projekt vsebuje:
+Glavne funkcionalnosti:
+- AI feedback sistem
+- Skill Quest mapa napredovanja
+- uporabniški profili
+- leaderboard sistem
+- responsive design
+- JWT avtentikacija
+- Docker podpora
 
-- React frontend za pregled veščin, simulacijo izziva, knjižnico promptov in poročilo napredka.
-- Spring Boot backend z REST API-jem.
-- MongoDB bazo z začetnimi podatki.
-- Realno Gemini AI ocenjevanje prek backend API-ja, z lokalnim fallbackom samo kadar je izrecno vklopljen.
-- Docker Compose za zagon celotnega sistema.
-- CI pipeline za GitHub Actions in GitLab CI.
+Projekt je zasnovan kot moderna full-stack rešitev z ločenim frontend in backend sistemom ter REST API komunikacijo.
 
-## Hitri zagon
+---
+
+# Struktura projekta
+
+Projekt je razdeljen na več glavnih delov: frontend, backend, baza, avtentikacija, dokumentacija in promocijski materiali.
+```text id="1u3z32"
+skillboost/
+│
+├── .github/
+│   └── workflows/                     # CI/CD workflow konfiguracije (GitHub Actions)
+│
+├── _PROMOCIJA/                        # Datoteke za predstavitev in promocijo projekta
+│   ├── OpisProjekta.md                # Kratek opis projekta
+│   ├── SkillBoostPredstavitev.pptx    # PowerPoint predstavitev
+│   └── arhitekturna_shema_luka.png    # Diagram arhitekture sistema
+│
+├── backend/                           # Spring Boot backend aplikacija
+│   ├── pom.xml                        # Maven konfiguracija backend projekta
+│   ├── Dockerfile                     # Docker konfiguracija za backend
+│   │
+│   └── src/
+│       └── main/
+│           ├── java/com/skillboost/
+│           │   ├── SkillBoostApplication.java         # Glavna Spring Boot aplikacija
+│           │   │
+│           │   ├── config/                           # Konfiguracija sistema
+│           │   │   ├── CorsConfig.java               # Omogoča frontend-backend komunikacijo
+│           │   │   └── SecurityConfig.java           # JWT varnost in zaščita
+│           │   │
+│           │   ├── controller/                       # REST API endpointi
+│           │   │   ├── ChallengeController.java      # API za izzive
+│           │   │   ├── MentorController.java         # Mentor funkcionalnosti
+│           │   │   ├── PromptController.java         # AI prompt sistem
+│           │   │   ├── QuestMapController.java       # Skill quest API
+│           │   │   ├── ReportController.java         # Statistika in poročila
+│           │   │   ├── SkillController.java          # Upravljanje skillov
+│           │   │   ├── TrainingSessionController.java# Trening seje
+│           │   │   ├── UserController.java           # Upravljanje uporabnikov
+│           │   │   └── UserProfileController.java    # Profil uporabnika
+│           │   │
+│           │   ├── dto/                              # DTO objekti za prenos podatkov
+│           │   ├── model/                            # Podatkovni modeli
+│           │   ├── repository/                       # Dostop do MongoDB baze
+│           │   ├── service/                          # Poslovna logika aplikacije
+│           │   └── seed/                             # Začetni/demo podatki
+│           │
+│           └── resources/
+│               ├── application.yml                   # Backend konfiguracija
+│               │
+│               └── db/
+│                   └── skillboost-seed.json          # Seed/demo podatki
+│
+├── docs/                              # Dokumentacija projekta
+│   ├── api-examples.http              # Primeri API requestov
+│   ├── skillquest-roadmap.md          # Roadmap nadaljnjega razvoja
+│   └── thursday-mvp-plan.md           # MVP plan razvoja
+│
+├── frontend/                          # React frontend aplikacija
+│   ├── package.json                   # Frontend knjižnice in npm skripte
+│   ├── package-lock.json              # Zaklenjene verzije npm paketov
+│   ├── Dockerfile                     # Docker konfiguracija za frontend
+│   ├── nginx.conf                     # Nginx konfiguracija
+│   ├── index.html                     # Osnovna HTML datoteka aplikacije
+│   ├── vite.config.js                 # Vite konfiguracija
+│   │
+│   └── src/
+│       ├── main.jsx                   # Vstopna točka React aplikacije
+│       ├── App.jsx                    # Glavna komponenta aplikacije
+│       ├── api.js                     # API komunikacija z backendom
+│       ├── keycloak.js                # Nastavitve prijave in avtentikacije
+│       │
+│       ├── components/                # React komponente uporabniškega vmesnika
+│       ├── data/                      # Demo podatki
+│       ├── hooks/                     # Custom React hooks
+│       ├── styles/                    # CSS datoteke in responsive design
+│       └── world/                     # SkillCity sistem in logika
+│
+├── keycloak_config/                   # Keycloak konfiguracija za avtentikacijo
+│   └── realm-export.json              # Export realm konfiguracije
+│
+├── mongo/                             # MongoDB seed podatki
+│   └── skillboost-prompts.seed.json   # Seed podatki za AI prompt sistem
+│
+├── .env.example                       # Primer konfiguracije okolja
+├── .gitignore                         # Datoteke, ki jih Git ignorira
+├── MVP_UPGRADES_5_TOCK.md             # Dokument nadgradenj in izboljšav
+├── README.md                          # Glavna dokumentacija projekta
+└── docker-compose.yml                 # Zagon celotnega sistema z Docker Compose
+```
+
+
+---
+
+# Pomen glavnih datotek in map
+
+## Glavne datoteke
+
+| Datoteka / mapa          | Pomen                                                                                                      |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `README.md`              | Glavna dokumentacija projekta. Vsebuje opis projekta, navodila za zagon, strukturo in dodatne informacije. |
+| `docker-compose.yml`     | Zažene celoten projekt: MongoDB, Mongo Express, Keycloak, backend in frontend.                             |
+| `.env`                   | Lokalne nastavitve okolja, npr. API ključi in povezave. Ta datoteka se običajno ne deli javno.             |
+| `.env.example`           | Primer nastavitev okolja. Uporabnik ga lahko kopira v `.env`.                                              |
+| `.gitignore`             | Določa, katere datoteke se ne dodajo v Git repozitorij.                                                    |
+| `MVP_UPGRADES_5_TOCK.md` | Dokument z nadgradnjami in izboljšavami projekta.                                                          |
+
+---
+
+## Frontend
+
+| Datoteka / mapa                         | Pomen                                                            |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| `frontend/package.json`                 | Seznam frontend knjižnic in skript za zagon React aplikacije.    |
+| `frontend/package-lock.json`            | Zaklenjene verzije npm paketov.                                  |
+| `frontend/Dockerfile`                   | Navodila za izdelavo Docker slike frontenda.                     |
+| `frontend/nginx.conf`                   | Konfiguracija Nginx strežnika za serviranje frontend aplikacije. |
+| `frontend/index.html`                   | Osnovna HTML datoteka, v katero se naloži React aplikacija.      |
+| `frontend/vite.config.js`               | Konfiguracija Vite razvojnega okolja.                            |
+| `frontend/src/main.jsx`                 | Vstopna točka React aplikacije.                                  |
+| `frontend/src/App.jsx`                  | Glavna komponenta aplikacije.                                    |
+| `frontend/src/api.js`                   | Nastavitve za komunikacijo z backend API-jem.                    |
+| `frontend/src/keycloak.js`              | Nastavitve za prijavo in avtentikacijo preko Keycloak sistema.   |
+| `frontend/src/components/`              | React komponente, iz katerih je sestavljen uporabniški vmesnik.  |
+| `frontend/src/hooks/`                   | Lastni React hooki za podatke, prijavo in temo.                  |
+| `frontend/src/styles/`                  | CSS datoteke za izgled aplikacije.                               |
+| `frontend/src/data/demoContent.js`      | Demo vsebina, ki se uporablja v aplikaciji.                      |
+| `frontend/src/world/skillcityEngine.js` | Logika za SkillCity / SkillQuest prikaz.                         |
+
+---
+
+## Backend
+
+| Datoteka / mapa              | Pomen                                                           |
+| ---------------------------- | --------------------------------------------------------------- |
+| `backend/pom.xml`            | Maven konfiguracija backend projekta in seznam Java odvisnosti. |
+| `backend/Dockerfile`         | Navodila za izdelavo Docker slike backend aplikacije.           |
+| `SkillBoostApplication.java` | Glavna Spring Boot datoteka, ki zažene backend.                 |
+| `config/`                    | Konfiguracija CORS, varnosti in dostopa.                        |
+| `controller/`                | REST API kontrolerji. Sprejemajo zahteve iz frontenda.          |
+| `dto/`                       | Objekti za prenos podatkov med frontendom in backendom.         |
+| `model/`                     | Glavni podatkovni modeli, ki se shranjujejo v MongoDB.          |
+| `repository/`                | Razredi za dostop do MongoDB baze.                              |
+| `service/`                   | Poslovna logika aplikacije.                                     |
+| `seed/`                      | Začetni podatki, ki se naložijo ob zagonu aplikacije.           |
+| `application.yml`            | Nastavitve backend aplikacije, baze, Keycloak in Gemini API.    |
+| `skillboost-seed.json`       | Začetni podatki za SkillBoost aplikacijo.                       |
+
+---
+
+## Baza in avtentikacija
+
+| Datoteka / mapa                      | Pomen                                                   |
+| ------------------------------------ | ------------------------------------------------------- |
+| `mongo/skillboost-prompts.seed.json` | Začetni podatki za AI prompt vsebine.                   |
+| `keycloak_config/realm-export.json`  | Keycloak konfiguracija za uporabnike, prijavo in realm. |
+| `keycloak_data/`                     | Lokalni podatki Keycloak sistema.                       |
+
+---
+
+## Dokumentacija
+
+| Datoteka / mapa              | Pomen                                                |
+| ---------------------------- | ---------------------------------------------------- |
+| `docs/api-examples.http`     | Primeri API zahtev za testiranje backend endpointov. |
+| `docs/skillquest-roadmap.md` | Načrt razvoja SkillQuest funkcionalnosti.            |
+| `docs/thursday-mvp-plan.md`  | Plan dela za MVP verzijo.                            |
+
+---
+
+## Promocijska mapa
+
+| Datoteka / mapa                          | Pomen                                 |
+| ---------------------------------------- | ------------------------------------- |
+| `_PROMOCIJA/OpisProjekta.md`             | Kratek opis projekta za predstavitev. |
+| `_PROMOCIJA/SkillBoostPredstavitev.pptx` | PowerPoint predstavitev projekta.     |
+| `_PROMOCIJA/arhitekturna_shema_luka.png` | Arhitekturna slika sistema.           |
+
+---
+
+# Zagon projekta
+
+Ta navodila so napisana po korakih, da lahko projekt ponovno zaženemo tudi kasneje brez dodatnega razmišljanja.
+
+---
+
+## 1. Potrebni programi
+
+Pred zagonom morajo biti nameščeni:
+
+1. Docker Desktop
+2. Git
+3. Node.js
+4. Java 17 ali novejša verzija
+5. Maven
+
+Najlažji način zagona je preko Dockerja, ker takrat ni treba ročno zaganjati baze, backend strežnika in frontenda posebej.
+
+---
+
+## 2. Prenos projekta
+
+Če projekt še ni prenesen, ga prenesemo iz Git repozitorija:
+
+```bash
+git clone LINK_DO_REPOZITORIJA
+```
+
+Nato gremo v mapo projekta:
+
+```bash
+cd skillboost
+```
+
+---
+
+## 3. Priprava `.env` datoteke
+
+Če datoteka `.env` še ne obstaja, jo ustvarimo iz primera:
+
+```bash
+cp .env.example .env
+```
+
+Na Windows lahko naredimo ročno:
+
+1. kopiramo datoteko `.env.example`
+2. kopijo preimenujemo v `.env`
+
+V `.env` datoteki lahko nastavimo Gemini API ključ:
+
+```env
+GEMINI_API_KEY=PASTE_YOUR_GEMINI_API_KEY_HERE
+```
+
+Če Gemini API ključa nimamo, lahko projekt še vedno zaženemo, vendar AI funkcionalnosti ne bodo v celoti delovale.
+
+---
+
+## 4. Zagon celotnega projekta z Dockerjem
+
+V glavni mapi projekta zaženemo:
 
 ```bash
 docker compose up --build
 ```
 
-Po zagonu:
+Ta ukaz zažene:
+
+1. MongoDB bazo
+2. Mongo Express za pregled baze
+3. Keycloak za prijavo
+4. Spring Boot backend
+5. React frontend
+
+---
+
+## 5. Preverjanje, če vse deluje
+
+Ko se Docker containerji zaženejo, odpremo naslednje povezave:
+
+| Storitev      | Povezava                | Namen                              |
+| ------------- | ----------------------- | ---------------------------------- |
+| Frontend      | `http://localhost:3000` | Glavna spletna aplikacija          |
+| Backend       | `http://localhost:8080` | REST API                           |
+| Mongo Express | `http://localhost:8081` | Pregled MongoDB baze               |
+| Keycloak      | `http://localhost:9080` | Upravljanje prijave in uporabnikov |
+
+---
+
+## 6. Prijava v Mongo Express
+
+Za pregled baze odpremo:
 
 ```text
-Frontend:      http://localhost:3000
-Backend API:   http://localhost:8080/api/health
-Mongo Express: http://localhost:8081
+http://localhost:8081
 ```
 
-Mongo Express prijava:
+Podatki za prijavo:
 
 ```text
-username: admin
-password: admin
+Username: admin
+Password: admin
 ```
 
-## Struktura
+---
+
+## 7. Prijava v Keycloak admin konzolo
+
+Za Keycloak odpremo:
 
 ```text
-skillboost/
-├── backend/                 Spring Boot API
-├── frontend/                React aplikacija
-├── mongo/                   Primer JSON promptov za LLM/mock podatke
-├── docs/                    API primeri in predlog plana za četrtek
-├── .github/workflows/       GitHub Actions pipeline
-├── .gitlab-ci.yml           GitLab CI pipeline
-├── docker-compose.yml       Celoten lokalni stack
-├── .env.example             Primer okoljskih spremenljivk
-└── README.md
+http://localhost:9080
 ```
 
-## Kaj dela prva verzija
-
-Prva verzija pokriva osnovne funkcionalnosti:
-
-1. Pregled učnih veščin.
-2. Pregled izzivov po veščini.
-3. Simulacija naloge z realnim Gemini AI ocenjevanjem.
-4. Shranjevanje rezultatov uporabnika v MongoDB.
-5. Točke, značke in osnovno poročilo napredka.
-6. Knjižnica promptov, ki jih lahko kasneje zamenjate z realnim LLM sistemom.
-7. Dodajanje novih promptov prek UI/API-ja.
-8. Mentorjev komentar na rešeno simulacijo.
-
-## Seed podatki
-
-Backend ob prvem zagonu samodejno naloži začetne podatke iz:
+Podatki za prijavo:
 
 ```text
-backend/src/main/resources/db/skillboost-seed.json
+Username: admin
+Password: admin
 ```
 
-Dodatna samostojna JSON datoteka, ki predstavlja primer prompt/response podatkov za lokalni fallback, je tukaj:
+---
+
+## 8. Preverjanje backend API-ja
+
+Backend lahko preverimo z health endpointom:
 
 ```text
-mongo/skillboost-prompts.seed.json
+http://localhost:8080/api/health
 ```
 
-Ideja: ta JSON je uporaben samo za lokalni fallback ali razvoj promptov. Produkcijsko ocenjevanje gre prek realnega Gemini klica v backendu.
+Če backend deluje, mora vrniti odgovor brez napake.
 
-## Lokalni zagon brez Dockerja
-
-### Backend
-
-```bash
-cd backend
-mvn spring-boot:run
-```
-
-Backend pričakuje MongoDB na:
-
-```text
-mongodb://localhost:27017/skillboost
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Vite dev server teče na:
-
-```text
-http://localhost:5173
-```
-
-V dev načinu se `/api` proxy-ja na backend `http://localhost:8080`.
-
-## Pomembni API endpointi
-
-```text
-GET    /api/health
-GET    /api/users
-POST   /api/users
-GET    /api/skills
-GET    /api/challenges
-GET    /api/challenges/skill/{skillKey}
-GET    /api/prompts
-GET    /api/prompts/skill/{skillKey}
-POST   /api/prompts
-POST   /api/sessions
-PATCH  /api/sessions/{sessionId}/mentor-note
-GET    /api/reports/{userId}
-```
-
-Primeri klicev so v:
+API primere lahko najdemo tudi v datoteki:
 
 ```text
 docs/api-examples.http
 ```
 
-## Pipeline
+---
 
-Vključen je:
+## 9. Ustavitev projekta
 
-- `.github/workflows/ci.yml`
-- `.gitlab-ci.yml`
-
-Oba pipeline-a preverita backend build, frontend build in Docker build.
-
-## Naslednji realni koraki
-
-- Dodati pravo avtentikacijo.
-- Dodati role: uporabnik, mentor, admin.
-- Dodati bolj strukturirano ocenjevanje po kriterijih.
-- Dodati testne scenarije in integracijske teste z MongoDB Testcontainers.
-- Dodati OpenAPI/Swagger dokumentacijo.
-
-## Gamification update
-
-Ta verzija vsebuje razširjeno motivacijsko logiko po vzoru učnih aplikacij:
-
-- XP/točke po vsaki oddani simulaciji.
-- 0-3 zvezdice glede na dosežen score.
-- uporabniški level in progress bar do naslednjega levela.
-- dnevni streak na podlagi zadnjega dneva vaje.
-- dnevni quest board: ena simulacija, rezultat nad 70/100 in vaja z vsaj dvema veščinama.
-- značke za prvi poskus, prvo zvezdico, močan odgovor, AI-ready odgovor, multi-skill vajo, streak in zbiranje zvezdic.
-- `POST /api/sessions` zdaj vrača `SessionSubmissionResponse`, ki vsebuje `session`, `reward` in posodobljenega `user`.
-
-Backend logika je ločena v `GamificationService`, da `TrainingSessionService` ostane osredotočen na simulacijo, scoring in AI feedback.
-
-
-### Gemini AI zagon
-
-Docker Compose ne bere `.env.example`. Najprej naredi lokalni `.env` in vanj dodaj svoj ključ:
+Ko želimo projekt ustaviti, v terminalu pritisnemo:
 
 ```bash
-cp .env.example .env
-# nato v .env nastavi GEMINI_API_KEY
+CTRL + C
 ```
 
-Po spremembi ključa ponovno zgradi in zaženi backend:
+Nato lahko zaustavimo containerje še z ukazom:
+
+```bash
+docker compose down
+```
+
+---
+
+## 10. Popoln reset projekta
+
+Če želimo izbrisati tudi podatke iz baze in Keycloak sistema, uporabimo:
+
+```bash
+docker compose down -v
+```
+
+To izbriše Docker volume podatke, zato se baza ponovno ustvari od začetka.
+
+---
+
+# Ročni zagon brez Dockerja
+
+Ročni zagon je uporaben pri razvoju, vendar je Docker priporočena možnost za končno oddajo.
+
+---
+
+## 1. Zagon baze
+
+Najprej mora delovati MongoDB.
+
+Privzeta povezava:
+
+```text
+mongodb://localhost:27017/skillboost
+```
+
+---
+
+## 2. Zagon backenda
+
+Gremo v backend mapo:
+
+```bash
+cd backend
+```
+
+Zaženemo Spring Boot aplikacijo:
+
+```bash
+mvn spring-boot:run
+```
+
+Backend se zažene na:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 3. Zagon frontenda
+
+V drugem terminalu gremo v frontend mapo:
+
+```bash
+cd frontend
+```
+
+Namestimo pakete:
+
+```bash
+npm install
+```
+
+Zaženemo frontend:
+
+```bash
+npm run dev
+```
+
+Frontend se običajno zažene na:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Najpogostejše težave
+
+## Port je že zaseden
+
+Če se pojavi napaka, da je port že zaseden, preverimo ali že deluje kakšen container ali program na teh portih:
+
+```text
+3000, 8080, 8081, 9080, 27017
+```
+
+Rešitev:
 
 ```bash
 docker compose down
 docker compose up --build
 ```
 
-Privzeto je `GEMINI_FALLBACK_ENABLED=false`, zato backend ne bo več tiho vračal lokalnega/mock odgovora. Če ključ manjka ali Gemini klic pade, bo UI pokazal jasno napako.
+---
 
-### Security/API key
+## Docker ne zažene pravilno baze
 
-Gemini API key ni več hardcodan v projektu. Nastavi ga samo lokalno ali v deployment okolju:
-
-```bash
-GEMINI_API_KEY=...
-```
-
-Za lokalni MVP je varnost privzeto izklopljena, da Docker Compose deluje brez dodatnega Keycloak debugiranja:
-
-```bash
-SKILLBOOST_SECURITY_ENABLED=false
-```
-
-Ko želiš strožje testiranje z JWT/Keycloak, nastavi:
-
-```bash
-SKILLBOOST_SECURITY_ENABLED=true
-```
-
-## Katalog življenjskih veščin
-
-Ta verzija doda večji, bolj interaktiven katalog veščin:
-
-- 24 praktičnih veščin iz komunikacije, odnosov, kariere, osebne učinkovitosti, čustvene inteligence in vsakdanjega življenja.
-- 24 konkretnih trening izzivov, po eden za vsako veščino.
-- Iskanje po veščinah, filtriranje po sekciji in težavnosti.
-- Preseti za hiter izbor: Karierni boost, Boljši odnosi, Fokus in disciplina, Mir pod pritiskom.
-- Podrobni panel za izbrano veščino z izidi, vajami in direktnim prehodom v simulator.
-- Seeder zdaj sinhronizira manjkajoče veščine, izzive in prompte tudi, če baza že obstaja, zato za nove katalog podatke ni nujno vedno brisati Mongo volume.
-
-Če želiš čisto sveže testne podatke, lahko še vedno uporabiš:
+Rešitev:
 
 ```bash
 docker compose down -v
 docker compose up --build
 ```
+
+---
+
+## Frontend se odpre, podatkov pa ni
+
+Preverimo:
+
+1. ali backend deluje na `http://localhost:8080`
+2. ali MongoDB container deluje
+3. ali je `.env` pravilno nastavljen
+4. ali se v konzoli brskalnika pojavi CORS ali API napaka
+
+---
+
+## AI funkcionalnosti ne delujejo
+
+Preverimo `.env` datoteko:
+
+```env
+GEMINI_API_KEY=VSTAVI_API_KLJUC
+```
+
+Če API ključ ni nastavljen, aplikacija lahko deluje, vendar AI del ne bo vračal pravih odgovorov.
+
+---
+
+# Priporočen postopek za predstavitev
+
+Pred predstavitvijo naredimo:
+
+1. Zaženemo projekt:
+
+```bash
+docker compose up --build
+```
+
+2. Odpremo frontend:
+
+```text
+http://localhost:3000
+```
+
+3. Preverimo, da backend deluje:
+
+```text
+http://localhost:8080/api/health
+```
+
+4. Preverimo bazo:
+
+```text
+http://localhost:8081
+```
+
+5. Pripravimo demo podatke.
+
+6. Ne tipkamo dolgih podatkov v živo.
+
+7. Predstavitev vodimo kot zgodbo uporabnika.
+
+Primer zgodbe:
+
+```text
+Uporabnik želi izboljšati svoje mehke veščine.
+Najprej se prijavi v aplikacijo, nato izbere izziv, opravi nalogo,
+prejme povratno informacijo in spremlja svoj napredek na lestvici.
+```
+
+---
+
+# Status projekta
+
+Projekt vsebuje:
+
+1. React frontend
+2. Spring Boot backend
+3. MongoDB bazo
+4. Keycloak avtentikacijo
+5. Docker Compose zagon
+6. začetne podatke
+7. API primere
+8. promocijsko mapo
+9. predstavitev
+10. arhitekturno shemo
+
+Projekt je pripravljen kot končna rešitev za oddajo in predstavitev.
