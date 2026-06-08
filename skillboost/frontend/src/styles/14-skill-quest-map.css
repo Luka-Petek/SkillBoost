@@ -2119,3 +2119,268 @@
     overflow: hidden;
   }
 }
+
+/* =========================================================
+   Fix za telefon (!important more bit)
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .skillquest-shell,
+  .skillcity-mvp-shell,
+  .app-workbench--quest,
+  .app-workbench--quest .app-main-panel {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .app-workbench--quest .app-main-panel {
+    padding: 0.45rem !important;
+  }
+
+  .skillcity-mvp-command.skillcity-mvp-command--pathable,
+  .skillcity-mvp-command {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+    padding: 0.65rem !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+  }
+
+  .skillcity-mvp-command.skillcity-mvp-command--pathable > *,
+  .skillcity-mvp-command > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .skillcity-mvp-command--pathable .skillcity-mvp-command__copy,
+  .skillcity-mvp-command__copy {
+    min-height: auto !important;
+    padding: 0.75rem !important;
+    align-content: start !important;
+    gap: 0.35rem !important;
+  }
+
+  .skillcity-mvp-command--pathable .skillcity-mvp-command__copy h2,
+  .skillcity-mvp-command__copy h2 {
+    font-size: 1.28rem !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.025em !important;
+    overflow-wrap: anywhere;
+  }
+
+  .skillcity-mvp-command--pathable .skillcity-mvp-command__copy p,
+  .skillcity-mvp-command__copy p {
+    font-size: 0.84rem !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .skillcity-mvp-next-card,
+  .skillcity-mvp-next-card--compact {
+    width: 100% !important;
+    min-height: auto !important;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    padding: 0.72rem !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+  }
+
+  .skillcity-mvp-next-card__icon,
+  .skillcity-mvp-next-card--compact .skillcity-mvp-next-card__icon {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 15px !important;
+    font-size: 1.05rem !important;
+  }
+
+  .skillcity-mvp-next-card strong,
+  .skillcity-mvp-next-card small,
+  .skillcity-mvp-next-card span {
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .skillcity-mvp-next-card strong {
+    font-size: 1rem !important;
+    line-height: 1.12 !important;
+  }
+
+  .skillcity-mvp-next-card__actions,
+  .skillcity-mvp-next-card--compact .skillcity-mvp-next-card__actions {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.48rem !important;
+  }
+
+  .skillcity-mvp-next-card__actions button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    padding-inline: 0.55rem !important;
+  }
+
+  .skillcity-mvp-stats,
+  .skillcity-mvp-stats.skillcity-mvp-stats--compact {
+    width: 100% !important;
+    min-height: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.45rem !important;
+  }
+
+  .skillcity-mvp-stats article,
+  .skillcity-mvp-stats button,
+  .skillcity-mvp-stats--compact article,
+  .skillcity-mvp-stats--compact button {
+    min-width: 0 !important;
+    padding: 0.58rem 0.45rem !important;
+    border-radius: 17px !important;
+  }
+
+  .skillcity-mvp-stats strong,
+  .skillcity-mvp-stats--compact strong {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+  }
+
+  .skillcity-mvp-stats span,
+  .skillcity-mvp-stats--compact span {
+    font-size: 0.62rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .skillcity-mvp-stats button,
+  .skillcity-mvp-stats--compact button {
+    grid-column: 1 / -1 !important;
+    min-height: 42px !important;
+  }
+
+  .skillcity-mvp-hero-character,
+  .skillcity-mvp-command--pathable .skillcity-mvp-hero-character {
+    width: 100% !important;
+    min-height: 135px !important;
+    overflow: hidden !important;
+    padding: 0.65rem !important;
+    border-radius: 22px !important;
+  }
+
+  .skillcity-mvp-hero-character__stage,
+  .skillcity-mvp-command--pathable .skillcity-mvp-hero-character__stage {
+    min-height: 86px !important;
+  }
+
+  .skillcity-mvp-hero-character__copy strong {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .avatar--roadmap-hero,
+  .skillcity-mvp-command--pathable .avatar--roadmap-hero {
+    transform: scale(0.82) !important;
+  }
+
+  .skillcity-mvp-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
+  }
+
+  .skillcity-mvp-toolbar__actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.45rem !important;
+  }
+
+  .skillcity-mvp-district-nav {
+    border-radius: 18px !important;
+  }
+
+  .skillcity-mvp-district-chips {
+    padding-inline: 0.8rem !important;
+  }
+
+  .skillcity-mvp-district-chip {
+    min-width: 150px !important;
+  }
+
+  .skillcity-mvp-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.7rem !important;
+  }
+
+  .skillcity-mvp-side {
+    position: static !important;
+  }
+
+  .skillcity-mvp-world {
+    min-height: 560px !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .skillcity-mvp-command.skillcity-mvp-command--pathable,
+  .skillcity-mvp-command {
+    padding: 0.5rem !important;
+    gap: 0.55rem !important;
+    border-radius: 20px !important;
+  }
+
+  .skillcity-mvp-command--pathable .skillcity-mvp-command__copy h2,
+  .skillcity-mvp-command__copy h2 {
+    font-size: 1.16rem !important;
+  }
+
+  .skillcity-mvp-command--pathable .skillcity-mvp-command__copy p,
+  .skillcity-mvp-command__copy p {
+    font-size: 0.78rem !important;
+  }
+
+  .skillcity-mvp-next-card,
+  .skillcity-mvp-next-card--compact {
+    grid-template-columns: 40px minmax(0, 1fr) !important;
+    padding: 0.62rem !important;
+  }
+
+  .skillcity-mvp-next-card__icon,
+  .skillcity-mvp-next-card--compact .skillcity-mvp-next-card__icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .skillcity-mvp-next-card__actions {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .skillcity-mvp-stats,
+  .skillcity-mvp-stats.skillcity-mvp-stats--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .skillcity-mvp-stats article {
+    padding: 0.5rem 0.35rem !important;
+  }
+
+  .skillcity-mvp-hero-character,
+  .skillcity-mvp-command--pathable .skillcity-mvp-hero-character {
+    min-height: 128px !important;
+  }
+}
+
