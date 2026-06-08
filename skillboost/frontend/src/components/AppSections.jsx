@@ -2,6 +2,71 @@ import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Icon } from './Icon';
 import { AvatarMini, defaultAvatarConfig, accentPalettes, normalizeAvatar, applySkillBoostMaterialTint } from './AvatarStudio';
 
+export function StyledSelect({ value, options = [], onChange, label = 'Izberi možnost', className = '' }) {
+    const [open, setOpen] = useState(false);
+    const wrapperRef = useRef(null);
+    const normalizedOptions = useMemo(() => options.map((option) => (
+        typeof option === 'string' ? { value: option, label: option } : option
+    )), [options]);
+    const selectedOption = normalizedOptions.find((option) => String(option.value) === String(value)) || normalizedOptions[0];
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!wrapperRef.current?.contains(event.target)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectOption = (optionValue) => {
+        onChange?.(optionValue);
+        setOpen(false);
+    };
+
+    return (
+        <div ref={wrapperRef} className={`styled-select ${open ? 'is-open' : ''} ${className}`}>
+            <button
+                type="button"
+                className="styled-select__button"
+                aria-haspopup="listbox"
+                aria-expanded={open}
+                aria-label={label}
+                onClick={() => setOpen((current) => !current)}
+                onKeyDown={(event) => {
+                    if (event.key === 'Escape') setOpen(false);
+                    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setOpen(true);
+                    }
+                }}
+            >
+                <span>{selectedOption?.label || label}</span>
+                <i aria-hidden="true" />
+            </button>
+            {open && (
+                <div className="styled-select__menu" role="listbox">
+                    {normalizedOptions.map((option) => {
+                        const selected = String(option.value) === String(value);
+                        return (
+                            <button
+                                key={option.value}
+                                type="button"
+                                className={`styled-select__option ${selected ? 'is-selected' : ''}`}
+                                role="option"
+                                aria-selected={selected}
+                                onClick={() => selectOption(option.value)}
+                            >
+                                {option.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+
 const scoreLabels = [
     { min: 85, label: 'Odlično', tone: 'great' },
     { min: 70, label: 'Dobro', tone: 'good' },
@@ -621,11 +686,12 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
 
             <form className="simulation-form" onSubmit={handleSubmitSession}>
                 <label>Scenarij
-                    <select value={selectedChallengeId} onChange={(e) => setSelectedChallengeId(e.target.value)}>
-                        {(filteredChallenges || []).map((challenge) => (
-                            <option key={challenge.id} value={challenge.id}>{challenge.title}</option>
-                        ))}
-                    </select>
+                    <StyledSelect
+                        value={selectedChallengeId}
+                        label="Izberi scenarij"
+                        onChange={setSelectedChallengeId}
+                        options={(filteredChallenges || []).map((challenge) => ({ value: challenge.id, label: challenge.title }))}
+                    />
                 </label>
 
                 {selectedChallenge && (
@@ -1103,9 +1169,12 @@ export function SkillsSection({ skills = [], challenges = [], selectedSkillKeys,
                     <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="npr. stres, pogajanje, poslušanje, samozavest ..." />
                 </label>
                 <label>Težavnost
-                    <select value={activeLevel} onChange={(event) => setActiveLevel(event.target.value)}>
-                        {levels.map((level) => <option key={level} value={level}>{level === 'VSE' ? 'Vse težavnosti' : level}</option>)}
-                    </select>
+                    <StyledSelect
+                        value={activeLevel}
+                        label="Izberi težavnost"
+                        onChange={setActiveLevel}
+                        options={levels.map((level) => ({ value: level, label: level === 'VSE' ? 'Vse težavnosti' : level }))}
+                    />
                 </label>
             </div>
 
@@ -2000,22 +2069,28 @@ export function CompetitionSection({ users = [], selectedUser, skills = [], chal
                     <p>Nastavi tekmeca, fokus in izziv. Ko klikneš začetek, se odpre zaslon dvoboja z rundami na dve dobljeni.</p>
                     <div className="battle-form-grid">
                         <label>Rival
-                            <select value={opponentId} onChange={(e) => setOpponentId(e.target.value)}>
-                                {rivals.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
-                            </select>
+                            <StyledSelect
+                                value={opponentId}
+                                label="Izberi rivala"
+                                onChange={setOpponentId}
+                                options={rivals.map((user) => ({ value: user.id, label: user.name }))}
+                            />
                         </label>
                         <label>Veščina
-                            <select value={battleSkillFilter} onChange={(e) => handleSkillFilterChange(e.target.value)}>
-                                <option value="all">Vse veščine</option>
-                                {skills.map((skill) => <option key={skill.key} value={skill.key}>{skill.name}</option>)}
-                            </select>
+                            <StyledSelect
+                                value={battleSkillFilter}
+                                label="Izberi veščino"
+                                onChange={handleSkillFilterChange}
+                                options={[{ value: 'all', label: 'Vse veščine' }, ...skills.map((skill) => ({ value: skill.key, label: skill.name }))]}
+                            />
                         </label>
                         <label className="wide">Izziv bitke
-                            <select value={selectedBattleChallenge?.id || ''} onChange={(e) => setBattleChallengeId(e.target.value)}>
-                                {(battleChallenges.length ? battleChallenges : challenges).map((challenge) => (
-                                    <option key={challenge.id} value={challenge.id}>{challenge.title}</option>
-                                ))}
-                            </select>
+                            <StyledSelect
+                                value={selectedBattleChallenge?.id || ''}
+                                label="Izberi izziv bitke"
+                                onChange={setBattleChallengeId}
+                                options={(battleChallenges.length ? battleChallenges : challenges).map((challenge) => ({ value: challenge.id, label: challenge.title }))}
+                            />
                         </label>
                     </div>
                     <div className="battle-preview-card battle-preview-card--duel">
@@ -2101,16 +2176,24 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
                         <input value={newPrompt.title} onChange={(e) => setNewPrompt({ ...newPrompt, title: e.target.value })} placeholder="npr. Empatično reševanje konflikta" />
                     </label>
                     <label>Veščina
-                        <select value={newPrompt.skillKey || selectedSkillKey} onChange={(e) => setNewPrompt({ ...newPrompt, skillKey: e.target.value })}>
-                            {(skills || []).map((skill) => <option key={skill.key} value={skill.key}>{skill.name}</option>)}
-                        </select>
+                        <StyledSelect
+                            value={newPrompt.skillKey || selectedSkillKey}
+                            label="Izberi veščino prompta"
+                            onChange={(value) => setNewPrompt({ ...newPrompt, skillKey: value })}
+                            options={(skills || []).map((skill) => ({ value: skill.key, label: skill.name }))}
+                        />
                     </label>
                     <label>Težavnost
-                        <select value={newPrompt.difficulty} onChange={(e) => setNewPrompt({ ...newPrompt, difficulty: e.target.value })}>
-                            <option value="ZAČETNIK">ZAČETNIK</option>
-                            <option value="SREDNJI">SREDNJI</option>
-                            <option value="NAPREDNI">NAPREDNI</option>
-                        </select>
+                        <StyledSelect
+                            value={newPrompt.difficulty}
+                            label="Izberi težavnost prompta"
+                            onChange={(value) => setNewPrompt({ ...newPrompt, difficulty: value })}
+                            options={[
+                                { value: 'ZAČETNIK', label: 'ZAČETNIK' },
+                                { value: 'SREDNJI', label: 'SREDNJI' },
+                                { value: 'NAPREDNI', label: 'NAPREDNI' }
+                            ]}
+                        />
                     </label>
                     <label>Sistemski prompt
                         <textarea rows="4" value={newPrompt.systemPrompt} onChange={(e) => setNewPrompt({ ...newPrompt, systemPrompt: e.target.value })} placeholder="AI naj bo trener, naj sprašuje, ocenjuje in predlaga izboljšave" />

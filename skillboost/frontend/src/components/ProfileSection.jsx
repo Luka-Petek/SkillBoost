@@ -166,7 +166,7 @@ export function ProfileSection({ profile, selectedUser, report, skills = [], sel
                             </label>
                             <label>
                                 Veščine za izboljšavo
-                                <textarea value={targetSkills} onChange={(event) => setTargetSkills(event.target.value)} placeholder="npr. public-speaking, feedback-giving" />
+                                <textarea value={targetSkills} onChange={(event) => setTargetSkills(event.target.value)} placeholder="npr. komunikacija, odnosi" />
                                 <small>Loči z vejico.</small>
                             </label>
                             <div className="profile-form-actions">

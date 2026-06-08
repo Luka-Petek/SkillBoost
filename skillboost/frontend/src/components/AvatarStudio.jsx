@@ -1,6 +1,71 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from './Icon';
 
+export function StyledSelect({ value, options = [], onChange, label = 'Izberi možnost', className = '' }) {
+    const [open, setOpen] = useState(false);
+    const wrapperRef = useRef(null);
+    const normalizedOptions = useMemo(() => options.map((option) => (
+        typeof option === 'string' ? { value: option, label: option } : option
+    )), [options]);
+    const selectedOption = normalizedOptions.find((option) => String(option.value) === String(value)) || normalizedOptions[0];
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!wrapperRef.current?.contains(event.target)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectOption = (optionValue) => {
+        onChange?.(optionValue);
+        setOpen(false);
+    };
+
+    return (
+        <div ref={wrapperRef} className={`styled-select ${open ? 'is-open' : ''} ${className}`}>
+            <button
+                type="button"
+                className="styled-select__button"
+                aria-haspopup="listbox"
+                aria-expanded={open}
+                aria-label={label}
+                onClick={() => setOpen((current) => !current)}
+                onKeyDown={(event) => {
+                    if (event.key === 'Escape') setOpen(false);
+                    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setOpen(true);
+                    }
+                }}
+            >
+                <span>{selectedOption?.label || label}</span>
+                <i aria-hidden="true" />
+            </button>
+            {open && (
+                <div className="styled-select__menu" role="listbox">
+                    {normalizedOptions.map((option) => {
+                        const selected = String(option.value) === String(value);
+                        return (
+                            <button
+                                key={option.value}
+                                type="button"
+                                className={`styled-select__option ${selected ? 'is-selected' : ''}`}
+                                role="option"
+                                aria-selected={selected}
+                                onClick={() => selectOption(option.value)}
+                            >
+                                {option.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+
 const MODEL_ROOT = '/models';
 const MODEL_VIEWER_SRC = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
 
@@ -546,7 +611,7 @@ function ProgressCard({ report, selectedUser, selectedModel }) {
         <aside className="shard-progress-card">
             <div className="shard-progress-card__head">
                 <div>
-                    <span>Your Progress</span>
+                    <span>Tvoj napredek</span>
                     <strong>Stopnja {level}</strong>
                     <small>{selectedModel.title}</small>
                 </div>
@@ -648,15 +713,12 @@ export function AvatarStudio({ value, onChange, onSave, saving, profile, selecte
                                     aria-hidden="true"
                                     style={{ background: `linear-gradient(135deg, ${palette.cyan}, ${palette.blue} 44%, ${palette.purple})` }}
                                 />
-                                <select
+                                <StyledSelect
                                     value={avatar.accent}
-                                    onChange={(event) => updateAvatar({ accent: event.target.value })}
-                                    aria-label="Izberi barvno paleto playerja"
-                                >
-                                    {Object.entries(accentPalettes).map(([accent, item]) => (
-                                        <option key={accent} value={accent}>{item.label}</option>
-                                    ))}
-                                </select>
+                                    label="Izberi barvno paleto playerja"
+                                    onChange={(value) => updateAvatar({ accent: value })}
+                                    options={Object.entries(accentPalettes).map(([accent, item]) => ({ value: accent, label: item.label }))}
+                                />
                             </label>
                             <small className="avatar-color-dropdown__hint">Izbrano: {palette.label}. Barva se uporabi na glavnem modelu, mini avatarjih in level karticah.</small>
                         </div>
