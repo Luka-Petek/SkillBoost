@@ -63,7 +63,7 @@ public class TrainingSessionService {
     @Value("${spring.gemini.fallback-enabled:false}")
     private boolean geminiFallbackEnabled;
 
-    @Value("${spring.gemini.max-output-tokens:480}")
+    @Value("${spring.gemini.max-output-tokens:900}")
     private int geminiMaxOutputTokens;
 
     @Value("${spring.gemini.temperature:0.2}")

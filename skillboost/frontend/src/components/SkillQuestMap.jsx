@@ -1088,7 +1088,7 @@ function MissionPanel({ node, questLoading, optimisticAction, onStart, onComplet
                 <span>{reward.label}</span>
             </div>
             <div className="skillcity-mvp-panel__actions">
-                <button type="button" disabled={isLocked || questLoading || startBusy} onClick={() => onStart(node)}>
+                <button type="button" className="primary" disabled={isLocked || questLoading || startBusy} onClick={() => onStart(node)}>
                     <Icon name="bolt" size={15} /> {startBusy ? 'Opening...' : 'Odpri trening'}
                 </button>
                 <button type="button" className="secondary" disabled={isLocked || node.completed || questLoading || completeBusy} onClick={() => onComplete(node)}>

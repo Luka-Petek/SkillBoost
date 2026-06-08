@@ -19,7 +19,7 @@ spring:
       base-url: ${GEMINI_API_BASE_URL:https://generativelanguage.googleapis.com}
     model: ${GEMINI_MODEL:gemini-3.1-flash-lite}
     fallback-enabled: ${GEMINI_FALLBACK_ENABLED:false}
-    max-output-tokens: ${GEMINI_MAX_OUTPUT_TOKENS:320}
+    max-output-tokens: ${GEMINI_MAX_OUTPUT_TOKENS:900}
     temperature: ${GEMINI_TEMPERATURE:0.25}
     thinking-budget: ${GEMINI_THINKING_BUDGET:0}
     thinking-level: ${GEMINI_THINKING_LEVEL:minimal}
