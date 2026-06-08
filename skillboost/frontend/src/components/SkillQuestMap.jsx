@@ -736,7 +736,7 @@ function CommandCenter({ map, nextNode, nextBoss, activePhase, questLoading, use
     return (
         <section className="skillcity-mvp-command skillcity-mvp-command--pathable">
             <div className="skillcity-mvp-command__copy">
-                <span className="eyebrow">SkillCity route</span>
+                <span className="eyebrow">SkillCity pot</span>
                 <h2>{nextNode?.skillName || 'Roadmap complete'}</h2>
                 <p>{activePhase?.title || 'SkillCity'} · sledi poti, odklepaj skupine in gradi mesto po vrsti.</p>
                 <ProgressBar value={nodeProgress(nextNode)} />
@@ -745,13 +745,13 @@ function CommandCenter({ map, nextNode, nextBoss, activePhase, questLoading, use
             <div className="skillcity-mvp-next-card skillcity-mvp-next-card--compact">
                 <div className="skillcity-mvp-next-card__icon">{nextNode?.emoji || '🏁'}</div>
                 <div>
-                    <span>Next best action</span>
+                    <span>Naslednja najboljša dejanja</span>
                     <strong>{nextNode?.skillName || 'Roadmap complete'}</strong>
-                    <small>{nextNode ? `${nextNode.bestScore || 0}/${nextNode.requiredScore || 0} score` : 'All nodes done'}</small>
+                    <small>{nextNode ? `${nextNode.bestScore || 0}/${nextNode.requiredScore || 0} točk` : 'Vsa vozlišča dokončana'}</small>
                 </div>
                 <div className="skillcity-mvp-next-card__actions">
                     <button type="button" className="primary" disabled={!nextNode?.unlocked || questLoading} onClick={onStartNext}>
-                        <Icon name="bolt" size={15} /> Start
+                        <Icon name="bolt" size={15} /> Začni
                     </button>
                     <button type="button" className="secondary" disabled={!nextBoss} onClick={onShowBoss}>
                         Boss
@@ -762,24 +762,24 @@ function CommandCenter({ map, nextNode, nextBoss, activePhase, questLoading, use
             <div className="skillcity-mvp-stats skillcity-mvp-stats--compact">
                 <article>
                     <strong>{summary.progressPercent || 0}%</strong>
-                    <span>city built</span>
+                    <span>zgrajeno mesto</span>
                 </article>
                 <article>
                     <strong>{summary.completedNodes || 0}/{summary.totalNodes || 0}</strong>
-                    <span>nodes</span>
+                    <span>vozlišč</span>
                 </article>
                 <article>
                     <strong>{summary.totalEarnedXp || 0}</strong>
                     <span>XP</span>
                 </article>
                 <button type="button" className="secondary" disabled={questLoading} onClick={onReset}>
-                    Reset
+                    Resetiraj
                 </button>
             </div>
 
             <div className="skillcity-mvp-hero-character" aria-label="Roadmap character preview">
                 <div className="skillcity-mvp-hero-character__copy">
-                    <span>Roadmap guide</span>
+                    <span>Vodič mape</span>
                     <strong>{user?.displayName || user?.name || 'Your character'}</strong>
                 </div>
                 <div className="skillcity-mvp-hero-character__stage">
@@ -805,7 +805,7 @@ function DistrictRail({ phases, activePhaseId, onSelectPhase }) {
                     >
                         <span>{status === 'locked' ? '🔒' : phase.emoji}</span>
                         <strong>{phase.title}</strong>
-                        <small>{phase.completedNodes}/{phase.totalNodes} built</small>
+                        <small>{phase.completedNodes}/{phase.totalNodes} zgrajeno</small>
                         <ProgressBar value={phase.progressPercent} />
                     </button>
                 );
@@ -1278,15 +1278,15 @@ export function SkillQuestMap({
 
             <div className="skillcity-mvp-toolbar">
                 <div>
-                    <span className="eyebrow">Renderer</span>
-                    <strong>{performanceMode ? 'Eco CSS fallback' : modelReady ? 'Grouped GLB roadmap' : 'Loading GLB viewer'}</strong>
+                    <span className="eyebrow">Upodabljalnik</span>
+                    <strong>{performanceMode ? 'Nadomestni Eco CSS' : modelReady ? 'Združen GLB načrt poti' : 'Nalaganje GLB gledalca'}</strong>
                 </div>
                 <div className="skillcity-mvp-toolbar__actions">
                     <button type="button" className={!performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(false)}>
-                        Grouped GLB
+                        Zgružen GLB
                     </button>
                     <button type="button" className={performanceMode ? 'active' : ''} onClick={() => setPerformanceMode(true)}>
-                        Eco mode
+                        Eco način
                     </button>
                 </div>
             </div>

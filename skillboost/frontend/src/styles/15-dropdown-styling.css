@@ -1,0 +1,109 @@
+select {
+    background: #11182a;
+    border: 1px solid rgba(139, 118, 255, 0.55);
+    border-radius: 18px;
+    color: #f8fbff;
+    font: inherit;
+    font-weight: 800;
+    padding: 0.95rem 3rem 0.95rem 1.1rem;
+}
+
+.styled-select {
+    position: relative;
+    width: 100%;
+    z-index: 20;
+}
+
+.styled-select.is-open {
+    z-index: 80;
+}
+
+.styled-select__button {
+    width: 100%;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.95rem 1.15rem;
+    border-radius: 20px;
+    border: 1px solid rgba(145, 128, 255, 0.72);
+    background: linear-gradient(180deg, rgba(19, 25, 46, 0.98), rgba(13, 19, 35, 0.98));
+    color: #f8fbff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 0 3px rgba(124, 95, 255, 0.17);
+    font: inherit;
+    font-weight: 900;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.styled-select__button:hover,
+.styled-select__button:focus-visible,
+.styled-select.is-open .styled-select__button {
+    border-color: rgba(169, 151, 255, 0.95);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 0 0 4px rgba(124, 95, 255, 0.26);
+    outline: none;
+}
+
+.styled-select__button i {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #dfe7ff;
+    transition: transform 160ms ease;
+}
+
+.styled-select.is-open .styled-select__button i {
+    transform: rotate(180deg);
+}
+
+.styled-select__menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    max-height: 260px;
+    overflow: auto;
+    padding: 0.45rem;
+    border-radius: 18px;
+    border: 1px solid rgba(151, 132, 255, 0.7);
+    background: #0d1424;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.styled-select__option {
+    width: 100%;
+    display: block;
+    padding: 0.85rem 1rem;
+    border: 0;
+    border-radius: 13px;
+    background: transparent;
+    color: #f8fbff;
+    font: inherit;
+    font-weight: 900;
+    text-align: left;
+    cursor: pointer;
+    transition: background 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.styled-select__option:hover,
+.styled-select__option:focus-visible {
+    background: rgba(124, 95, 255, 0.24);
+    outline: none;
+    transform: translateX(2px);
+}
+
+.styled-select__option.is-selected {
+    background: linear-gradient(135deg, #8fc1f3, #9d8cff);
+    color: #10182b;
+}
+
+.avatar-color-dropdown .styled-select {
+    flex: 1;
+}
+
+.avatar-color-dropdown .styled-select__button {
+    min-height: 50px;
+}
