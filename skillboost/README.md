@@ -107,6 +107,13 @@ skillboost/
 
 ---
 
+# Arhitekturna shema
+Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na React frontend-u, Spring Boot backend-u, MongoDB bazi podatkov ter Keycloak avtentikaciji. Celoten sistem je povezan preko REST API komunikacije in deluje v Docker infrastrukturi, nameščeni na TrueNAS strežniku z uporabo Nginx reverse proxy-ja in Cloudflare zaščite.
+
+![alt text](_PROMOCIJA/arhitekturna_shema.png)
+
+---
+
 # Pomen glavnih datotek in map
 
 ## Glavne datoteke
