@@ -672,3 +672,47 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.app-workbench--simulator .training-answer-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 620px;
+  height: 100%;
+}
+
+.app-workbench--simulator .training-answer-panel textarea {
+  flex: 1;
+  min-height: 360px;
+  width: 100%;
+  resize: vertical;
+}
+
+.app-workbench--simulator .submit-button {
+  position: static;
+  width: 100%;
+  margin-top: auto;
+
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+
+  transform: none;
+  z-index: auto;
+}
+
+.app-workbench--simulator .submit-button.fixed,
+.app-workbench--simulator .submit-button.sticky {
+  position: static;
+}
+
+.app-workbench--simulator .uploaded-file-preview,
+.app-workbench--simulator .file-preview,
+.app-workbench--simulator .attachment-preview {
+  display: none !important;
+}
+
+.app-workbench--simulator .training-answer-panel > * + * {
+  margin-top: 1rem;
+}

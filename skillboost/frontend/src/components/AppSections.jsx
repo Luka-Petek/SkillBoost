@@ -707,20 +707,6 @@ export function SimulatorSection({ skills, demoMode, selectedSkillKeys, filtered
                     </div>
                 </label>
 
-                {(voiceStatus || fileStatus || attachedFiles.length > 0) && (
-                    <div className="input-assist-status" aria-live="polite">
-                        {voiceStatus && <p>{voiceStatus}</p>}
-                        {fileStatus && <p>{fileStatus}</p>}
-                        {attachedFiles.length > 0 && (
-                            <div className="attachment-list">
-                                {attachedFiles.map((file, index) => (
-                                    <span key={`${file.name}-${index}`}><FileIcon /> {file.name}</span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 {saving && (
                     <AiThinkingCard
                         answerStats={answerStats}
