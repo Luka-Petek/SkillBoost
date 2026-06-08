@@ -14,7 +14,6 @@ import {
     GrowthFocusPanel,
     MentorDashboardSection,
     MetricCard,
-    PromptsSection,
     ReportSection,
     SimulatorSection,
     SkillSelector,
@@ -28,8 +27,6 @@ const navItems = [
     { key: 'simulator', label: 'Simulator', icon: 'message' },
     { key: 'skills', label: 'Veščine', icon: 'target' },
     { key: 'quest', label: 'SkillCity', icon: 'compass' },
-    { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
-    //{ key: 'prompts', label: 'Prompti', icon: 'sparkles' },
     { key: 'report', label: 'Poročilo', icon: 'chart' },
     { key: 'mentor', label: 'Mentor', icon: 'userTie', mentorOnly: true },
     { key: 'profile', label: 'Profil', icon: 'users', protected: true }
@@ -61,13 +58,6 @@ const sectionMeta = {
         title: 'Tekmovalno središče',
         helper: 'Dnevni dvoboj in bitka veščin v bolj kompaktnem pogledu.'
     },
-    /*
-    prompts: {
-        eyebrow: 'AI nastavitve',
-        title: 'Prompti',
-        helper: 'Pripravi in testiraj navodila za AI trenerja.'
-    },
-     */
     report: {
         eyebrow: 'Napredek',
         title: 'Poročilo',
@@ -168,14 +158,6 @@ export default function App() {
                             </button>
                         ))}
                     </nav>
-
-                    <div className="app-sidebar__status">
-                        <span className={`status-dot ${data.health?.status === 'UP' || data.health?.status === 'DEMO' ? 'ok' : ''}`} />
-                        <div>
-                            <strong>Backend</strong>
-                            <small>{data.health?.status || 'Preverjam...'}</small>
-                        </div>
-                    </div>
 
                     <div className="app-sidebar__footer">
                         <button className="theme-toggle" onClick={toggleTheme}>
@@ -333,19 +315,6 @@ export default function App() {
                                         }}
                                     />
                                 )}
-
-                                {/* {activeSection === 'prompts' && (
-                                    <PromptsSection
-                                        skills={data.skills}
-                                        filteredPrompts={data.filteredPrompts}
-                                        newPrompt={data.newPrompt}
-                                        setNewPrompt={data.setNewPrompt}
-                                        handleCreatePrompt={data.handleCreatePrompt}
-                                        selectedSkillKey={data.selectedSkillKey}
-                                        saving={data.saving}
-                                        authenticated={authenticated}
-                                    />
-                                )} */}
 
                                 {activeSection === 'report' && <ReportSection report={data.report} skills={data.skills} />}
                                 {activeSection === 'mentor' && (
