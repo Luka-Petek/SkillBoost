@@ -2433,6 +2433,55 @@ export function ReportSection({ report, skills = [] }) {
     );
 }
 
+//welcome section za vse neprijavljene uorabnike
+export function GuestWelcome({ onLogin, onRegister }) {
+    return (
+        <div className="engagement-dashboard guest-welcome">
+            <section className="engagement-hero guest-welcome__hero">
+                <div className="engagement-hero__copy">
+                    <p className="eyebrow">Dobrodošel v SkillBoost</p>
+                    <h2>Postani boljši.<br />Vsak dan.</h2>
+                    <p>AI trener za mehke veščine. Kratke vaje, takojšnja ocena, merljiv napredek.</p>
+                    <div className="engagement-actions">
+                        <button type="button" className="primary" onClick={onRegister}>
+                            <Icon name="bolt" size={17} />
+                            Začni brezplačno
+                        </button>
+                        <button type="button" className="secondary" onClick={onLogin}>
+                            Prijava
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div className="guest-steps">
+                <div className="guest-step">
+                    <div className="guest-step__num">1</div>
+                    <div className="guest-step__body">
+                        <strong>Registracija</strong>
+                        <p>Ustvari brezplačen račun v 30 sekundah.</p>
+                    </div>
+                </div>
+                <div className="guest-step">
+                    <div className="guest-step__num">2</div>
+                    <div className="guest-step__body">
+                        <strong>Izberi veščino</strong>
+                        <p>Komunikacija, vodenje, pogajanja — izbereš ti.</p>
+                    </div>
+                </div>
+                <div className="guest-step">
+                    <div className="guest-step__num">3</div>
+                    <div className="guest-step__body">
+                        <strong>Treniraj z AI</strong>
+                        <p>Kratka situacija, tvoj odgovor, takojšnja ocena.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
 function GrowthInsightBoard({ insights, skillName }) {
     return (
         <section className="growth-insight-board">

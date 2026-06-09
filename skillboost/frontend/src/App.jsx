@@ -12,6 +12,7 @@ import {
     DailyQuests,
     EngagementDashboard,
     GrowthFocusPanel,
+    GuestWelcome,
     MentorDashboardSection,
     MetricCard,
     ReportSection,
@@ -202,34 +203,38 @@ export default function App() {
                     {data.loading && <div className="loading-card app-loading">Nalagam SkillBoost podatke...</div>}
 
                     {!data.loading && (
-                        <main className={`app-workbench app-workbench--${activeSection}`}>
+                        <main className={`app-workbench app-workbench--${activeSection}${!authenticated && activeSection === 'dashboard' ? ' app-workbench--guest' : ''}`}>
                             <section className="app-main-panel">
                                 {activeSection === 'dashboard' && (
-                                    <EngagementDashboard
-                                        user={data.selectedUser}
-                                        report={data.report}
-                                        skills={data.skills}
-                                        selectedSkills={selectedSkills}
-                                        selectedSkillNames={selectedSkillNames}
-                                        challenges={data.challenges}
-                                        selectedChallenge={data.selectedChallenge}
-                                        dailyDuelChallenge={data.dailyDuelChallenge}
-                                        personalizedDailyChallenge={data.personalizedDailyChallenge}
-                                        lastReward={data.lastReward}
-                                        lastSession={data.lastSession}
-                                        onStartSimulator={() => handleNavigate('simulator')}
-                                        onOpenSkills={() => handleNavigate('skills')}
-                                        onOpenCompetition={() => handleNavigate('competition')}
-                                        onOpenReport={() => handleNavigate('report')}
-                                        onStartDailyChallenge={() => {
-                                            data.handleStartDailyChallenge();
-                                            handleNavigate('simulator');
-                                        }}
-                                        onStartDailyDuel={() => {
-                                            data.handleStartDailyDuel();
-                                            handleNavigate('simulator');
-                                        }}
-                                    />
+                                    authenticated ? (
+                                        <EngagementDashboard
+                                            user={data.selectedUser}
+                                            report={data.report}
+                                            skills={data.skills}
+                                            selectedSkills={selectedSkills}
+                                            selectedSkillNames={selectedSkillNames}
+                                            challenges={data.challenges}
+                                            selectedChallenge={data.selectedChallenge}
+                                            dailyDuelChallenge={data.dailyDuelChallenge}
+                                            personalizedDailyChallenge={data.personalizedDailyChallenge}
+                                            lastReward={data.lastReward}
+                                            lastSession={data.lastSession}
+                                            onStartSimulator={() => handleNavigate('simulator')}
+                                            onOpenSkills={() => handleNavigate('skills')}
+                                            onOpenCompetition={() => handleNavigate('competition')}
+                                            onOpenReport={() => handleNavigate('report')}
+                                            onStartDailyChallenge={() => {
+                                                data.handleStartDailyChallenge();
+                                                handleNavigate('simulator');
+                                            }}
+                                            onStartDailyDuel={() => {
+                                                data.handleStartDailyDuel();
+                                                handleNavigate('simulator');
+                                            }}
+                                        />
+                                    ) : (
+                                        <GuestWelcome onLogin={handleLogin} onRegister={handleRegister} />
+                                    )
                                 )}
 
                                 {activeSection === 'simulator' && (
