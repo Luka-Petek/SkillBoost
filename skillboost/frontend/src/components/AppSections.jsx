@@ -2504,6 +2504,78 @@ export function ReportSection({ report, skills = [] }) {
     );
 }
 
+//welcome section za vse neprijavljene uorabnike
+export function GuestWelcome({ onLogin, onRegister }) {
+    return (
+        <div className="engagement-dashboard guest-welcome">
+            <section className="engagement-hero guest-welcome__hero">
+                <div className="engagement-hero__copy">
+                    <p className="eyebrow">Dobrodošel v SkillBoost</p>
+                    <h2>Postani boljši.<br />Vsak dan.</h2>
+                    <p>AI trener za mehke veščine. Kratke vaje, takojšnja ocena, merljiv napredek.</p>
+                    <div className="engagement-actions">
+                        <button type="button" className="primary" onClick={onRegister}>
+                            <Icon name="bolt" size={17} />
+                            Registracija
+                        </button>
+                        <button type="button" className="secondary" onClick={onLogin}>
+                            Prijava
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div className="guest-steps">
+                <div className="guest-step">
+                    <div className="guest-step__num">1</div>
+                    <div className="guest-step__body">
+                        <strong>Registracija</strong>
+                        <p>Brezplačen račun. 30 sekund.</p>
+                    </div>
+                </div>
+                <div className="guest-step">
+                    <div className="guest-step__num">2</div>
+                    <div className="guest-step__body">
+                        <strong>Izberi veščino</strong>
+                        <p>Komunikacija, vodenje, pogajanja — fokus si določiš sam.</p>
+                    </div>
+                </div>
+                <div className="guest-step">
+                    <div className="guest-step__num">3</div>
+                    <div className="guest-step__body">
+                        <strong>Treniraj</strong>
+                        <p>AI izziv, tvoj odgovor, takojšnja ocena in XP.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    );
+}
+
+export function GuestSidebar({ onRegister }) {
+    return (
+        <>
+            <section className="right-card right-card--guest-feature">
+                <span className="guest-sidebar-icon"><Icon name="chart" size={22} /></span>
+                <strong>Leveli & XP</strong>
+                <p>Napreduj skozi 10+ nivojev. Vsaka vaja prinese XP, zvezdice in nova odklepanja.</p>
+            </section>
+            <section className="right-card right-card--guest-feature right-card--accent">
+                <span className="guest-sidebar-icon"><Icon name="compass" size={22} /></span>
+                <strong>SkillCity</strong>
+                <p>Osvoji virtualno mesto misijo po misijo. Vsaka zaključena naloga zgradi novo stavbo.</p>
+            </section>
+            <section className="right-card right-card--guest-feature right-card--warm">
+                <span className="guest-sidebar-icon"><Icon name="swords" size={22} /></span>
+                <strong>Dvoboji</strong>
+                <p>Meri se z drugimi v živem dvoboju. Isti izziv, tri runde, en zmagovalec.</p>
+            </section>
+        </>
+    );
+}
+
+
 function GrowthInsightBoard({ insights, skillName }) {
     return (
         <section className="growth-insight-board">

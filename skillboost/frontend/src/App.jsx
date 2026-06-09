@@ -12,6 +12,8 @@ import {
     DailyQuests,
     EngagementDashboard,
     GrowthFocusPanel,
+    GuestSidebar,
+    GuestWelcome,
     MentorDashboardSection,
     MetricCard,
     ReportSection,
@@ -202,34 +204,38 @@ export default function App() {
                     {data.loading && <div className="loading-card app-loading">Nalagam SkillBoost podatke...</div>}
 
                     {!data.loading && (
-                        <main className={`app-workbench app-workbench--${activeSection}`}>
+                        <main className={`app-workbench app-workbench--${activeSection}${!authenticated && activeSection === 'dashboard' ? ' app-workbench--guest' : ''}`}>
                             <section className="app-main-panel">
                                 {activeSection === 'dashboard' && (
-                                    <EngagementDashboard
-                                        user={data.selectedUser}
-                                        report={data.report}
-                                        skills={data.skills}
-                                        selectedSkills={selectedSkills}
-                                        selectedSkillNames={selectedSkillNames}
-                                        challenges={data.challenges}
-                                        selectedChallenge={data.selectedChallenge}
-                                        dailyDuelChallenge={data.dailyDuelChallenge}
-                                        personalizedDailyChallenge={data.personalizedDailyChallenge}
-                                        lastReward={data.lastReward}
-                                        lastSession={data.lastSession}
-                                        onStartSimulator={() => handleNavigate('simulator')}
-                                        onOpenSkills={() => handleNavigate('skills')}
-                                        onOpenCompetition={() => handleNavigate('competition')}
-                                        onOpenReport={() => handleNavigate('report')}
-                                        onStartDailyChallenge={() => {
-                                            data.handleStartDailyChallenge();
-                                            handleNavigate('simulator');
-                                        }}
-                                        onStartDailyDuel={() => {
-                                            data.handleStartDailyDuel();
-                                            handleNavigate('simulator');
-                                        }}
-                                    />
+                                    authenticated ? (
+                                        <EngagementDashboard
+                                            user={data.selectedUser}
+                                            report={data.report}
+                                            skills={data.skills}
+                                            selectedSkills={selectedSkills}
+                                            selectedSkillNames={selectedSkillNames}
+                                            challenges={data.challenges}
+                                            selectedChallenge={data.selectedChallenge}
+                                            dailyDuelChallenge={data.dailyDuelChallenge}
+                                            personalizedDailyChallenge={data.personalizedDailyChallenge}
+                                            lastReward={data.lastReward}
+                                            lastSession={data.lastSession}
+                                            onStartSimulator={() => handleNavigate('simulator')}
+                                            onOpenSkills={() => handleNavigate('skills')}
+                                            onOpenCompetition={() => handleNavigate('competition')}
+                                            onOpenReport={() => handleNavigate('report')}
+                                            onStartDailyChallenge={() => {
+                                                data.handleStartDailyChallenge();
+                                                handleNavigate('simulator');
+                                            }}
+                                            onStartDailyDuel={() => {
+                                                data.handleStartDailyDuel();
+                                                handleNavigate('simulator');
+                                            }}
+                                        />
+                                    ) : (
+                                        <GuestWelcome onLogin={handleLogin} onRegister={handleRegister} />
+                                    )
                                 )}
 
                                 {activeSection === 'simulator' && (
@@ -343,12 +349,15 @@ export default function App() {
                             </section>
 
                             <aside className="app-right-panel" aria-label="Napredek in fokus">
-                                <section className="right-card right-card--profile">
+                                {!authenticated && (
+                                    <GuestSidebar onRegister={handleRegister} />
+                                )}
+                                {authenticated && <section className="right-card right-card--profile">
                                     <div className="right-card__head">
                                         <span className="avatar avatar--large avatar--model"><AvatarMini config={data.myProfile?.avatarConfig || data.selectedUser?.avatarConfig} /></span>
                                         <div>
                                             <strong>{data.selectedUser?.name || 'Gost'}</strong>
-                                            <small>{data.selectedUser?.role || 'Demo način'}</small>
+                                            <small>{data.selectedUser?.role}</small>
                                         </div>
                                     </div>
                                     <div className="compact-metrics">
@@ -356,9 +365,9 @@ export default function App() {
                                         <MetricCard label="Niz" value={<span className="metric-inline"><Icon name="flame" size={17} />{streakDays}</span>} helper="dni" />
                                         <MetricCard label="Zvezdice" value={totalStars} helper="skupno" />
                                     </div>
-                                </section>
+                                </section>}
 
-                                <section className="right-card">
+                                {authenticated && <section className="right-card">
                                     <div className="right-section-title">
                                         <span>Izbrane veščine</span>
                                         <button type="button" onClick={() => handleNavigate('skills')}>Uredi</button>
@@ -371,17 +380,17 @@ export default function App() {
                                             </button>
                                         )) : <p>Izberi veščine za personaliziran trening.</p>}
                                     </div>
-                                </section>
+                                </section>}
 
-                                <section className="right-card right-card--selector">
+                                {authenticated && <section className="right-card right-card--selector">
                                     <SkillSelector
                                         skills={data.skills}
                                         selectedSkillKeys={data.selectedSkillKeys}
                                         toggleSkillKey={data.toggleSkillKey}
                                     />
-                                </section>
+                                </section>}
 
-                                <section className="right-card right-card--growth">
+                                {authenticated && <section className="right-card right-card--growth">
                                     <GrowthFocusPanel
                                         skills={data.skills}
                                         report={data.report}
@@ -391,11 +400,11 @@ export default function App() {
                                         dailyChallengeActive={data.dailyChallengeActive}
                                         onStartDailyChallenge={data.handleStartDailyChallenge}
                                     />
-                                </section>
+                                </section>}
 
-                                <section className="right-card">
+                                {authenticated && <section className="right-card">
                                     <DailyQuests quests={data.lastReward?.dailyQuests || data.report?.dailyQuests} />
-                                </section>
+                                </section>}
                             </aside>
                         </main>
                     )}

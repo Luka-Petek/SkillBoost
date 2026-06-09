@@ -1,0 +1,108 @@
+/* Guest landing: unauthenticated dashboard */
+.guest-welcome__hero {
+  grid-template-columns: 1fr;
+}
+
+.guest-welcome__hero .engagement-hero__copy h2 {
+  font-size: clamp(2.4rem, 4.5vw, 4.8rem);
+}
+
+.guest-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.guest-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--panel-strong) 72%, transparent);
+}
+
+.guest-step__num {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.guest-step__body strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.guest-step__body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* Sidebar feature cards for guest right rail */
+.right-card--guest-feature {
+  border-left: 3px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 5%, var(--panel-strong));
+}
+
+.right-card--guest-feature.right-card--accent {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--panel-strong));
+}
+
+.right-card--guest-feature.right-card--warm {
+  border-left-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 5%, var(--panel-strong));
+}
+
+.right-card--guest-feature .guest-sidebar-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.right-card--guest-feature.right-card--accent .guest-sidebar-icon {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+.right-card--guest-feature.right-card--warm .guest-sidebar-icon {
+  background: color-mix(in srgb, var(--accent-2) 14%, transparent);
+  color: var(--accent-2);
+}
+
+.right-card--guest-feature strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.right-card--guest-feature p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 780px) {
+  .guest-steps {
+    grid-template-columns: 1fr;
+  }
+}
