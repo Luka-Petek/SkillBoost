@@ -2,8 +2,10 @@ package com.skillboost.service;
 
 import com.skillboost.dto.MentorDashboardResponse;
 import com.skillboost.model.TrainingSession;
+import com.skillboost.model.TrainingChallenge;
 import com.skillboost.model.UserProfile;
 import com.skillboost.repository.TrainingSessionRepository;
+import com.skillboost.repository.TrainingChallengeRepository;
 import com.skillboost.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 public class MentorDashboardService {
     private final UserProfileRepository userRepository;
     private final TrainingSessionRepository sessionRepository;
+    private final TrainingChallengeRepository challengeRepository;
 
-    public MentorDashboardService(UserProfileRepository userRepository, TrainingSessionRepository sessionRepository) {
+    public MentorDashboardService(UserProfileRepository userRepository, TrainingSessionRepository sessionRepository, TrainingChallengeRepository challengeRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
+        this.challengeRepository = challengeRepository;
     }
 
     public MentorDashboardResponse buildDashboard() {
@@ -30,6 +34,9 @@ public class MentorDashboardService {
         Map<String, UserProfile> usersById = users.stream()
                 .filter(user -> user.getId() != null)
                 .collect(Collectors.toMap(UserProfile::getId, Function.identity(), (a, b) -> a));
+        Map<String, TrainingChallenge> challengesById = challengeRepository.findAll().stream()
+                .filter(challenge -> challenge.getId() != null)
+                .collect(Collectors.toMap(TrainingChallenge::getId, Function.identity(), (a, b) -> a));
 
         double averageScore = sessions.stream().mapToInt(TrainingSession::getScore).average().orElse(0);
         long needsReview = sessions.stream().filter(session -> session.getMentorNote() == null || session.getMentorNote().isBlank()).count();
@@ -40,23 +47,13 @@ public class MentorDashboardService {
                 .sorted(Comparator.comparing(MentorDashboardResponse.MentorLearnerSummary::averageScore))
                 .toList();
 
-        List<MentorDashboardResponse.MentorRecentSession> recentSessions = sessions.stream()
+        List<MentorDashboardResponse.MentorRecentSession> allSessions = sessions.stream()
                 .sorted(Comparator.comparing(TrainingSession::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .map(session -> toMentorSession(session, usersById.get(session.getUserId()), challengesById.get(session.getChallengeId())))
+                .toList();
+
+        List<MentorDashboardResponse.MentorRecentSession> recentSessions = allSessions.stream()
                 .limit(10)
-                .map(session -> {
-                    UserProfile user = usersById.get(session.getUserId());
-                    return new MentorDashboardResponse.MentorRecentSession(
-                            session.getId(),
-                            session.getUserId(),
-                            user == null ? "Neznan uporabnik" : user.getName(),
-                            session.getChallengeId(),
-                            session.getSkillKey(),
-                            session.getScore(),
-                            session.getMentorNote() != null && !session.getMentorNote().isBlank(),
-                            session.getMentorNote(),
-                            session.getCreatedAt() == null ? "" : session.getCreatedAt().toString()
-                    );
-                })
                 .toList();
 
         return new MentorDashboardResponse(
@@ -65,7 +62,25 @@ public class MentorDashboardService {
                 round(averageScore),
                 needsReview,
                 learners,
-                recentSessions
+                recentSessions,
+                allSessions
+        );
+    }
+
+    private MentorDashboardResponse.MentorRecentSession toMentorSession(TrainingSession session, UserProfile user, TrainingChallenge challenge) {
+        return new MentorDashboardResponse.MentorRecentSession(
+                session.getId(),
+                session.getUserId(),
+                user == null ? "Neznan uporabnik" : user.getName(),
+                session.getChallengeId(),
+                session.getSkillKey(),
+                session.getScore(),
+                session.getMentorNote() != null && !session.getMentorNote().isBlank(),
+                session.getMentorNote(),
+                challenge == null ? "Naloga" : challenge.getTitle(),
+                challenge == null ? "" : challenge.getScenario(),
+                session.getUserAnswer(),
+                session.getCreatedAt() == null ? "" : session.getCreatedAt().toString()
         );
     }
 

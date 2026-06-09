@@ -8,7 +8,8 @@ public record MentorDashboardResponse(
         double averageScore,
         long sessionsNeedingReview,
         List<MentorLearnerSummary> learners,
-        List<MentorRecentSession> recentSessions
+        List<MentorRecentSession> recentSessions,
+        List<MentorRecentSession> allSessions
 ) {
     public record MentorLearnerSummary(
             String userId,
@@ -32,6 +33,9 @@ public record MentorDashboardResponse(
             int score,
             boolean reviewed,
             String mentorNote,
+            String challengeTitle,
+            String challengeScenario,
+            String userAnswer,
             String createdAt
     ) {}
 }

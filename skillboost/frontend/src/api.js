@@ -1,22 +1,46 @@
+import keycloak from './keycloak.js';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
+async function getAccessToken() {
+  if (keycloak?.authenticated && keycloak.token) {
+    try {
+      await keycloak.updateToken(30);
+      if (keycloak.token) {
+        localStorage.setItem('token', keycloak.token);
+        return keycloak.token;
+      }
+    } catch (error) {
+      console.warn('Token refresh failed, using stored token if available.', error);
+    }
+  }
+
+  return localStorage.getItem('token');
+}
+
 async function request(path, options = {}) {
-  const token = localStorage.getItem('token');  //zeton od keycloak-a
+  const token = await getAccessToken();
+  const { headers: optionHeaders = {}, ...restOptions } = options;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...optionHeaders
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '', // Dodano!
-      ...(options.headers || {})
-    },
-    ...options
+    ...restOptions,
+    headers
   });
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
     try {
       const payload = await response.json();
-      message = payload.error || message;
+      message = payload.error || payload.message || message;
     } catch {
       // keep default message
     }

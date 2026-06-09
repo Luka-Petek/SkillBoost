@@ -2220,6 +2220,8 @@ export function PromptsSection({ skills, filteredPrompts, newPrompt, setNewPromp
 
 
 export function MentorDashboardSection({ dashboard, users = [], roles = [], isMentor, onRefresh, onSaveMentorNote, saving }) {
+    const [selectedLearner, setSelectedLearner] = useState(null);
+
     if (!isMentor) {
         return (
             <div className="content-section empty-state">
@@ -2238,8 +2240,14 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
             userId: user.id, name: user.name, email: user.email, level: user.level || 1, points: user.points || 0,
             streakDays: user.streakDays || 0, sessions: 0, averageScore: 0, weakestSkill: 'še ni podatkov', mentorStatus: 'Naloži nadzorno ploščo'
         })),
-        recentSessions: []
+        recentSessions: [],
+        allSessions: []
     };
+
+    const allMentorSessions = safeDashboard.allSessions || safeDashboard.recentSessions || [];
+    const selectedLearnerSessions = selectedLearner
+        ? allMentorSessions.filter((session) => String(session.userId) === String(selectedLearner.userId))
+        : [];
 
     return (
         <div className="content-section mentor-dashboard-section">
@@ -2258,12 +2266,34 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
                 <MetricCard label="Za pregled" value={safeDashboard.sessionsNeedingReview} helper="brez mentorskega komentarja" />
             </div>
 
-            <div className="mentor-layout">
-                <section className="mentor-panel">
+            {selectedLearner && (
+                <MentorLearnerSessionsModal
+                    learner={selectedLearner}
+                    sessions={selectedLearnerSessions}
+                    saving={saving}
+                    onClose={() => setSelectedLearner(null)}
+                    onSaveMentorNote={onSaveMentorNote}
+                />
+            )}
+
+            <div className={selectedLearner ? 'mentor-layout mentor-layout--modal-open' : 'mentor-layout'}>
+                <section className="mentor-panel mentor-panel--full">
                     <h3>Učenci po prioriteti</h3>
                     <div className="mentor-learner-list">
                         {(safeDashboard.learners || []).map((learner) => (
-                            <article key={learner.userId} className="mentor-learner-card">
+                            <article
+                                key={learner.userId}
+                                className="mentor-learner-card mentor-learner-card--clickable"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setSelectedLearner(learner)}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        setSelectedLearner(learner);
+                                    }
+                                }}
+                            >
                                 <div>
                                     <strong>{learner.name || 'Uporabnik'}</strong>
                                     <small>{learner.email || 'brez e-maila'}</small>
@@ -2275,25 +2305,53 @@ export function MentorDashboardSection({ dashboard, users = [], roles = [], isMe
                                 </div>
                                 <p>Najšibkejša veščina: <b>{learner.weakestSkill}</b></p>
                                 <span className="pill">{learner.mentorStatus}</span>
+                                <button type="button" className="secondary mentor-open-user" onClick={(event) => { event.stopPropagation(); setSelectedLearner(learner); }}>
+                                    Odpri vse odgovore
+                                </button>
                             </article>
                         ))}
                     </div>
                 </section>
-
-                <section className="mentor-panel">
-                    <h3>Zadnje simulacije</h3>
-                    <div className="mentor-session-list">
-                        {(safeDashboard.recentSessions || []).length ? safeDashboard.recentSessions.map((session) => (
-                            <MentorSessionReviewCard
-                                key={session.sessionId}
-                                session={session}
-                                saving={saving}
-                                onSaveMentorNote={onSaveMentorNote}
-                            />
-                        )) : <p>Ni še simulacij za prikaz.</p>}
-                    </div>
-                </section>
             </div>
+        </div>
+    );
+}
+
+function MentorLearnerSessionsModal({ learner, sessions = [], saving, onClose, onSaveMentorNote }) {
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') onClose?.();
+        };
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [onClose]);
+
+    return (
+        <div className="mentor-user-modal-overlay" onClick={onClose}>
+            <section className="mentor-user-modal" onClick={(event) => event.stopPropagation()}>
+                <div className="mentor-user-modal__header">
+                    <div>
+                        <span>Odgovori uporabnika</span>
+                        <h3>{learner.name || 'Uporabnik'}</h3>
+                        <small>{learner.email || 'brez e-maila'} · {sessions.length} odgovorov</small>
+                    </div>
+                    <button type="button" className="secondary mentor-user-modal__close" onClick={onClose}>Zapri</button>
+                </div>
+
+                <div className="mentor-user-modal__body">
+                    {sessions.length ? sessions.map((session) => (
+                        <MentorSessionReviewCard
+                            key={session.sessionId}
+                            session={session}
+                            saving={saving}
+                            onSaveMentorNote={onSaveMentorNote}
+                            expanded
+                        />
+                    )) : (
+                        <div className="mentor-user-modal__empty">Ta uporabnik še nima oddanih odgovorov.</div>
+                    )}
+                </div>
+            </section>
         </div>
     );
 }
@@ -2328,6 +2386,19 @@ function MentorSessionReviewCard({ session, saving, onSaveMentorNote }) {
                 <b>{session.score}/100</b>
             </div>
             <span className={session.reviewed ? 'reviewed' : 'needs-review'}>{session.reviewed ? 'pregledano' : 'čaka komentar'}</span>
+            <div className="mentor-session-details">
+                <section>
+                    <small>Vprašanje / naloga</small>
+                    <p>
+                        <strong>{session.challengeTitle || 'Naloga'}</strong>
+                        {session.challengeScenario ? `\n${session.challengeScenario}` : ''}
+                    </p>
+                </section>
+                <section>
+                    <small>Odgovor uporabnika</small>
+                    <p>{session.userAnswer || 'Uporabnik še ni oddal odgovora.'}</p>
+                </section>
+            </div>
             <textarea
                 value={note}
                 onChange={(event) => setNote(event.target.value)}

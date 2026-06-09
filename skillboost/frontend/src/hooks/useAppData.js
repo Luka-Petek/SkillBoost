@@ -673,7 +673,23 @@ function buildDemoMentorDashboard(users = [], sessions = []) {
             skillKey: session.skillKey,
             score: session.score,
             reviewed: Boolean(session.mentorNote),
-            createdAt: new Date().toISOString()
+            mentorNote: session.mentorNote || '',
+            userAnswer: session.userAnswer || session.answer || '',
+            aiFeedback: session.aiFeedback || '',
+            createdAt: session.createdAt || new Date().toISOString()
+        })),
+        allSessions: sessions.map((session) => ({
+            sessionId: session.id,
+            userId: session.userId,
+            userName: users.find((user) => user.id === session.userId)?.name || 'Demo uporabnik',
+            challengeId: session.challengeId,
+            skillKey: session.skillKey,
+            score: session.score,
+            reviewed: Boolean(session.mentorNote),
+            mentorNote: session.mentorNote || '',
+            userAnswer: session.userAnswer || session.answer || '',
+            aiFeedback: session.aiFeedback || '',
+            createdAt: session.createdAt || new Date().toISOString()
         }))
     };
 }
