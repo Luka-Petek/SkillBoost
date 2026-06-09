@@ -117,7 +117,7 @@ export function useAppData() {
             ],
             recommendations: ['To je demo način, ker backend trenutno ni dosegljiv.', 'Izberi več veščin in oddaj odgovor za lokalno AI oceno.']
         });
-        setError(message ? `Demo način` : 'Demo način');
+        setError('');   //ni vec demo nacin sporocila
         syncInitialSelection(demoSkills, demoChallenges);
     }, []);
 
