@@ -38,7 +38,7 @@ Projekt je nastal v okviru predmeta Praktikum 2 (UM FERI, 2025/2026) kot full-st
 
 | Sloj | Tehnologije |
 | --- | --- |
-| Frontend | React 18, Vite, `keycloak-js`, `mammoth` |
+| Frontend | React 18, Vite, `keycloak-js`|
 | Backend | Spring Boot 3.3.5 (Java 21), Spring Web, Spring Data MongoDB, Validation, Security, OAuth2 Resource Server |
 | Baza | MongoDB 7 (+ Mongo Express) |
 | Avtentikacija | Keycloak 24 (OIDC / JWT) |
@@ -49,11 +49,7 @@ Projekt je nastal v okviru predmeta Praktikum 2 (UM FERI, 2025/2026) kot full-st
 
 ## Avtorji
 
-| Avtor | Vloga |
-| --- | --- |
-| **Luka Petek** | Vodja projekta, full-stack razvoj, DevOps in namestitev |
-| **Miha Kostanjevec** | Backend, integracija AI (Gemini), varnost in Keycloak |
-| **Miha Kitak** | Frontend, UI/UX, gamifikacija |
+| **Luka Petek** | **Miha Kostanjevec** | **Miha Kitak** |
 
 ---
 
@@ -154,7 +150,7 @@ skillboost/
 # Arhitekturna shema
 Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na React frontend-u, Spring Boot backend-u, MongoDB bazi podatkov ter Keycloak avtentikaciji. Celoten sistem je povezan preko REST API komunikacije in deluje v Docker infrastrukturi, nameščeni na TrueNAS strežniku z uporabo Nginx reverse proxy-ja in Cloudflare zaščite.
 
-![alt text](_PROMOCIJA/arhitekturna_shema.png)
+![arhitekturna_shema.png](_PROMOCIJA/Screenshoti/arhitekturna_shema.png)![alt text](_PROMOCIJA/arhitekturna_shema.png)
 
 ---
 

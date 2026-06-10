@@ -66,7 +66,7 @@ Glavne funkcionalnosti rešitve:
 SkillBoost je zasnovan kot **večslojna, storitveno naravnana full-stack rešitev**
 z jasno ločitvijo med prikazom, poslovno logiko in podatki ter REST komunikacijo.
 
-![arhitekturna_shema.png](arhitekturna_shema.png)
+![arhitekturna_shema.png](Screenshoti/arhitekturna_shema.png)
 
 | Sloj | Tehnologija | Vloga |
 | --- | --- | --- |
