@@ -1,9 +1,19 @@
+<div align="center">
+
+<img src="_PROMOCIJA/grafika_logo_700x500.png" alt="SkillBoost" width="220" />
+
 # SkillBoost
 
-> Interaktivni AI trener mehkih veščin, ki vsakodnevno vajo spremeni v igro z napredkom, ocenami in povratnimi informacijami.
+**Interaktivni AI trener mehkih veščin — simulacije, takojšnje ocenjevanje, gamifikacija.**
 
-**Delujoča rešitev:** <https://skillboost.lukapetek.net>
-**Repozitorij:** <https://github.com/Luka-Petek/SkillBoost>
+[![Live](https://img.shields.io/badge/🌐_Deluje_tukaj-skillboost.lukapetek.net-4A90D9)](https://skillboost.lukapetek.net)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](frontend/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3-6DB33F?logo=springboot&logoColor=white)](backend/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7-47A248?logo=mongodb&logoColor=white)](docker-compose.yml)
+[![Keycloak](https://img.shields.io/badge/Keycloak-24-4D4D4D?logo=keycloak)](keycloak_config/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+
+</div>
 
 ---
 
@@ -147,10 +157,31 @@ skillboost/
 ---
 
 # Arhitekturna shema
-Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na React frontend-u, Spring Boot backend-u, MongoDB bazi podatkov ter Keycloak avtentikaciji. Celoten sistem je povezan preko REST API komunikacije in deluje v Docker infrastrukturi, nameščeni na TrueNAS strežniku z uporabo Nginx reverse proxy-ja in Cloudflare zaščite.
+
+Aplikacija temelji na React frontendu, Spring Boot backendu, MongoDB bazi in Keycloak avtentikaciji. Celoten sistem teče v Docker infrastrukturi z Nginx reverse proxy-jem in Cloudflare zaščito.
+
+```
+Browser → Nginx
+              ├── /*       → React SPA (frontend :3000)
+              └── /api/*   → Spring Boot (:8080) → MongoDB (:27017)
+                                    ├── Keycloak (:9080)   JWT / OAuth2
+                                    └── Gemini API         AI ocenjevanje
+```
 
 ![arhitekturna_shema.png](_PROMOCIJA/Screenshoti/arhitekturna_shema.png)
-(_PROMOCIJA/arhitekturna_shema.png)
+### Ključne API poti
+
+| Metoda | Pot | Namen |
+|--------|-----|-------|
+| `POST` | `/api/sessions` | Odda trening sejo → AI ocena + XP |
+| `GET` | `/api/sessions/user/{userId}` | Seje uporabnika |
+| `GET` | `/api/report/{userId}` | Poročilo z napredkom |
+| `GET` | `/api/skills` | Seznam veščin |
+| `GET` | `/api/challenges` | Seznam izzivov |
+| `GET` | `/api/quest/user/{userId}` | SkillCity quest mapa |
+| `POST` | `/api/quest/user/{userId}/node/{nodeKey}` | Akcija na quest vozlišču |
+| `GET` | `/api/mentor/dashboard` | Mentorska nadzorna plošča |
+| `GET/PUT` | `/api/profile` | Profil prijavljenega uporabnika |
 
 ---
 
@@ -268,7 +299,7 @@ Najlažji način zagona je preko Dockerja, ker takrat ni treba ročno zaganjati 
 Če projekt še ni prenesen, ga prenesemo iz Git repozitorija:
 
 ```bash
-git clone LINK_DO_REPOZITORIJA
+git clone https://github.com/Luka-Petek/SkillBoost
 ```
 
 Nato gremo v mapo projekta:
@@ -478,120 +509,3 @@ Frontend se običajno zažene na:
 ```text
 http://localhost:5173
 ```
-
----
-
-# Najpogostejše težave
-
-## Port je že zaseden
-
-Če se pojavi napaka, da je port že zaseden, preverimo ali že deluje kakšen container ali program na teh portih:
-
-```text
-3000, 8080, 8081, 9080, 27017
-```
-
-Rešitev:
-
-```bash
-docker compose down
-docker compose up --build
-```
-
----
-
-## Docker ne zažene pravilno baze
-
-Rešitev:
-
-```bash
-docker compose down -v
-docker compose up --build
-```
-
----
-
-## Frontend se odpre, podatkov pa ni
-
-Preverimo:
-
-1. ali backend deluje na `http://localhost:8080`
-2. ali MongoDB container deluje
-3. ali je `.env` pravilno nastavljen
-4. ali se v konzoli brskalnika pojavi CORS ali API napaka
-
----
-
-## AI funkcionalnosti ne delujejo
-
-Preverimo `.env` datoteko:
-
-```env
-GEMINI_API_KEY=VSTAVI_API_KLJUC
-```
-
-Če API ključ ni nastavljen, aplikacija lahko deluje, vendar AI del ne bo vračal pravih odgovorov.
-
----
-
-# Priporočen postopek za predstavitev
-
-Pred predstavitvijo naredimo:
-
-1. Zaženemo projekt:
-
-```bash
-docker compose up --build
-```
-
-2. Odpremo frontend:
-
-```text
-http://localhost:3000
-```
-
-3. Preverimo, da backend deluje:
-
-```text
-http://localhost:8080/api/health
-```
-
-4. Preverimo bazo:
-
-```text
-http://localhost:8081
-```
-
-5. Pripravimo demo podatke.
-
-6. Ne tipkamo dolgih podatkov v živo.
-
-7. Predstavitev vodimo kot zgodbo uporabnika.
-
-Primer zgodbe:
-
-```text
-Uporabnik želi izboljšati svoje mehke veščine.
-Najprej se prijavi v aplikacijo, nato izbere izziv, opravi nalogo,
-prejme povratno informacijo in spremlja svoj napredek na lestvici.
-```
-
----
-
-# Status projekta
-
-Projekt vsebuje:
-
-1. React frontend
-2. Spring Boot backend
-3. MongoDB bazo
-4. Keycloak avtentikacijo
-5. Docker Compose zagon
-6. začetne podatke
-7. API primere
-8. promocijsko mapo
-9. predstavitev
-10. arhitekturno shemo
-
-Projekt je pripravljen kot končna rešitev za oddajo in predstavitev.
-
