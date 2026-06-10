@@ -108,8 +108,8 @@ skillboost/
 │
 ├── docs/                              # Dokumentacija projekta
 │   ├── api-examples.http              # Primeri API requestov
-│   ├── skillquest-roadmap.md          # Roadmap nadaljnjega razvoja
-│   └── thursday-mvp-plan.md           # MVP plan razvoja
+│   └── dev-notes/                     # Razvojni zapiski in interne roadmap datoteke
+│    
 │
 ├── frontend/                          # React frontend aplikacija
 │   ├── package.json                   # Frontend knjižnice in npm skripte
@@ -139,7 +139,6 @@ skillboost/
 │
 ├── .env.example                       # Primer konfiguracije okolja
 ├── .gitignore                         # Datoteke, ki jih Git ignorira
-├── MVP_UPGRADES_5_TOCK.md             # Dokument nadgradenj in izboljšav
 ├── README.md                          # Glavna dokumentacija projekta
 └── docker-compose.yml                 # Zagon celotnega sistema z Docker Compose
 ```
@@ -150,7 +149,8 @@ skillboost/
 # Arhitekturna shema
 Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na React frontend-u, Spring Boot backend-u, MongoDB bazi podatkov ter Keycloak avtentikaciji. Celoten sistem je povezan preko REST API komunikacije in deluje v Docker infrastrukturi, nameščeni na TrueNAS strežniku z uporabo Nginx reverse proxy-ja in Cloudflare zaščite.
 
-![arhitekturna_shema.png](_PROMOCIJA/Screenshoti/arhitekturna_shema.png)![alt text](_PROMOCIJA/arhitekturna_shema.png)
+![arhitekturna_shema.png](_PROMOCIJA/Screenshoti/arhitekturna_shema.png)
+(_PROMOCIJA/arhitekturna_shema.png)
 
 ---
 
@@ -165,7 +165,7 @@ Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na
 | `.env`                   | Lokalne nastavitve okolja, npr. API ključi in povezave. Ta datoteka se običajno ne deli javno.             |
 | `.env.example`           | Primer nastavitev okolja. Uporabnik ga lahko kopira v `.env`.                                              |
 | `.gitignore`             | Določa, katere datoteke se ne dodajo v Git repozitorij.                                                    |
-| `MVP_UPGRADES_5_TOCK.md` | Dokument z nadgradnjami in izboljšavami projekta.                                                          |
+                                            
 
 ---
 
@@ -187,6 +187,8 @@ Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na
 | `frontend/src/hooks/`                   | Lastni React hooki za podatke, prijavo in temo.                  |
 | `frontend/src/styles/`                  | CSS datoteke za izgled aplikacije.                               |
 | `frontend/src/data/demoContent.js`      | Demo vsebina, ki se uporablja v aplikaciji.                      |
+| `frontend/src/docs/` | Primeri API requestov                      |
+| `frontend/src/docs/dev_notes` | Dokumentacija projekta.                         |
 | `frontend/src/world/skillcityEngine.js` | Logika za SkillCity / SkillQuest prikaz.                         |
 
 ---
@@ -225,8 +227,7 @@ Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na
 | Datoteka / mapa              | Pomen                                                |
 | ---------------------------- | ---------------------------------------------------- |
 | `docs/api-examples.http`     | Primeri API zahtev za testiranje backend endpointov. |
-| `docs/skillquest-roadmap.md` | Načrt razvoja SkillQuest funkcionalnosti.            |
-| `docs/thursday-mvp-plan.md`  | Plan dela za MVP verzijo.                            |
+
 
 ---
 
@@ -329,25 +330,6 @@ Ko se Docker containerji zaženejo, odpremo naslednje povezave:
 | Backend       | `http://localhost:8080` | REST API                           |
 | Mongo Express | `http://localhost:8081` | Pregled MongoDB baze               |
 | Keycloak      | `http://localhost:9080` | Upravljanje prijave in uporabnikov |
-
----
-
-## Prijava v aplikacijo (privzeti dostopi)
-
-Aplikacija uporablja **Keycloak** za prijavo in registracijo.
-
-- Ob prvi uporabi se na prijavnem zaslonu lahko **registrirate** (registracija je odprta) in nato prijavite z lastnim računom.
-- Privzeti uporabnik z vlogo `MENTOR` / `ADMIN` ni vnaprej naložen; mentorske funkcije se prikažejo uporabnikom z ustrezno vlogo (vlogo dodelite v Keycloak admin konzoli).
-- Brez prijave je na voljo gostujoči (demo) pogled aplikacije.
-
-Administracijski konzoli (samo **lokalno demo okolje**):
-
-| Storitev | Uporabnik | Geslo |
-| --- | --- | --- |
-| Keycloak admin konzola (`http://localhost:9080`) | `admin` | `admin` |
-| Mongo Express (`http://localhost:8081`) | `admin` | `admin` |
-
-> Javna rešitev je dostopna na <https://skillboost.lukapetek.net>.
 
 ---
 
@@ -613,13 +595,3 @@ Projekt vsebuje:
 
 Projekt je pripravljen kot končna rešitev za oddajo in predstavitev.
 
----
-
-# Dodatna dokumentacija
-
-| Dokument | Vsebina |
-| --- | --- |
-| [`_PROMOCIJA/OpisProjekta.md`](_PROMOCIJA/OpisProjekta.md) | Podroben opis rešitve s kazalom: funkcionalnosti, arhitektura, REST vmesnik, zagon, nadaljnji razvoj, odprte pomanjkljivosti in prevzem. |
-| [`_PROMOCIJA/SkillBoost.txt`](_PROMOCIJA/SkillBoost.txt) | Promocijski kataloški opis projekta. |
-| [`docs/skillquest-roadmap.md`](docs/skillquest-roadmap.md) | Načrt nadaljnjega razvoja. |
-| [`docs/api-examples.http`](docs/api-examples.http) | Primeri REST zahtev. |
