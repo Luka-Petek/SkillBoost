@@ -29,6 +29,7 @@ const navItems = [
     { key: 'simulator', label: 'Simulator', icon: 'message' },
     { key: 'skills', label: 'Veščine', icon: 'target' },
     { key: 'quest', label: 'SkillCity', icon: 'compass' },
+    { key: 'competition', label: 'Tekmovanje', icon: 'trophy' },
     { key: 'report', label: 'Poročilo', icon: 'chart' },
     { key: 'mentor', label: 'Mentor', icon: 'userTie', mentorOnly: true },
     { key: 'profile', label: 'Profil', icon: 'users', protected: true }

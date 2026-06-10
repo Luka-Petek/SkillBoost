@@ -436,10 +436,16 @@
   gap: 6px;
 }
 
-.app-workbench--skills .catalog-meta-row span,
-.app-workbench--skills .mini-list span {
+.app-workbench--skills .catalog-meta-row span {
   padding: 5px 7px;
   font-size: 0.72rem;
+}
+
+.app-workbench--skills .mini-list span {
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  width: fit-content;
+  flex: 0 0 auto;
 }
 
 .app-workbench--skills .catalog-card-actions .primary,
