@@ -1,0 +1,35 @@
+SkillBoost
+
+Interaktivni AI trener mehkih veščin, ki vsakodnevno vajo spremeni v igro z napredkom, ocenami in povratnimi informacijami.
+
+Leto izdelave: 2026
+
+Luka Petek
+Miha Kostanjevec
+Miha Kitak
+
+Domača stran: https://skillboost.lukapetek.net
+Vir podatkov: lasten seed (MongoDB) + generativni AI (Google Gemini API)
+Koda: https://github.com/Luka-Petek/SkillBoost
+
+Kategorizacija: celovita informacijska rešitev, spletna aplikacija
+
+Oznake: ReactJS, Vite, SpringBoot, Java, MongoDB, Keycloak, Docker, Nginx, REST, GeminiAI, UporabaAI, Scrum, AgilenRazvoj, GitHub, ResponsiveDesign
+
+Opis projekta:
+
+SkillBoost je spletna aplikacija za razvoj mehkih veščin (komunikacija, empatija,
+reševanje konfliktov, vodenje), ki klasično učenje nadomesti z interaktivnimi
+simulacijami in gamifikacijo. Uporabnik izbere veščine, ki jih želi izboljšati,
+nato pa rešuje realistične scenarije, na katere odgovarja s tekstom ali z govorom.
+Odgovore oceni umetna inteligenca (Google Gemini) po petih merilih – jasnost,
+empatija, struktura, učinek in samozavest – ter poda konkretne predloge za izboljšavo.
+
+Napredek je viden skozi sistem stopenj, izkušenjskih točk (XP), nizov, dnevnih
+nalog, dvobojev in lestvic, kar uporabnika motivira k rednemu treningu. Aplikacija
+ponuja še personalizirano nadzorno ploščo, matriko stanja veščin, zemljevid SkillCity
+in mentorski pregled za sledenje napredku skupin.
+
+Rešitev je zgrajena kot ločena full-stack arhitektura: React (Vite) frontend, Spring
+Boot REST backend, MongoDB baza in Keycloak avtentikacija. Celoten sistem teče v
+Docker okolju in je javno dostopen prek Nginx reverse proxyja.

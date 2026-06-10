@@ -1,18 +1,59 @@
- # SkillBoost
-SkillBoost je moderna spletna aplikacija za razvijanje mehkih veščin skozi interaktivne izzive, AI povratne informacije in sistem napredovanja.
+# SkillBoost
 
-Projekt je bil razvit v okviru predmeta Praktikum 2 z uporabo React, Spring Boot in MongoDB tehnologij. Aplikacija uporabnikom omogoča izboljševanje komunikacije, sodelovanja in profesionalnih kompetenc preko gamifikacije, mentorstva in praktičnih simulacij.
+> Interaktivni AI trener mehkih veščin, ki vsakodnevno vajo spremeni v igro z napredkom, ocenami in povratnimi informacijami.
 
-Glavne funkcionalnosti:
-- AI feedback sistem
-- Skill Quest mapa napredovanja
-- uporabniški profili
-- leaderboard sistem
-- responsive design
-- JWT avtentikacija
-- Docker podpora
+**Delujoča rešitev:** <https://skillboost.lukapetek.net>
+**Repozitorij:** <https://github.com/Luka-Petek/SkillBoost>
 
-Projekt je zasnovan kot moderna full-stack rešitev z ločenim frontend in backend sistemom ter REST API komunikacijo.
+---
+
+## O projektu
+
+SkillBoost je spletna aplikacija za razvoj mehkih veščin (komunikacija, empatija, reševanje konfliktov, vodenje, javno nastopanje). Klasično učenje nadomesti z interaktivnimi simulacijami, takojšnjo AI povratno informacijo in gamifikacijo.
+
+Uporabnik izbere veščine, ki jih želi izboljšati, rešuje realistične scenarije in odgovore odda v oceno. Umetna inteligenca (Google Gemini) odgovor oceni po petih merilih — jasnost, empatija, struktura, učinek in samozavest — ter poda konkretne predloge za izboljšavo.
+
+**Komu je namenjen:** študentom, zaposlenim in posameznikom, ki želijo redno in strukturirano izboljševati komunikacijske veščine, ter mentorjem, ki spremljajo napredek skupin.
+
+Projekt je nastal v okviru predmeta Praktikum 2 (UM FERI, 2025/2026) kot full-stack rešitev z ločenim frontendom in backendom ter REST API komunikacijo.
+
+---
+
+## Funkcionalnosti
+
+- **AI ocenjevanje odgovorov** (Gemini) po petih merilih z razlago in predlogi.
+- **Interaktivni simulator** z vnosom prek teksta, **govora** (Web Speech API) ali **pripete datoteke** (`.docx` / besedilo).
+- **Gamifikacija** — stopnje, izkušenjske točke (XP), dnevni nizi, dnevne naloge, dnevni dvoboj, tekmovalni način, značke in zvezdice.
+- **Personalizirana nadzorna plošča** z matriko stanja veščin in priporočeno vajo.
+- **SkillCity / SkillQuest zemljevid** napredovanja.
+- **Poročila** o aktivnosti in napredku po veščinah.
+- **Mentorski pregled** (vidno samo vlogama `MENTOR` / `ADMIN`).
+- **Uporabniški profili** in avatar.
+- **Avtentikacija in vloge** prek Keycloak (`USER`, `MENTOR`, `ADMIN`).
+- **Odziven (responsive) UI** s svetlo in temno temo.
+
+---
+
+## Tehnološki sklad
+
+| Sloj | Tehnologije |
+| --- | --- |
+| Frontend | React 18, Vite, `keycloak-js`, `mammoth` |
+| Backend | Spring Boot 3.3.5 (Java 21), Spring Web, Spring Data MongoDB, Validation, Security, OAuth2 Resource Server |
+| Baza | MongoDB 7 (+ Mongo Express) |
+| Avtentikacija | Keycloak 24 (OIDC / JWT) |
+| AI | Google Gemini API |
+| Infrastruktura | Docker Compose, Nginx, Cloudflare |
+
+---
+
+## Avtorji
+
+| Avtor | Vloga |
+| --- | --- |
+| **Luka Petek** | Vodja projekta, full-stack razvoj, DevOps in namestitev |
+| **Miha Kostanjevec** | Backend, integracija AI (Gemini), varnost in Keycloak |
+| **Miha Kitak** | Frontend, UI/UX, gamifikacija |
 
 ---
 
@@ -26,9 +67,12 @@ skillboost/
 │   └── workflows/                     # CI/CD workflow konfiguracije (GitHub Actions)
 │
 ├── _PROMOCIJA/                        # Datoteke za predstavitev in promocijo projekta
-│   ├── OpisProjekta.md                # Kratek opis projekta
-│   ├── SkillBoostPredstavitev.pptx    # PowerPoint predstavitev
-│   └── arhitekturna_shema_luka.png    # Diagram arhitekture sistema
+│   ├── OpisProjekta.md                # Podroben opis rešitve (z vsebino/kazalom)
+│   ├── SkillBoost.txt                 # Promocijski opis projekta (kataloški vnos)
+│   ├── arhitekturna_shema.png         # Diagram arhitekture sistema
+│   ├── Predstavitev/
+│   │   └── SkillBoostPredstavitev.pptx# PowerPoint predstavitev
+│   └── Screenshoti/                   # Zaslonske maske aplikacije
 │
 ├── backend/                           # Spring Boot backend aplikacija
 │   ├── pom.xml                        # Maven konfiguracija backend projekta
@@ -192,11 +236,13 @@ Arhitekturna shema prikazuje delovanje sistema SkillBoost. Aplikacija temelji na
 
 ## Promocijska mapa
 
-| Datoteka / mapa                          | Pomen                                 |
-| ---------------------------------------- | ------------------------------------- |
-| `_PROMOCIJA/OpisProjekta.md`             | Kratek opis projekta za predstavitev. |
-| `_PROMOCIJA/SkillBoostPredstavitev.pptx` | PowerPoint predstavitev projekta.     |
-| `_PROMOCIJA/arhitekturna_shema_luka.png` | Arhitekturna slika sistema.           |
+| Datoteka / mapa                                     | Pomen                                            |
+| --------------------------------------------------- | ------------------------------------------------ |
+| `_PROMOCIJA/OpisProjekta.md`                        | Podroben opis rešitve s kazalom (vir za PDF).    |
+| `_PROMOCIJA/SkillBoost.txt`                         | Promocijski kataloški opis projekta.             |
+| `_PROMOCIJA/arhitekturna_shema.png`                 | Arhitekturna slika sistema.                      |
+| `_PROMOCIJA/Predstavitev/SkillBoostPredstavitev.pptx` | PowerPoint predstavitev projekta.              |
+| `_PROMOCIJA/Screenshoti/`                           | Zaslonske maske aplikacije.                      |
 
 ---
 
@@ -287,6 +333,25 @@ Ko se Docker containerji zaženejo, odpremo naslednje povezave:
 | Backend       | `http://localhost:8080` | REST API                           |
 | Mongo Express | `http://localhost:8081` | Pregled MongoDB baze               |
 | Keycloak      | `http://localhost:9080` | Upravljanje prijave in uporabnikov |
+
+---
+
+## Prijava v aplikacijo (privzeti dostopi)
+
+Aplikacija uporablja **Keycloak** za prijavo in registracijo.
+
+- Ob prvi uporabi se na prijavnem zaslonu lahko **registrirate** (registracija je odprta) in nato prijavite z lastnim računom.
+- Privzeti uporabnik z vlogo `MENTOR` / `ADMIN` ni vnaprej naložen; mentorske funkcije se prikažejo uporabnikom z ustrezno vlogo (vlogo dodelite v Keycloak admin konzoli).
+- Brez prijave je na voljo gostujoči (demo) pogled aplikacije.
+
+Administracijski konzoli (samo **lokalno demo okolje**):
+
+| Storitev | Uporabnik | Geslo |
+| --- | --- | --- |
+| Keycloak admin konzola (`http://localhost:9080`) | `admin` | `admin` |
+| Mongo Express (`http://localhost:8081`) | `admin` | `admin` |
+
+> Javna rešitev je dostopna na <https://skillboost.lukapetek.net>.
 
 ---
 
@@ -551,3 +616,14 @@ Projekt vsebuje:
 10. arhitekturno shemo
 
 Projekt je pripravljen kot končna rešitev za oddajo in predstavitev.
+
+---
+
+# Dodatna dokumentacija
+
+| Dokument | Vsebina |
+| --- | --- |
+| [`_PROMOCIJA/OpisProjekta.md`](_PROMOCIJA/OpisProjekta.md) | Podroben opis rešitve s kazalom: funkcionalnosti, arhitektura, REST vmesnik, zagon, nadaljnji razvoj, odprte pomanjkljivosti in prevzem. |
+| [`_PROMOCIJA/SkillBoost.txt`](_PROMOCIJA/SkillBoost.txt) | Promocijski kataloški opis projekta. |
+| [`docs/skillquest-roadmap.md`](docs/skillquest-roadmap.md) | Načrt nadaljnjega razvoja. |
+| [`docs/api-examples.http`](docs/api-examples.http) | Primeri REST zahtev. |
