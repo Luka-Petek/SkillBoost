@@ -1,0 +1,23 @@
+.git
+.github
+.idea
+.vscode
+*.iml
+
+# local dependencies/build outputs
+**/node_modules
+frontend/dist
+frontend/.vite
+backend/target
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# local/secrets
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+
+# local runtime data
+keycloak_data
+keycloak_data/h2
