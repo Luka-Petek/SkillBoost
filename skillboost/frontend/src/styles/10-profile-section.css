@@ -426,3 +426,66 @@
     justify-content: center;
   }
 }
+
+/* =========================
+   FIX: profile hero text overflow
+   ========================= */
+
+.profile-hero-copy,
+.profile-hero-copy *,
+.profile-meta-row,
+.profile-meta-row * {
+  min-width: 0;
+}
+
+.profile-hero-copy h2 {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-meta-row {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.profile-meta-row span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* če je v span ikona + tekst, naj se tekst lahko skrajša */
+.profile-meta-row span svg,
+.profile-meta-row span .app-icon {
+  flex: 0 0 auto;
+}
+
+.profile-meta-row span {
+  flex: 0 1 auto;
+}
+
+/* zelo mali zasloni */
+@media (max-width: 430px) {
+  .profile-hero-card {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .profile-avatar {
+    width: 68px;
+    height: 68px;
+  }
+
+  .profile-meta-row {
+    gap: 6px;
+  }
+
+  .profile-meta-row span {
+    max-width: 100%;
+    font-size: 0.74rem;
+    padding: 6px 9px;
+  }
+}
