@@ -92,7 +92,7 @@
   gap: 14px;
   padding: 18px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .competition-card::before {
@@ -973,4 +973,60 @@
 
 .duel-fighter.winner .duel-model__glow {
   background: radial-gradient(circle, color-mix(in srgb, var(--shard-main, var(--accent)) 56%, transparent), transparent 70%);
+}
+
+.competition-card .battle-form-grid {
+  position: relative;
+  z-index: 50;
+}
+
+.competition-card .battle-form-grid label {
+  position: relative;
+  z-index: 1;
+}
+
+.competition-card .battle-form-grid label:has(.styled-select.is-open) {
+  z-index: 999999;
+}
+
+.competition-card .battle-preview-card {
+  position: relative;
+  z-index: 1;
+}
+
+.competition-card .styled-select.is-open {
+  z-index: 999999;
+}
+
+.competition-card .styled-select__menu {
+  z-index: 9999999;
+
+  background: var(--panel-strong);
+  background-color: var(--panel-strong);
+  background-image: none;
+
+  opacity: 1;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  border: 1px solid var(--border);
+
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.competition-card .styled-select__option {
+  color: var(--text);
+}
+
+.competition-card .styled-select__option:hover,
+.competition-card .styled-select__option:focus-visible {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.competition-card .styled-select__option.is-selected {
+  background: color-mix(in srgb, var(--primary) 24%, transparent);
+  color: var(--text);
 }

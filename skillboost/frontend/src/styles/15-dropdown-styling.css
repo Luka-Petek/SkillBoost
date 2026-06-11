@@ -1,8 +1,8 @@
 select {
-    background: #11182a;
-    border: 1px solid rgba(139, 118, 255, 0.55);
+    background: var(--panel-strong);
+    border: 1px solid color-mix(in srgb, var(--primary) 42%, var(--border));
     border-radius: 18px;
-    color: #f8fbff;
+    color: var(--text);
     font: inherit;
     font-weight: 800;
     padding: 0.95rem 3rem 0.95rem 1.1rem;
@@ -15,7 +15,7 @@ select {
 }
 
 .styled-select.is-open {
-    z-index: 80;
+    z-index: 999999;
 }
 
 .styled-select__button {
@@ -27,22 +27,37 @@ select {
     gap: 1rem;
     padding: 0.95rem 1.15rem;
     border-radius: 20px;
-    border: 1px solid rgba(145, 128, 255, 0.72);
-    background: linear-gradient(180deg, rgba(19, 25, 46, 0.98), rgba(13, 19, 35, 0.98));
-    color: #f8fbff;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 0 3px rgba(124, 95, 255, 0.17);
+    border: 1px solid color-mix(in srgb, var(--primary) 58%, var(--border));
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--panel-strong) 96%, var(--primary) 4%),
+            color-mix(in srgb, var(--panel) 92%, var(--primary) 8%)
+        );
+    color: var(--text);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent),
+        0 0 0 3px color-mix(in srgb, var(--primary) 17%, transparent);
     font: inherit;
     font-weight: 900;
     text-align: left;
     cursor: pointer;
-    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.styled-select__button span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .styled-select__button:hover,
 .styled-select__button:focus-visible,
 .styled-select.is-open .styled-select__button {
-    border-color: rgba(169, 151, 255, 0.95);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 0 0 4px rgba(124, 95, 255, 0.26);
+    border-color: color-mix(in srgb, var(--primary) 78%, var(--border));
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--text) 7%, transparent),
+        0 0 0 4px color-mix(in srgb, var(--primary) 24%, transparent);
     outline: none;
 }
 
@@ -51,7 +66,8 @@ select {
     height: 0;
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
-    border-top: 8px solid #dfe7ff;
+    border-top: 8px solid var(--text);
+    opacity: 0.82;
     transition: transform 160ms ease;
 }
 
@@ -64,13 +80,22 @@ select {
     left: 0;
     right: 0;
     top: calc(100% + 8px);
+    z-index: 9999999;
     max-height: 260px;
     overflow: auto;
     padding: 0.45rem;
     border-radius: 18px;
-    border: 1px solid rgba(151, 132, 255, 0.7);
-    background: #0d1424;
-    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    border: 1px solid color-mix(in srgb, var(--primary) 58%, var(--border));
+    background: var(--panel-strong);
+    background-color: var(--panel-strong);
+    background-image: none;
+    color: var(--text);
+    opacity: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.18),
+        inset 0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .styled-select__option {
@@ -80,7 +105,7 @@ select {
     border: 0;
     border-radius: 13px;
     background: transparent;
-    color: #f8fbff;
+    color: var(--text);
     font: inherit;
     font-weight: 900;
     text-align: left;
@@ -90,14 +115,15 @@ select {
 
 .styled-select__option:hover,
 .styled-select__option:focus-visible {
-    background: rgba(124, 95, 255, 0.24);
+    background: color-mix(in srgb, var(--primary) 16%, transparent);
+    color: var(--text);
     outline: none;
     transform: translateX(2px);
 }
 
 .styled-select__option.is-selected {
-    background: linear-gradient(135deg, #8fc1f3, #9d8cff);
-    color: #10182b;
+    background: color-mix(in srgb, var(--primary) 22%, var(--panel-strong));
+    color: var(--text);
 }
 
 .avatar-color-dropdown .styled-select {
@@ -106,4 +132,38 @@ select {
 
 .avatar-color-dropdown .styled-select__button {
     min-height: 50px;
+}
+
+/* Competition dropdown layering fix */
+.competition-card .battle-form-grid {
+    position: relative;
+    z-index: 50;
+}
+
+.competition-card .battle-form-grid label {
+    position: relative;
+    z-index: 1;
+}
+
+.competition-card .battle-form-grid label:has(.styled-select.is-open) {
+    z-index: 999999;
+}
+
+.competition-card .battle-preview-card {
+    position: relative;
+    z-index: 1;
+}
+
+.competition-card .styled-select.is-open {
+    z-index: 999999;
+}
+
+.competition-card .styled-select__menu {
+    z-index: 9999999;
+    background: var(--panel-strong);
+    background-color: var(--panel-strong);
+    background-image: none;
+    opacity: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
