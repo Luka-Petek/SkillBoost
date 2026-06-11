@@ -1092,12 +1092,23 @@ export function SkillsSection({ skills = [], challenges = [], selectedSkillKeys,
     const [expandedSkillKey, setExpandedSkillKey] = useState(selectedSkillKeys[0] || skills[0]?.key || '');
 
     const categories = useMemo(() => ['Vse', ...Array.from(new Set((skills || []).map((skill) => skill.category).filter(Boolean)))], [skills]);
-    const levels = ['VSE', 'ZAČETNIK', 'SREDNJI', 'NAPREDNI'];
+   const normalizeFilterValue = (value = '') =>
+    String(value)
+        .trim()
+        .toUpperCase();
+
+    const levels = useMemo(() => [
+    'VSE',
+    ...Array.from(new Set((skills || []).map((skill) => normalizeFilterValue(skill.level)).filter(Boolean)))
+    ], [skills]);
+
     const groupedSkills = useMemo(() => {
-        const normalizedQuery = query.trim().toLowerCase();
-        return (skills || [])
-            .filter((skill) => activeCategory === 'Vse' || skill.category === activeCategory)
-            .filter((skill) => activeLevel === 'VSE' || skill.level === activeLevel)
+    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedActiveLevel = normalizeFilterValue(activeLevel);
+
+    return (skills || [])
+        .filter((skill) => activeCategory === 'Vse' || skill.category === activeCategory)
+        .filter((skill) => normalizedActiveLevel === 'VSE' || normalizeFilterValue(skill.level) === normalizedActiveLevel)
             .filter((skill) => {
                 if (!normalizedQuery) return true;
                 const haystack = [skill.name, skill.category, skill.description, ...(skill.outcomes || [])].join(' ').toLowerCase();
