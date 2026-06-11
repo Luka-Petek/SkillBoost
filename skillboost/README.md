@@ -15,6 +15,10 @@
 
 </div>
 
+## Avtorji
+
+**Luka Petek**, **Miha Kostanjevec**, **Miha Kitak** 
+
 ---
 
 ## O projektu
@@ -44,6 +48,18 @@ Projekt je nastal v okviru predmeta Praktikum 2 (UM FERI, 2025/2026) kot full-st
 
 ---
 
+## Promocijska mapa / Dokumentacija
+
+| Datoteka / mapa                                       | Pomen                                            |
+|-------------------------------------------------------| ------------------------------------------------ |
+| `_PROMOCIJA/OpisProjekta.pdf`                         | Podroben opis rešitve s kazalom (vir za PDF).    |
+| `_PROMOCIJA/SkillBoost.txt`                           | Promocijski kataloški opis projekta.             |
+| `_PROMOCIJA/Screenshoti/arhitekturna_shema.png`       | Arhitekturna slika sistema.                      |
+| `_PROMOCIJA/Predstavitev/SkillBoostPredstavitev.pptx` | PowerPoint predstavitev projekta.              |
+| `_PROMOCIJA/Screenshoti/`                             | Zaslonske maske aplikacije.                      |
+
+---
+
 ## Tehnološki sklad
 
 | Sloj | Tehnologije |
@@ -54,12 +70,6 @@ Projekt je nastal v okviru predmeta Praktikum 2 (UM FERI, 2025/2026) kot full-st
 | Avtentikacija | Keycloak 24 (OIDC / JWT) |
 | AI | Google Gemini API |
 | Infrastruktura | Docker Compose, Nginx, Cloudflare |
-
----
-
-## Avtorji
-
-| **Luka Petek** | **Miha Kostanjevec** | **Miha Kitak** |
 
 ---
 
@@ -160,14 +170,6 @@ skillboost/
 
 Aplikacija temelji na React frontendu, Spring Boot backendu, MongoDB bazi in Keycloak avtentikaciji. Celoten sistem teče v Docker infrastrukturi z Nginx reverse proxy-jem in Cloudflare zaščito.
 
-```
-Browser → Nginx
-              ├── /*       → React SPA (frontend :3000)
-              └── /api/*   → Spring Boot (:8080) → MongoDB (:27017)
-                                    ├── Keycloak (:9080)   JWT / OAuth2
-                                    └── Gemini API         AI ocenjevanje
-```
-
 ![arhitekturna_shema.png](_PROMOCIJA/Screenshoti/arhitekturna_shema.png)
 ### Ključne API poti
 
@@ -250,27 +252,6 @@ Browser → Nginx
 | `mongo/skillboost-prompts.seed.json` | Začetni podatki za AI prompt vsebine.                   |
 | `keycloak_config/realm-export.json`  | Keycloak konfiguracija za uporabnike, prijavo in realm. |
 | `keycloak_data/`                     | Lokalni podatki Keycloak sistema.                       |
-
----
-
-## Dokumentacija
-
-| Datoteka / mapa              | Pomen                                                |
-| ---------------------------- | ---------------------------------------------------- |
-| `docs/api-examples.http`     | Primeri API zahtev za testiranje backend endpointov. |
-
-
----
-
-## Promocijska mapa
-
-| Datoteka / mapa                                     | Pomen                                            |
-| --------------------------------------------------- | ------------------------------------------------ |
-| `_PROMOCIJA/OpisProjekta.md`                        | Podroben opis rešitve s kazalom (vir za PDF).    |
-| `_PROMOCIJA/SkillBoost.txt`                         | Promocijski kataloški opis projekta.             |
-| `_PROMOCIJA/arhitekturna_shema.png`                 | Arhitekturna slika sistema.                      |
-| `_PROMOCIJA/Predstavitev/SkillBoostPredstavitev.pptx` | PowerPoint predstavitev projekta.              |
-| `_PROMOCIJA/Screenshoti/`                           | Zaslonske maske aplikacije.                      |
 
 ---
 
